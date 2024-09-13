@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Azure.Identity;
 using Azure.Security.KeyVault.Certificates;
@@ -9,26 +10,20 @@ namespace Devv.WebServer.Api.Features.Hosts;
 
 public class CertificateManager
 {
-    private readonly MemoryCache _cache;
-    private readonly ConcurrentDictionary<string, SecretClient> _secretClients;
-    private readonly ConcurrentDictionary<string, CertificateClient> _certificateClients;
-    private readonly DefaultAzureCredential _credential;
-
-    public CertificateManager()
-    {
-        // Initialize MemoryCache with default options
-        _cache = new MemoryCache(new MemoryCacheOptions());
-
-        _credential = new DefaultAzureCredential();
-        _secretClients = new ConcurrentDictionary<string, SecretClient>();
-        _certificateClients = new ConcurrentDictionary<string, CertificateClient>();
-    }
+    private readonly MemoryCache _cache = new(new MemoryCacheOptions());
+    private readonly ConcurrentDictionary<string, SecretClient> _secretClients = new();
+    private readonly ConcurrentDictionary<string, CertificateClient> _certificateClients = new();
+    private readonly DefaultAzureCredential _credential = new();
 
     public async Task AddOrUpdateCertificateAsync(CertificateSettings settings)
     {
         X509Certificate2 certificate;
 
-        if (settings.CertificateSource == CertificateSources.KeyVault)
+        if (settings.CertificateSource == CertificateSources.Fallback)
+        {
+            certificate = GenerateSelfSignedCertificate();
+        }
+        else if (settings.CertificateSource == CertificateSources.KeyVault)
         {
             certificate = await LoadCertificateFromKeyVaultAsync(settings.Location);
         }
@@ -105,5 +100,16 @@ public class CertificateManager
 
         return new X509Certificate2(filePath, password,
             X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
+    }
+
+    public X509Certificate2 GenerateSelfSignedCertificate()
+    {
+        var rsa = RSA.Create(2048);
+        var certReq = new CertificateRequest("CN=localhost", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+        // Create a self-signed certificate that is valid for 1 year
+        var certificate = certReq.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+
+        return certificate;
     }
 }

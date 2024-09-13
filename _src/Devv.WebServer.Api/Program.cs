@@ -2,29 +2,22 @@ using System.Text.Json;
 using Devv.WebServer.Api.Features.Hosts;
 using FastEndpoints;
 using FastEndpoints.Swagger;
-using Microsoft.Extensions.Options;
 
 namespace Devv.WebServer.Api;
 
 public class Program
 {
-    public async Task Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
         var certificateManager = new CertificateManager();
-        var certificateOptions = new CertificateOptions();
-        builder.Configuration.GetSection(CertificateOptions.SectionName).Bind(certificateOptions);
-
-        foreach (var certSettings in certificateOptions.Certificates)
-        {
-            await certificateManager.AddOrUpdateCertificateAsync(certSettings);
-        }
+        await builder.ConfigureCertificates(certificateManager);
 
         builder.WebHost.ConfigureKestrel(options =>
         {
-            options.ListenAnyIP(80);
-            options.ListenAnyIP(443,
+            options.ListenAnyIP(8080);
+            options.ListenAnyIP(8081,
                 listenOptions =>
                 {
                     listenOptions.UseHttps(httpsOptions =>
@@ -37,10 +30,13 @@ public class Program
                 });
         });
 
-        builder.Services.AddSingleton(certificateManager);
+        builder.Services.AddHttpsRedirection(options =>
+        {
+            options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+            options.HttpsPort = 8081;
+        });
 
-        builder.Services.Configure<CertificateOptions>(
-            builder.Configuration.GetSection(CertificateOptions.SectionName));
+        builder.Services.AddSingleton(certificateManager);
 
         var configuration = builder.Configuration;
 
@@ -50,14 +46,8 @@ public class Program
 
         var app = builder.Build();
 
-        builder.Services.AddHttpsRedirection(options =>
-        {
-            options.RedirectStatusCode = StatusCodes.Status301MovedPermanently;
-            options.HttpsPort = 443;
-        });
-
+        app.UseHttpsRedirection();
         app.UseAuthorization();
-
         app.UseFastEndpoints(c =>
             {
                 c.Serializer.Options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
@@ -74,6 +64,6 @@ public class Program
             })
             .UseSwaggerGen();
 
-        app.Run();
+        await app.RunAsync();
     }
 }

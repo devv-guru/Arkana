@@ -1,19 +1,29 @@
-﻿using Microsoft.Extensions.Options;
-
-namespace Devv.WebServer.Api.Features.Hosts;
+﻿namespace Devv.WebServer.Api.Features.Hosts;
 
 public static class ConfigureServices
 {
-    public static async Task<WebApplication> UseDynamicWebServer(this WebApplication app)
+    public static async Task ConfigureCertificates(this WebApplicationBuilder builder,
+        CertificateManager certificateManager)
     {
-        var certificateOptions = app.Services.GetRequiredService<IOptions<CertificateOptions>>().Value;
-        var certificateManager = app.Services.GetRequiredService<CertificateManager>();
+        var certificateOptions = new CertificateOptions();
+        builder.Configuration.GetSection(CertificateOptions.SectionName).Bind(certificateOptions);
 
-        foreach (var certSettings in certificateOptions.Certificates)
+        if (certificateOptions?.Certificates == null || !certificateOptions.Certificates.Any())
         {
-            await certificateManager.AddOrUpdateCertificateAsync(certSettings);
+            await certificateManager.AddOrUpdateCertificateAsync(new CertificateSettings
+            {
+                HostName = "localhost",
+                CertificateSource = CertificateSources.Fallback,
+                Location = "Generated",
+                Password = null
+            });
         }
-
-        return app;
+        else
+        {
+            foreach (var certSettings in certificateOptions.Certificates)
+            {
+                await certificateManager.AddOrUpdateCertificateAsync(certSettings);
+            }
+        }
     }
 }
