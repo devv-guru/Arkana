@@ -1,0 +1,6 @@
+@Devv.WebServer.Api_HostAddress = http://localhost:5100
+
+GET {{Devv.WebServer.Api_HostAddress}}/api/weather/
+Accept: application/json
+
+###
