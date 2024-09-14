@@ -1,7 +1,10 @@
 using System.Text.Json;
+using Devv.WebServer.Api.Configuration;
 using Devv.WebServer.Api.Features.Hosts;
+using Devv.WebServer.Api.Logging;
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using Microsoft.Extensions.Azure;
 
 namespace Devv.WebServer.Api;
 
@@ -10,22 +13,26 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        var host = builder.Host;
+        var configuration = builder.Configuration;
 
-        var certificateManager = new CertificateManager();
-        await builder.ConfigureCertificates(certificateManager);
+        host.AddLogging(configuration);
+        configuration.AddConfigurationSources(configuration, args);
+        builder.Services.AddLazyCache();
+        builder.Services.AddScoped<IHostCache, HostCache>();
 
         builder.WebHost.ConfigureKestrel(options =>
         {
+            options.AddServerHeader = false;
             options.ListenAnyIP(8080);
             options.ListenAnyIP(8081,
                 listenOptions =>
                 {
+                    var hostCache = options.ApplicationServices.GetRequiredService<IHostCache>();
                     listenOptions.UseHttps(httpsOptions =>
                     {
-                        httpsOptions.ServerCertificateSelector = (context, hostName) =>
-                        {
-                            return certificateManager.GetCertificate(hostName);
-                        };
+                        httpsOptions.ServerCertificateSelector =
+                            (context, hostName) => hostCache.GetCertificate(hostName);
                     });
                 });
         });
@@ -35,10 +42,6 @@ public class Program
             options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
             options.HttpsPort = 8081;
         });
-
-        builder.Services.AddSingleton(certificateManager);
-
-        var configuration = builder.Configuration;
 
         builder.Services.AddFastEndpoints()
             .SwaggerDocument()
@@ -53,13 +56,13 @@ public class Program
                 c.Serializer.Options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 c.Endpoints.Configurator = ep =>
                 {
-                    var allowedDomain = configuration["Server:VerifiedDomain"];
-                    if (ep.Routes[0].StartsWith("/api") &&
-                        !string.IsNullOrWhiteSpace(allowedDomain))
-                    {
-                        ep.Options(b => b.RequireHost(allowedDomain));
-                        ep.Description(b => b.Produces<ErrorResponse>(400, "application/problem+json"));
-                    }
+                    var allowedDomain = configuration["Server:ManagementDomain"];
+
+                    if (string.IsNullOrWhiteSpace(allowedDomain) || !ep.Routes[0].StartsWith("/api"))
+                        return;
+
+                    ep.Options(b => b.RequireHost(allowedDomain));
+                    ep.Description(b => b.Produces<ErrorResponse>(400, "application/problem+json"));
                 };
             })
             .UseSwaggerGen();
