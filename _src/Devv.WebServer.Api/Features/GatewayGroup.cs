@@ -2,16 +2,16 @@
 
 namespace Devv.WebServer.Api.Features;
 
-public class ApiGroup : Group
+public class GatewayGroup : Group
 {
-    public ApiGroup()
+    public GatewayGroup()
     {
-        Configure("/api",
+        Configure("/gateway",
             ep =>
             {
                 ep.Description(
                     x => x.Produces(401)
-                        .WithTags("api"));
+                        .WithTags("gateway"));
             });
     }
 }

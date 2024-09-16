@@ -9,7 +9,7 @@ public class Endpoint : EndpointWithoutRequest<Results<Ok<Response[]>, NotFound,
     public override void Configure()
     {
         Get("/weather");
-        Group<ApiGroup>();
+        Group<GatewayGroup>();
         AllowAnonymous();
     }
 

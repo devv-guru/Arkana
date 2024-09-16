@@ -1,10 +1,8 @@
-using System.Text.Json;
 using Devv.WebServer.Api.Configuration;
+using Devv.WebServer.Api.Data;
+using Devv.WebServer.Api.FastEndpoints;
 using Devv.WebServer.Api.Features.Hosts;
 using Devv.WebServer.Api.Logging;
-using FastEndpoints;
-using FastEndpoints.Swagger;
-using Microsoft.Extensions.Azure;
 
 namespace Devv.WebServer.Api;
 
@@ -19,53 +17,19 @@ public class Program
         host.AddLogging(configuration);
         configuration.AddConfigurationSources(configuration, args);
         builder.Services.AddLazyCache();
-        builder.Services.AddScoped<IHostCache, HostCache>();
-
-        builder.WebHost.ConfigureKestrel(options =>
-        {
-            options.AddServerHeader = false;
-            options.ListenAnyIP(8080);
-            options.ListenAnyIP(8081,
-                listenOptions =>
-                {
-                    var hostCache = options.ApplicationServices.GetRequiredService<IHostCache>();
-                    listenOptions.UseHttps(httpsOptions =>
-                    {
-                        httpsOptions.ServerCertificateSelector =
-                            (context, hostName) => hostCache.GetCertificate(hostName);
-                    });
-                });
-        });
-
-        builder.Services.AddHttpsRedirection(options =>
-        {
-            options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-            options.HttpsPort = 8081;
-        });
-
-        builder.Services.AddFastEndpoints()
-            .SwaggerDocument()
-            .AddAuthorization();
+        builder.Services.AddScoped<HostCertificateCache>();
+        builder.WebHost.ConfigureWebServer();
+        builder.Services.AddDataContext(configuration);
+        builder.Services.AddGatewayHttpsRedirection();
+        builder.Services.AddGatewayFastEndpoints();
+        builder.Services.AddProxy();
 
         var app = builder.Build();
 
         app.UseHttpsRedirection();
         app.UseAuthorization();
-        app.UseFastEndpoints(c =>
-            {
-                c.Serializer.Options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                c.Endpoints.Configurator = ep =>
-                {
-                    var allowedDomain = configuration["Server:ManagementDomain"];
-
-                    if (string.IsNullOrWhiteSpace(allowedDomain) || !ep.Routes[0].StartsWith("/api"))
-                        return;
-
-                    ep.Options(b => b.RequireHost(allowedDomain));
-                    ep.Description(b => b.Produces<ErrorResponse>(400, "application/problem+json"));
-                };
-            })
-            .UseSwaggerGen();
+        app.UseGatewayFastEndpoints(configuration);
+        app.UseProxy();
 
         await app.RunAsync();
     }

@@ -4,12 +4,13 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Devv.WebServer.Api.Features.Hosts;
 
-public class HostCache : IHostCache
+public class HostCertificateCache
 {
-    private readonly ILogger<HostCache> _logger;
+    private const string CacheKeyPrefix = "HostCert-";
+    private readonly ILogger<HostCertificateCache> _logger;
     private readonly IAppCache _cache;
 
-    public HostCache(ILogger<HostCache> logger, IAppCache cache)
+    public HostCertificateCache(ILogger<HostCertificateCache> logger, IAppCache cache)
     {
         _cache = cache;
         _logger = logger;
@@ -18,7 +19,7 @@ public class HostCache : IHostCache
     public X509Certificate2? GetCertificate(string? hostName)
     {
         _logger.LogInformation("GetCertificate: {HostName}", hostName);
-        if (_cache.TryGetValue(hostName, out X509Certificate2 certificate))
+        if (_cache.TryGetValue($"{CacheKeyPrefix}{hostName}", out X509Certificate2 certificate))
         {
             _logger.LogInformation("Certificate found for {HostName}", hostName);
             return certificate;
@@ -38,12 +39,12 @@ public class HostCache : IHostCache
         _logger.LogInformation("SetCertificate: {HostName} with expiration {date}", hostName,
             options.AbsoluteExpiration);
 
-        _cache.Add(hostName, certificate, options);
+        _cache.Add($"{CacheKeyPrefix}{hostName}", certificate, options);
     }
 
     public void RemoveCertificate(string hostName)
     {
         _logger.LogInformation("RemoveCertificate: {HostName}", hostName);
-        _cache.Remove(hostName);
+        _cache.Remove($"{CacheKeyPrefix}{hostName}");
     }
 }
