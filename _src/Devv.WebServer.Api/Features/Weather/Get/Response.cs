@@ -1,4 +1,4 @@
-namespace Devv.WebServer.Api;
+namespace Devv.WebServer.Api.Features.Weather.Get;
 
 public class Response
 {

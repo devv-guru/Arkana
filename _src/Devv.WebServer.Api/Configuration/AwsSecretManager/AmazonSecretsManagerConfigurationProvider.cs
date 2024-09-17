@@ -28,7 +28,7 @@ public class AmazonSecretsManagerConfigurationProvider : ConfigurationProvider
         var request = new GetSecretValueRequest
         {
             SecretId = _secretName,
-            VersionStage = "AWSCURRENT" // VersionStage defaults to AWSCURRENT if unspecified.
+            VersionStage = "AWSCURRENT"
         };
 
         using (var client =

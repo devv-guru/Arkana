@@ -1,4 +1,4 @@
-﻿namespace Devv.WebServer.Api.Data;
+﻿namespace Devv.WebServer.Api.Data.Common;
 
 public class DataContextProviders
 {

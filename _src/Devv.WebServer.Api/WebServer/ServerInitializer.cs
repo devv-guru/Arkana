@@ -1,8 +1,7 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using Devv.WebServer.Api.Data;
-using Microsoft.Extensions.Options;
+﻿using Devv.WebServer.Api.Data;
+using Devv.WebServer.Api.Data.Contexts;
 
-namespace Devv.WebServer.Api.Features.Hosts;
+namespace Devv.WebServer.Api.WebServer;
 
 public class ServerInitializer : IHostedService
 {

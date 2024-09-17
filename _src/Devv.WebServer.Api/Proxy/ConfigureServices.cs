@@ -1,5 +1,7 @@
 ﻿using Yarp.ReverseProxy.Configuration;
 
+namespace Devv.WebServer.Api.Proxy;
+
 public static class ConfigureServices
 {
     public static IServiceCollection AddProxy(this IServiceCollection services)

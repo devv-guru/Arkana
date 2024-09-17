@@ -2,7 +2,7 @@
 using LazyCache;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Devv.WebServer.Api.Features.Hosts;
+namespace Devv.WebServer.Api.WebServer;
 
 public class HostCertificateCache
 {

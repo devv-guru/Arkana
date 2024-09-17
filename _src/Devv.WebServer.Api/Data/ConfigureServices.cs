@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Devv.WebServer.Api.Data.Common;
+using Devv.WebServer.Api.Data.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace Devv.WebServer.Api.Data;
 
@@ -8,46 +10,68 @@ public static class ConfigureServices
     {
         var dataContextOptions = configuration.GetSection(DataContextOptions.SectionName).Get<DataContextOptions>();
 
-        services.AddDbContext<DataContext>(options =>
-        {
-            switch (dataContextOptions.Provider)
-            {
-                case DataContextProviders.SqlServer:
-                    options.UseSqlServer(dataContextOptions.ConnectionString);
-                    break;
-                case DataContextProviders.PostgreSql:
-                    options.UseNpgsql(dataContextOptions.ConnectionString);
-                    break;
-                case DataContextProviders.SqLite:
-                    options.UseSqlite(dataContextOptions.ConnectionString);
-                    break;
-                case DataContextProviders.MySql:
-                {
-                    if (dataContextOptions.MySqlVersion != "AutoDetect")
-                        options.UseMySql(dataContextOptions.ConnectionString,
-                            new MySqlServerVersion(new Version(dataContextOptions.MySqlVersion)));
-                    else
-                        options.UseMySql(dataContextOptions.ConnectionString,
-                            ServerVersion.AutoDetect(dataContextOptions.ConnectionString));
-                    break;
-                }
-                case DataContextProviders.MariaDb:
-                {
-                    if (dataContextOptions.MariaDbVersion != "AutoDetect")
-                        options.UseMySql(dataContextOptions.ConnectionString,
-                            new MariaDbServerVersion(new Version(dataContextOptions.MariaDbVersion)));
-                    else
-                        options.UseMySql(dataContextOptions.ConnectionString,
-                            ServerVersion.AutoDetect(dataContextOptions.ConnectionString));
+        // Register the base context (used for migrations)
+        services.AddDbContext<DbContext>(options =>
+            ConfigureDatabaseProvider(options, dataContextOptions));
 
-                    break;
-                }
-
-                default:
-                    throw new NotSupportedException($"The provider '{dataContextOptions.Provider}' is not supported.");
-            }
-        });
+        // Register ReadOnlyContext and WriteOnlyContext
+        services.AddDbContext<ReadOnlyContext>(options => { ConfigureDatabaseProvider(options, dataContextOptions); });
+        services.AddDbContext<WriteOnlyContext>(options => { ConfigureDatabaseProvider(options, dataContextOptions); });
 
         return services;
+    }
+
+    private static void ConfigureDatabaseProvider(DbContextOptionsBuilder options,
+        DataContextOptions dataContextOptions)
+    {
+        switch (dataContextOptions.Provider)
+        {
+            case DataContextProviders.SqlServer:
+                options.UseSqlServer(dataContextOptions.ConnectionString);
+                break;
+
+            case DataContextProviders.PostgreSql:
+                options.UseNpgsql(dataContextOptions.ConnectionString);
+                break;
+
+            case DataContextProviders.SqLite:
+                options.UseSqlite(dataContextOptions.ConnectionString);
+                break;
+
+            case DataContextProviders.MySql:
+                ConfigureMySql(options, dataContextOptions.ConnectionString, dataContextOptions.MySqlVersion);
+                break;
+
+            case DataContextProviders.MariaDb:
+                ConfigureMariaDb(options, dataContextOptions.ConnectionString, dataContextOptions.MariaDbVersion);
+                break;
+
+            default:
+                throw new NotSupportedException($"The provider '{dataContextOptions.Provider}' is not supported.");
+        }
+    }
+
+    private static void ConfigureMySql(DbContextOptionsBuilder options, string connectionString, string version)
+    {
+        if (version != "AutoDetect")
+        {
+            options.UseMySql(connectionString, new MySqlServerVersion(new Version(version)));
+        }
+        else
+        {
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+        }
+    }
+
+    private static void ConfigureMariaDb(DbContextOptionsBuilder options, string connectionString, string version)
+    {
+        if (version != "AutoDetect")
+        {
+            options.UseMySql(connectionString, new MariaDbServerVersion(new Version(version)));
+        }
+        else
+        {
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+        }
     }
 }

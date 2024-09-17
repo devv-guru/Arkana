@@ -6,7 +6,7 @@ using Azure.Security.KeyVault.Certificates;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Devv.WebServer.Api.Features.Hosts;
+namespace Devv.WebServer.Api.WebServer;
 
 public class CertificateManager
 {

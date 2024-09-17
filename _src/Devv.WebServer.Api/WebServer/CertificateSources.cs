@@ -1,4 +1,4 @@
-﻿namespace Devv.WebServer.Api.Features.Hosts;
+﻿namespace Devv.WebServer.Api.WebServer;
 
 public class CertificateSources
 {
