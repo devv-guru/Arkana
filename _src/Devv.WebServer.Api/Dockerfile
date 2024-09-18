@@ -17,7 +17,7 @@ RUN dotnet publish "Devv.WebServer.Api.csproj" -c Release -o /app/publish /p:Use
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-distroless AS final
 
 # Create directories for config, certs, and logs
-RUN mkdir -p /etc/app-config /etc/app/certs /var/log/app /var/www/app/static
+RUN mkdir -p /etc/app-config /etc/app/certs /var/log/app /var/www/app/static /var/lib/app/data
 
 # Copy the appsettings.json to the /etc/app-config directory
 COPY Devv.WebServer.Api/appsettings.json /etc/app-config/appsettings.json
@@ -27,6 +27,7 @@ ENV CONFIG_PATH=/etc/app-config
 ENV CERT_PATH=/etc/app/certs
 ENV LOG_PATH=/var/log/app
 ENV STATIC_CONTENT_PATH=/var/www/app/static
+ENV DATA_PATH=/var/lib/app/data
 
 WORKDIR /app
 COPY --from=publish /app/publish .

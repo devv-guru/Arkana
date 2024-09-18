@@ -1,7 +1,7 @@
 ﻿namespace Devv.WebServer.Api.Configuration;
 
-public class ConfigurationOptions
+public class GatewayOptions
 {
-    public const string SectionName = "ConfigurationOptions";
+    public const string SectionName = "GatewayOptions";
     public string? ManagementDomain { get; init; }
 }

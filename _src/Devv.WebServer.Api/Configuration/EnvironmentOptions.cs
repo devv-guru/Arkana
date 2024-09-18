@@ -7,4 +7,5 @@ public class EnvironmentOptions
     public string LogsPath { get; set; } = string.Empty;
     public string ConfigPath { get; set; } = string.Empty;
     public string StaticFilesPath { get; set; } = string.Empty;
+    public string DataPath { get; set; } = string.Empty;
 }

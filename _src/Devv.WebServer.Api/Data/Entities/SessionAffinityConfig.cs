@@ -3,6 +3,7 @@
 public class SessionAffinityConfig
 {
     public int Id { get; set; }
+
     public bool Enabled { get; set; }
     public string Policy { get; set; }
     public string FailurePolicy { get; set; }

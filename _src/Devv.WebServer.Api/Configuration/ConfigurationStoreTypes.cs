@@ -2,6 +2,7 @@
 
 public class ConfigurationStoreTypes
 {
+    public const string Override = "Override";
     public const string AppSettings = "AppSettings";
     public const string AzureKeyVault = "AzureKeyVault";
     public const string AwsSecretsManager = "AwsSecretsManager";

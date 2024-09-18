@@ -11,6 +11,7 @@ public static class ConfigureServices
         services.AddFastEndpoints()
             .SwaggerDocument()
             .AddAuthorization();
+        
         return services;
     }
 
@@ -21,7 +22,7 @@ public static class ConfigureServices
                 c.Serializer.Options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 c.Endpoints.Configurator = ep =>
                 {
-                    var allowedDomain = configuration["Server:ManagementDomain"];
+                    var allowedDomain = configuration["GatewayOptions:ManagementDomain"];
 
                     if (string.IsNullOrWhiteSpace(allowedDomain) || !ep.Routes[0].StartsWith("/gateway"))
                         return;

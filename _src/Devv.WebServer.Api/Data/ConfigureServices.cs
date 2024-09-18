@@ -27,15 +27,18 @@ public static class ConfigureServices
         switch (dataContextOptions.Provider)
         {
             case DataContextProviders.SqlServer:
-                options.UseSqlServer(dataContextOptions.ConnectionString);
+                options.UseSqlServer(dataContextOptions.ConnectionString,
+                    x => x.MigrationsAssembly("Devv.SqlServerMigrations"));
                 break;
 
             case DataContextProviders.PostgreSql:
-                options.UseNpgsql(dataContextOptions.ConnectionString);
+                options.UseNpgsql(dataContextOptions.ConnectionString,
+                    x => x.MigrationsAssembly("Devv.PostgreSqlMigrations"));
                 break;
 
             case DataContextProviders.SqLite:
-                options.UseSqlite(dataContextOptions.ConnectionString);
+                options.UseSqlite(dataContextOptions.ConnectionString,
+                    x => x.MigrationsAssembly("Devv.SqliteMigrations"));
                 break;
 
             case DataContextProviders.MySql:
@@ -54,16 +57,20 @@ public static class ConfigureServices
     private static void ConfigureMySql(DbContextOptionsBuilder options, string connectionString, string version)
     {
         if (version != "AutoDetect")
-            options.UseMySql(connectionString, new MySqlServerVersion(new Version(version)));
+            options.UseMySql(connectionString, new MySqlServerVersion(new Version(version)),
+                x => x.MigrationsAssembly("Devv.MySqlMigrations"));
         else
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                x => x.MigrationsAssembly("Devv.MySqlMigrations"));
     }
 
     private static void ConfigureMariaDb(DbContextOptionsBuilder options, string connectionString, string version)
     {
         if (version != "AutoDetect")
-            options.UseMySql(connectionString, new MariaDbServerVersion(new Version(version)));
+            options.UseMySql(connectionString, new MariaDbServerVersion(new Version(version)),
+                x => x.MigrationsAssembly("Devv.MariaDbMigrations"));
         else
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                x => x.MigrationsAssembly("Devv.MariaDbMigrations"));
     }
 }

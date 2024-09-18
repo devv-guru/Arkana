@@ -12,9 +12,9 @@ public static class ConfigureServices
         IConfiguration configuration, string[] args)
     {
         configurationManager.AddEnvironmentVariables();
+        configurationManager.AddUserSecrets<Program>();
 
-
-        configurationManager.SetBasePath("/app/config")
+        configurationManager.SetBasePath(Environment.GetEnvironmentVariable("CONFIG_PATH"))
             .AddJsonFile("appsettings.json", false, true);
 
         var configurationStore =
@@ -26,6 +26,7 @@ public static class ConfigureServices
         switch (configurationStore.Type)
         {
             case ConfigurationStoreTypes.AppSettings:
+            case ConfigurationStoreTypes.Override:
                 break;
             case ConfigurationStoreTypes.AzureKeyVault:
                 configurationManager.ConfigureAzureKeyVault(configurationStore.AzureKeyVaultUri);

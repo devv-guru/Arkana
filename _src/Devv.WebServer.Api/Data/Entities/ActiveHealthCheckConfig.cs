@@ -12,5 +12,5 @@ public class ActiveHealthCheckConfig
 
     // Foreign key to HealthCheckConfig
     public int HealthCheckConfigId { get; set; }
-    public HealthCheckConfig HealthCheckConfig { get; set; }
+    public HealthCheckConfig? HealthCheckConfig { get; set; }
 }

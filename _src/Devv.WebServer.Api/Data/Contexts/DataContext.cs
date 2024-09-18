@@ -11,6 +11,11 @@ public class DataContext : DbContext
     {
     }
 
+    public DataContext(DbContextOptions<DataContext> options)
+        : base(options)
+    {
+    }
+
     public DbSet<RouteConfig> Routes { get; set; }
     public DbSet<ClusterConfig> Clusters { get; set; }
     public DbSet<MatchConfig> Matches { get; set; }

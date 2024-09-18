@@ -17,12 +17,15 @@ public class Program
         var host = builder.Host;
         var configuration = builder.Configuration;
 
+        var test = Environment.GetEnvironmentVariable("CONFIG_PATH");
+        
         builder.Services.Configure<EnvironmentOptions>(config =>
         {
             config.CertificatePath = Environment.GetEnvironmentVariable("CERT_PATH") ?? "/etc/app/certs";
-            config.LogsPath = Environment.GetEnvironmentVariable("LOGS_PATH") ?? "/var/log/app";
+            config.LogsPath = Environment.GetEnvironmentVariable("LOG_PATH") ?? "/var/log/app";
             config.ConfigPath = Environment.GetEnvironmentVariable("CONFIG_PATH") ?? "/etc/app-config";
             config.StaticFilesPath = Environment.GetEnvironmentVariable("STATIC_CONTENT_PATH") ?? "/var/www/app/static";
+            config.DataPath = Environment.GetEnvironmentVariable("DATA_PATH") ?? "/var/lib/app/data";
         });
 
         host.AddLogging(configuration);

@@ -4,6 +4,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Devv.WebServer.Ui", "_src\D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Devv.WebServer.Api", "_src\Devv.WebServer.Api\Devv.WebServer.Api.csproj", "{4503BFF3-FD54-44F3-AC8A-603DADE31777}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Migrations", "Migrations", "{792EC23B-0420-40D0-A7DF-2D084327BD66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Devv.SqlServerMigrations", "_src\Migrations\Devv.SqlServerMigrations\Devv.SqlServerMigrations.csproj", "{7C442766-E800-4905-95E5-2F5F92EFCD8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Devv.SqliteMigrations", "_src\Migrations\Devv.SqliteMigrations\Devv.SqliteMigrations.csproj", "{B0987AA4-5BC7-4968-9518-A049390669E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Devv.MySqlMigrations", "_src\Migrations\Devv.MySqlMigrations\Devv.MySqlMigrations.csproj", "{6EA658DF-E560-4687-A55A-F8BA6517CD68}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Devv.MariaDbMigrations", "_src\Migrations\Devv.MariaDbMigrations\Devv.MariaDbMigrations.csproj", "{EC28F3FA-E708-4456-9ABA-BE9AE3E584A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Devv.PostgreSqlMigrations", "_src\Migrations\Devv.PostgreSqlMigrations\Devv.PostgreSqlMigrations.csproj", "{A5753724-5118-47CC-B3C2-18A32938D3C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +30,32 @@ Global
 		{4503BFF3-FD54-44F3-AC8A-603DADE31777}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4503BFF3-FD54-44F3-AC8A-603DADE31777}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4503BFF3-FD54-44F3-AC8A-603DADE31777}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C442766-E800-4905-95E5-2F5F92EFCD8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C442766-E800-4905-95E5-2F5F92EFCD8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C442766-E800-4905-95E5-2F5F92EFCD8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C442766-E800-4905-95E5-2F5F92EFCD8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0987AA4-5BC7-4968-9518-A049390669E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0987AA4-5BC7-4968-9518-A049390669E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0987AA4-5BC7-4968-9518-A049390669E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0987AA4-5BC7-4968-9518-A049390669E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EA658DF-E560-4687-A55A-F8BA6517CD68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EA658DF-E560-4687-A55A-F8BA6517CD68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EA658DF-E560-4687-A55A-F8BA6517CD68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EA658DF-E560-4687-A55A-F8BA6517CD68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC28F3FA-E708-4456-9ABA-BE9AE3E584A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC28F3FA-E708-4456-9ABA-BE9AE3E584A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC28F3FA-E708-4456-9ABA-BE9AE3E584A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC28F3FA-E708-4456-9ABA-BE9AE3E584A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5753724-5118-47CC-B3C2-18A32938D3C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5753724-5118-47CC-B3C2-18A32938D3C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5753724-5118-47CC-B3C2-18A32938D3C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5753724-5118-47CC-B3C2-18A32938D3C6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7C442766-E800-4905-95E5-2F5F92EFCD8D} = {792EC23B-0420-40D0-A7DF-2D084327BD66}
+		{B0987AA4-5BC7-4968-9518-A049390669E9} = {792EC23B-0420-40D0-A7DF-2D084327BD66}
+		{6EA658DF-E560-4687-A55A-F8BA6517CD68} = {792EC23B-0420-40D0-A7DF-2D084327BD66}
+		{EC28F3FA-E708-4456-9ABA-BE9AE3E584A9} = {792EC23B-0420-40D0-A7DF-2D084327BD66}
+		{A5753724-5118-47CC-B3C2-18A32938D3C6} = {792EC23B-0420-40D0-A7DF-2D084327BD66}
 	EndGlobalSection
 EndGlobal
