@@ -11,11 +11,18 @@ public static class ConfigureServices
     public static void AddConfigurationSources(this IConfigurationBuilder configurationManager,
         IConfiguration configuration, string[] args)
     {
+        configurationManager.AddEnvironmentVariables();
+        
+        
+        
+        configurationManager.SetBasePath("/app/config")
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
         var configurationStore =
             configuration.GetSection(ConfigurationStore.SectionName).Get<ConfigurationStore>();
 
         if (configurationStore is null)
-            throw new Exception("Configuration store is not defined");
+            throw new Exception("The configuration store section in appsettings.json is missing or invalid.");
 
         switch (configurationStore.Type)
         {
@@ -42,10 +49,7 @@ public static class ConfigureServices
     private static void ConfigureAzureKeyVault(this IConfigurationBuilder configurationManager,
         string? keyVaultUri)
     {
-        if (string.IsNullOrWhiteSpace(keyVaultUri))
-        {
-            throw new Exception("Azure Key Vault URI is not defined");
-        }
+        EnsureValid(keyVaultUri, "Azure Key Vault URI is not defined");
 
         configurationManager.AddAzureKeyVault(
             new Uri(keyVaultUri),
@@ -55,10 +59,8 @@ public static class ConfigureServices
     private static void AddAmazonSecretsManager(this IConfigurationBuilder configurationManager,
         string? region, string? secretName)
     {
-        if (string.IsNullOrWhiteSpace(region) || string.IsNullOrWhiteSpace(secretName))
-        {
-            throw new Exception("AWS Secrets Manager configuration is not defined");
-        }
+        EnsureValid(region, "AWS Secrets Manager region is not defined");
+        EnsureValid(secretName, "AWS Secrets Manager secret name is not defined");
 
         var configurationSource = new AmazonSecretsManagerConfigurationSource(region, secretName);
 
@@ -73,8 +75,7 @@ public static class ConfigureServices
             throw new Exception("Environment variables mappings are not defined");
         }
 
-        var configurationSource =
-            new EnvironmentVariableConfigurationSource(mappings);
+        var configurationSource = new EnvironmentVariableConfigurationSource(mappings);
         configurationManager.Add(configurationSource);
     }
 
@@ -94,5 +95,13 @@ public static class ConfigureServices
         var configurationSource = new StartupParametersConfigurationSource(mappings, args);
 
         configurationManager.Add(configurationSource);
+    }
+
+    private static void EnsureValid(string? value, string errorMessage)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new Exception(errorMessage);
+        }
     }
 }

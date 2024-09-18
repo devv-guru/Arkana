@@ -48,6 +48,7 @@
 
     <ItemGroup>
       <Folder Include="Features\Hosts\" />
+      <Folder Include="StaticSites\" />
     </ItemGroup>
 
 </Project>
