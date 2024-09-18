@@ -49,7 +49,7 @@ public static class ConfigureServices
                 ClusterId = "defaultCluster",
                 Destinations = new Dictionary<string, DestinationConfig>(StringComparer.OrdinalIgnoreCase)
                 {
-                    { "default", new DestinationConfig() { Address = "https://localhost" } },
+                    { "default", new DestinationConfig() { Address = "https://localhost" } }
                 }
             }
         };

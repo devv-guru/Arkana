@@ -21,7 +21,7 @@ public class ServerInitializer : IHostedService
         await using (var scope = _serviceProvider.CreateAsyncScope())
         {
             _logger.LogInformation("ServerInitializer StartAsync scope");
-            
+
             var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
         }
     }

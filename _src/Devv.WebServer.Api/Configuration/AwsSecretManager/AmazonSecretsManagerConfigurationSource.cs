@@ -1,6 +1,6 @@
 ﻿namespace Devv.WebServer.Api.Configuration.AwsSecretManager;
 
-public class AmazonSecretsManagerConfigurationSource: IConfigurationSource
+public class AmazonSecretsManagerConfigurationSource : IConfigurationSource
 {
     private readonly string _region;
     private readonly string _secretName;

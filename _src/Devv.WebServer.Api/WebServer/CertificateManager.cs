@@ -20,32 +20,22 @@ public class CertificateManager
         X509Certificate2 certificate;
 
         if (settings.CertificateSource == CertificateSources.Fallback)
-        {
             certificate = GenerateSelfSignedCertificate();
-        }
         else if (settings.CertificateSource == CertificateSources.KeyVault)
-        {
             certificate = await LoadCertificateFromKeyVaultAsync(settings.Location);
-        }
         else if (settings.CertificateSource == CertificateSources.LocalFile)
-        {
             certificate = LoadCertificateFromLocalFile(settings.Location, settings.Password);
-        }
         else
-        {
             throw new ArgumentException("Unsupported certificate source.");
-        }
 
         var expiration = certificate.NotAfter - DateTime.Now;
         if (expiration.TotalHours < 1)
-        {
             expiration = TimeSpan.FromHours(1); // If the certificate is expiring soon, set a minimum cache time.
-        }
 
         var cacheEntryOptions = new MemoryCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = expiration,
-            SlidingExpiration = TimeSpan.FromHours(6),
+            SlidingExpiration = TimeSpan.FromHours(6)
         };
 
         // Add or update certificate in the cache
@@ -77,7 +67,7 @@ public class CertificateManager
             var secretClient =
                 _secretClients.GetOrAdd(keyVaultUri.Host, _ => new SecretClient(keyVaultUri, _credential));
             KeyVaultSecret secret = await secretClient.GetSecretAsync(new Uri(keyVaultUrl).Segments.Last());
-            byte[] certBytes = Convert.FromBase64String(secret.Value);
+            var certBytes = Convert.FromBase64String(secret.Value);
             return new X509Certificate2(certBytes);
         }
         else
@@ -93,10 +83,7 @@ public class CertificateManager
     // Load certificate from local file system
     private X509Certificate2 LoadCertificateFromLocalFile(string filePath, string password)
     {
-        if (!File.Exists(filePath))
-        {
-            throw new FileNotFoundException($"The certificate file was not found: {filePath}");
-        }
+        if (!File.Exists(filePath)) throw new FileNotFoundException($"The certificate file was not found: {filePath}");
 
         return new X509Certificate2(filePath, password,
             X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);

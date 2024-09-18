@@ -16,10 +16,7 @@ public class EnvironmentVariableConfigurationProvider : ConfigurationProvider
         foreach (var mapping in _mappings)
         {
             var envVarValue = Environment.GetEnvironmentVariable(mapping.Key);
-            if (!string.IsNullOrEmpty(envVarValue))
-            {
-                config[mapping.Value] = envVarValue;
-            }
+            if (!string.IsNullOrEmpty(envVarValue)) config[mapping.Value] = envVarValue;
         }
 
         Data = config;

@@ -54,7 +54,7 @@ public class Program
         await app.RunAsync();
     }
 
-    static bool IsStaticFileRequest(HttpContext context)
+    private static bool IsStaticFileRequest(HttpContext context)
     {
         return context.Request.Path.StartsWithSegments($"/{EnvironmentOptions.StaticRequestPath}")
                && context.Request.Method == "GET"

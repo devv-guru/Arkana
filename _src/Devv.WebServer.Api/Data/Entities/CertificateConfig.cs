@@ -6,7 +6,7 @@ public class CertificateConfig
 {
     public int Id { get; set; }
 
-    public CertificateSourceType SourceType { get; set; } 
+    public CertificateSourceType SourceType { get; set; }
 
     // For Local storage
     public string LocalPath { get; set; }

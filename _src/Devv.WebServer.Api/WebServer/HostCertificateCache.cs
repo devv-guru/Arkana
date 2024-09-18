@@ -33,7 +33,7 @@ public class HostCertificateCache
     {
         var options = new MemoryCacheEntryOptions
         {
-            AbsoluteExpiration = certificate.NotAfter.AddDays(-1),
+            AbsoluteExpiration = certificate.NotAfter.AddDays(-1)
         };
 
         _logger.LogInformation("SetCertificate: {HostName} with expiration {date}", hostName,

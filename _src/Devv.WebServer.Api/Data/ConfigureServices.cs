@@ -54,24 +54,16 @@ public static class ConfigureServices
     private static void ConfigureMySql(DbContextOptionsBuilder options, string connectionString, string version)
     {
         if (version != "AutoDetect")
-        {
             options.UseMySql(connectionString, new MySqlServerVersion(new Version(version)));
-        }
         else
-        {
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-        }
     }
 
     private static void ConfigureMariaDb(DbContextOptionsBuilder options, string connectionString, string version)
     {
         if (version != "AutoDetect")
-        {
             options.UseMySql(connectionString, new MariaDbServerVersion(new Version(version)));
-        }
         else
-        {
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-        }
     }
 }

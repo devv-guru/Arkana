@@ -18,10 +18,7 @@ public class StartParametersConfigurationProvider : ConfigurationProvider
         foreach (var mapping in _mappings)
         {
             var argValue = _args.FirstOrDefault(x => x.StartsWith(mapping.Key));
-            if (!string.IsNullOrEmpty(argValue))
-            {
-                config[mapping.Value] = argValue.Split("=")[1];
-            }
+            if (!string.IsNullOrEmpty(argValue)) config[mapping.Value] = argValue.Split("=")[1];
         }
 
         Data = config;

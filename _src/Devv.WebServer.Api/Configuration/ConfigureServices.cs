@@ -12,11 +12,10 @@ public static class ConfigureServices
         IConfiguration configuration, string[] args)
     {
         configurationManager.AddEnvironmentVariables();
-        
-        
-        
+
+
         configurationManager.SetBasePath("/app/config")
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            .AddJsonFile("appsettings.json", false, true);
 
         var configurationStore =
             configuration.GetSection(ConfigurationStore.SectionName).Get<ConfigurationStore>();
@@ -70,10 +69,7 @@ public static class ConfigureServices
     private static void ConfigureEnvironmentVariables(this IConfigurationBuilder configurationManager,
         Dictionary<string, string>? mappings)
     {
-        if (mappings is null)
-        {
-            throw new Exception("Environment variables mappings are not defined");
-        }
+        if (mappings is null) throw new Exception("Environment variables mappings are not defined");
 
         var configurationSource = new EnvironmentVariableConfigurationSource(mappings);
         configurationManager.Add(configurationSource);
@@ -82,15 +78,9 @@ public static class ConfigureServices
     private static void ConfigureStartupParameters(this IConfigurationBuilder configurationManager,
         Dictionary<string, string>? mappings, string[] args)
     {
-        if (mappings is null)
-        {
-            throw new Exception("Startup parameters mappings are not defined");
-        }
+        if (mappings is null) throw new Exception("Startup parameters mappings are not defined");
 
-        if (args.Length == 0)
-        {
-            throw new Exception("Startup parameters are not defined");
-        }
+        if (args.Length == 0) throw new Exception("Startup parameters are not defined");
 
         var configurationSource = new StartupParametersConfigurationSource(mappings, args);
 
@@ -99,9 +89,6 @@ public static class ConfigureServices
 
     private static void EnsureValid(string? value, string errorMessage)
     {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            throw new Exception(errorMessage);
-        }
+        if (string.IsNullOrWhiteSpace(value)) throw new Exception(errorMessage);
     }
 }
