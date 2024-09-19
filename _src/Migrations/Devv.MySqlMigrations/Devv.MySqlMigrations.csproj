@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\Devv.Data\Devv.Data.csproj" />
+        <ProjectReference Include="..\..\Devv.Gateway.Data\Devv.Gateway.Data.csproj" />
     </ItemGroup>
 
 </Project>

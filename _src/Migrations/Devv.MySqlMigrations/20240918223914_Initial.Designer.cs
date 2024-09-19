@@ -2,7 +2,7 @@
 
 #nullable disable
 
-using Devv.WebServer.Api.Data.Contexts;
+using Devv.Gateway.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -23,7 +23,7 @@ namespace Devv.MySqlMigrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.ActiveHealthCheckConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.ActiveHealthCheckConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,7 +63,7 @@ namespace Devv.MySqlMigrations
                     b.ToTable("ActiveHealthChecks");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.CertificateConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.CertificateConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -111,7 +111,7 @@ namespace Devv.MySqlMigrations
                     b.ToTable("Certificates");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.ClusterConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.ClusterConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -132,7 +132,7 @@ namespace Devv.MySqlMigrations
                     b.ToTable("Clusters");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.DestinationConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.DestinationConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -162,7 +162,7 @@ namespace Devv.MySqlMigrations
                     b.ToTable("Destinations");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.HeaderMatchConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.HeaderMatchConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -195,7 +195,7 @@ namespace Devv.MySqlMigrations
                     b.ToTable("HeaderMatches");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.HealthCheckConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.HealthCheckConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -214,7 +214,7 @@ namespace Devv.MySqlMigrations
                     b.ToTable("HealthChecks");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.HttpClientConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.HttpClientConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -254,7 +254,7 @@ namespace Devv.MySqlMigrations
                     b.ToTable("HttpClients");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.HttpRequestConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.HttpRequestConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -287,7 +287,7 @@ namespace Devv.MySqlMigrations
                     b.ToTable("HttpRequests");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.MatchConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.MatchConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -318,7 +318,7 @@ namespace Devv.MySqlMigrations
                     b.ToTable("Matches");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.MetadataConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.MetadataConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -347,7 +347,7 @@ namespace Devv.MySqlMigrations
                     b.ToTable("Metadata");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.PassiveHealthCheckConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.PassiveHealthCheckConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -376,7 +376,7 @@ namespace Devv.MySqlMigrations
                     b.ToTable("PassiveHealthChecks");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.QueryParameterMatchConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.QueryParameterMatchConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -409,7 +409,7 @@ namespace Devv.MySqlMigrations
                     b.ToTable("QueryParameterMatches");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.RouteConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.RouteConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -444,7 +444,7 @@ namespace Devv.MySqlMigrations
                     b.ToTable("Routes");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.SessionAffinityConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.SessionAffinityConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -478,7 +478,7 @@ namespace Devv.MySqlMigrations
                     b.ToTable("SessionAffinities");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.TransformConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.TransformConfig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -504,29 +504,29 @@ namespace Devv.MySqlMigrations
                     b.ToTable("Transforms");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.ActiveHealthCheckConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.ActiveHealthCheckConfig", b =>
                 {
-                    b.HasOne("Devv.WebServer.Api.Data.Entities.HealthCheckConfig", "HealthCheckConfig")
+                    b.HasOne("Devv.Gateway.Api.Data.Entities.HealthCheckConfig", "HealthCheckConfig")
                         .WithOne("Active")
-                        .HasForeignKey("Devv.WebServer.Api.Data.Entities.ActiveHealthCheckConfig", "HealthCheckConfigId");
+                        .HasForeignKey("Devv.Gateway.Api.Data.Entities.ActiveHealthCheckConfig", "HealthCheckConfigId");
 
                     b.Navigation("HealthCheckConfig");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.CertificateConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.CertificateConfig", b =>
                 {
-                    b.HasOne("Devv.WebServer.Api.Data.Entities.RouteConfig", "RouteConfig")
+                    b.HasOne("Devv.Gateway.Api.Data.Entities.RouteConfig", "RouteConfig")
                         .WithOne("Certificate")
-                        .HasForeignKey("Devv.WebServer.Api.Data.Entities.CertificateConfig", "RouteConfigId")
+                        .HasForeignKey("Devv.Gateway.Api.Data.Entities.CertificateConfig", "RouteConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("RouteConfig");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.DestinationConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.DestinationConfig", b =>
                 {
-                    b.HasOne("Devv.WebServer.Api.Data.Entities.ClusterConfig", "ClusterConfig")
+                    b.HasOne("Devv.Gateway.Api.Data.Entities.ClusterConfig", "ClusterConfig")
                         .WithMany("Destinations")
                         .HasForeignKey("ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -535,9 +535,9 @@ namespace Devv.MySqlMigrations
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.HeaderMatchConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.HeaderMatchConfig", b =>
                 {
-                    b.HasOne("Devv.WebServer.Api.Data.Entities.MatchConfig", "MatchConfig")
+                    b.HasOne("Devv.Gateway.Api.Data.Entities.MatchConfig", "MatchConfig")
                         .WithMany("Headers")
                         .HasForeignKey("MatchConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -546,77 +546,77 @@ namespace Devv.MySqlMigrations
                     b.Navigation("MatchConfig");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.HealthCheckConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.HealthCheckConfig", b =>
                 {
-                    b.HasOne("Devv.WebServer.Api.Data.Entities.ClusterConfig", "ClusterConfig")
+                    b.HasOne("Devv.Gateway.Api.Data.Entities.ClusterConfig", "ClusterConfig")
                         .WithOne("HealthCheck")
-                        .HasForeignKey("Devv.WebServer.Api.Data.Entities.HealthCheckConfig", "ClusterConfigId")
+                        .HasForeignKey("Devv.Gateway.Api.Data.Entities.HealthCheckConfig", "ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.HttpClientConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.HttpClientConfig", b =>
                 {
-                    b.HasOne("Devv.WebServer.Api.Data.Entities.ClusterConfig", "ClusterConfig")
+                    b.HasOne("Devv.Gateway.Api.Data.Entities.ClusterConfig", "ClusterConfig")
                         .WithOne("HttpClient")
-                        .HasForeignKey("Devv.WebServer.Api.Data.Entities.HttpClientConfig", "ClusterConfigId")
+                        .HasForeignKey("Devv.Gateway.Api.Data.Entities.HttpClientConfig", "ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.HttpRequestConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.HttpRequestConfig", b =>
                 {
-                    b.HasOne("Devv.WebServer.Api.Data.Entities.ClusterConfig", "ClusterConfig")
+                    b.HasOne("Devv.Gateway.Api.Data.Entities.ClusterConfig", "ClusterConfig")
                         .WithOne("HttpRequest")
-                        .HasForeignKey("Devv.WebServer.Api.Data.Entities.HttpRequestConfig", "ClusterConfigId")
+                        .HasForeignKey("Devv.Gateway.Api.Data.Entities.HttpRequestConfig", "ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.MatchConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.MatchConfig", b =>
                 {
-                    b.HasOne("Devv.WebServer.Api.Data.Entities.RouteConfig", "RouteConfig")
+                    b.HasOne("Devv.Gateway.Api.Data.Entities.RouteConfig", "RouteConfig")
                         .WithOne("Match")
-                        .HasForeignKey("Devv.WebServer.Api.Data.Entities.MatchConfig", "RouteConfigId")
+                        .HasForeignKey("Devv.Gateway.Api.Data.Entities.MatchConfig", "RouteConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("RouteConfig");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.MetadataConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.MetadataConfig", b =>
                 {
-                    b.HasOne("Devv.WebServer.Api.Data.Entities.ClusterConfig", "ClusterConfig")
+                    b.HasOne("Devv.Gateway.Api.Data.Entities.ClusterConfig", "ClusterConfig")
                         .WithOne("Metadata")
-                        .HasForeignKey("Devv.WebServer.Api.Data.Entities.MetadataConfig", "ClusterConfigId");
+                        .HasForeignKey("Devv.Gateway.Api.Data.Entities.MetadataConfig", "ClusterConfigId");
 
-                    b.HasOne("Devv.WebServer.Api.Data.Entities.RouteConfig", "RouteConfig")
+                    b.HasOne("Devv.Gateway.Api.Data.Entities.RouteConfig", "RouteConfig")
                         .WithOne("Metadata")
-                        .HasForeignKey("Devv.WebServer.Api.Data.Entities.MetadataConfig", "RouteConfigId");
+                        .HasForeignKey("Devv.Gateway.Api.Data.Entities.MetadataConfig", "RouteConfigId");
 
                     b.Navigation("ClusterConfig");
 
                     b.Navigation("RouteConfig");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.PassiveHealthCheckConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.PassiveHealthCheckConfig", b =>
                 {
-                    b.HasOne("Devv.WebServer.Api.Data.Entities.HealthCheckConfig", "HealthCheckConfig")
+                    b.HasOne("Devv.Gateway.Api.Data.Entities.HealthCheckConfig", "HealthCheckConfig")
                         .WithOne("Passive")
-                        .HasForeignKey("Devv.WebServer.Api.Data.Entities.PassiveHealthCheckConfig", "HealthCheckConfigId");
+                        .HasForeignKey("Devv.Gateway.Api.Data.Entities.PassiveHealthCheckConfig", "HealthCheckConfigId");
 
                     b.Navigation("HealthCheckConfig");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.QueryParameterMatchConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.QueryParameterMatchConfig", b =>
                 {
-                    b.HasOne("Devv.WebServer.Api.Data.Entities.MatchConfig", "MatchConfig")
+                    b.HasOne("Devv.Gateway.Api.Data.Entities.MatchConfig", "MatchConfig")
                         .WithMany("QueryParameters")
                         .HasForeignKey("MatchConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -625,20 +625,20 @@ namespace Devv.MySqlMigrations
                     b.Navigation("MatchConfig");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.SessionAffinityConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.SessionAffinityConfig", b =>
                 {
-                    b.HasOne("Devv.WebServer.Api.Data.Entities.ClusterConfig", "ClusterConfig")
+                    b.HasOne("Devv.Gateway.Api.Data.Entities.ClusterConfig", "ClusterConfig")
                         .WithOne("SessionAffinity")
-                        .HasForeignKey("Devv.WebServer.Api.Data.Entities.SessionAffinityConfig", "ClusterConfigId")
+                        .HasForeignKey("Devv.Gateway.Api.Data.Entities.SessionAffinityConfig", "ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.TransformConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.TransformConfig", b =>
                 {
-                    b.HasOne("Devv.WebServer.Api.Data.Entities.RouteConfig", "RouteConfig")
+                    b.HasOne("Devv.Gateway.Api.Data.Entities.RouteConfig", "RouteConfig")
                         .WithMany("Transforms")
                         .HasForeignKey("RouteConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -647,7 +647,7 @@ namespace Devv.MySqlMigrations
                     b.Navigation("RouteConfig");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.ClusterConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.ClusterConfig", b =>
                 {
                     b.Navigation("Destinations");
 
@@ -667,21 +667,21 @@ namespace Devv.MySqlMigrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.HealthCheckConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.HealthCheckConfig", b =>
                 {
                     b.Navigation("Active");
 
                     b.Navigation("Passive");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.MatchConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.MatchConfig", b =>
                 {
                     b.Navigation("Headers");
 
                     b.Navigation("QueryParameters");
                 });
 
-            modelBuilder.Entity("Devv.WebServer.Api.Data.Entities.RouteConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Api.Data.Entities.RouteConfig", b =>
                 {
                     b.Navigation("Certificate")
                         .IsRequired();
