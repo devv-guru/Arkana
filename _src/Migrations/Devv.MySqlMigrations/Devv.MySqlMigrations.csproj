@@ -6,12 +6,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        <ProjectReference Include="..\..\Devv.Data\Devv.Data.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\..\Devv.WebServer.Api\Devv.WebServer.Api.csproj"/>
-    </ItemGroup>
+
 </Project>

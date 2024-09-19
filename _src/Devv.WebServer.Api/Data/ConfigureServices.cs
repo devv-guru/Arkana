@@ -1,8 +1,8 @@
-﻿using Devv.WebServer.Api.Data.Common;
-using Devv.WebServer.Api.Data.Contexts;
+﻿using Devv.Data.Common;
+using Devv.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 
-namespace Devv.WebServer.Api.Data;
+namespace Devv.Data;
 
 public static class ConfigureServices
 {
@@ -11,8 +11,7 @@ public static class ConfigureServices
         var dataContextOptions = configuration.GetSection(DataContextOptions.SectionName).Get<DataContextOptions>();
 
         // Register the base context (used for migrations)
-        services.AddDbContext<DbContext>(options =>
-            ConfigureDatabaseProvider(options, dataContextOptions));
+        services.AddDbContext<DataContext>(options => ConfigureDatabaseProvider(options, dataContextOptions));
 
         // Register ReadOnlyContext and WriteOnlyContext
         services.AddDbContext<ReadOnlyContext>(options => { ConfigureDatabaseProvider(options, dataContextOptions); });
@@ -28,17 +27,17 @@ public static class ConfigureServices
         {
             case DataContextProviders.SqlServer:
                 options.UseSqlServer(dataContextOptions.ConnectionString,
-                    x => x.MigrationsAssembly("Devv.SqlServerMigrations"));
+                    x => x.MigrationsAssembly(typeof(Devv.SqlServerMigrations.Marker).Assembly.GetName().Name!));
                 break;
 
             case DataContextProviders.PostgreSql:
                 options.UseNpgsql(dataContextOptions.ConnectionString,
-                    x => x.MigrationsAssembly("Devv.PostgreSqlMigrations"));
+                    x => x.MigrationsAssembly(typeof(Devv.PostgresSqlMigrations.Marker).Assembly.GetName().Name!));
                 break;
 
             case DataContextProviders.SqLite:
                 options.UseSqlite(dataContextOptions.ConnectionString,
-                    x => x.MigrationsAssembly("Devv.SqliteMigrations"));
+                    x => x.MigrationsAssembly(typeof(Devv.SqliteMigrations.Marker).Assembly.GetName().Name!));
                 break;
 
             case DataContextProviders.MySql:
@@ -58,19 +57,19 @@ public static class ConfigureServices
     {
         if (version != "AutoDetect")
             options.UseMySql(connectionString, new MySqlServerVersion(new Version(version)),
-                x => x.MigrationsAssembly("Devv.MySqlMigrations"));
+                x => x.MigrationsAssembly(typeof(Devv.MySqlMigrations.Marker).Assembly.GetName().Name!));
         else
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-                x => x.MigrationsAssembly("Devv.MySqlMigrations"));
+                x => x.MigrationsAssembly(typeof(Devv.MySqlMigrations.Marker).Assembly.GetName().Name!));
     }
 
     private static void ConfigureMariaDb(DbContextOptionsBuilder options, string connectionString, string version)
     {
         if (version != "AutoDetect")
             options.UseMySql(connectionString, new MariaDbServerVersion(new Version(version)),
-                x => x.MigrationsAssembly("Devv.MariaDbMigrations"));
+                x => x.MigrationsAssembly(typeof(Devv.MariaDbMigrations.Marker).Assembly.GetName().Name!));
         else
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-                x => x.MigrationsAssembly("Devv.MariaDbMigrations"));
+                x => x.MigrationsAssembly(typeof(Devv.MariaDbMigrations.Marker).Assembly.GetName().Name!));
     }
 }

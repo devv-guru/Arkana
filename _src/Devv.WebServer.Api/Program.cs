@@ -1,3 +1,4 @@
+using Devv.Data;
 using Devv.WebServer.Api.Configuration;
 using Devv.WebServer.Api.Data;
 using Devv.WebServer.Api.FastEndpoints;
@@ -15,21 +16,27 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         var host = builder.Host;
+
+        // Clear the default configuration sources
+        builder.Configuration.Sources.Clear();
+        builder.Configuration.SetBasePath(Environment.GetEnvironmentVariable("CONFIG_PATH"))
+            .AddJsonFile("appsettings.json", false, true)
+            .AddEnvironmentVariables();
+
         var configuration = builder.Configuration;
 
-        var test = Environment.GetEnvironmentVariable("CONFIG_PATH");
-        
         builder.Services.Configure<EnvironmentOptions>(config =>
         {
-            config.CertificatePath = Environment.GetEnvironmentVariable("CERT_PATH") ?? "/etc/app/certs";
-            config.LogsPath = Environment.GetEnvironmentVariable("LOG_PATH") ?? "/var/log/app";
-            config.ConfigPath = Environment.GetEnvironmentVariable("CONFIG_PATH") ?? "/etc/app-config";
-            config.StaticFilesPath = Environment.GetEnvironmentVariable("STATIC_CONTENT_PATH") ?? "/var/www/app/static";
-            config.DataPath = Environment.GetEnvironmentVariable("DATA_PATH") ?? "/var/lib/app/data";
+            config.CertificatePath = configuration["CERT_PATH"] ?? "/etc/app/certs";
+            config.LogsPath = configuration["LOG_PATH"] ?? "/var/log/app";
+            config.ConfigPath = configuration["CONFIG_PATH"] ?? "/etc/app-config";
+            config.StaticFilesPath = configuration["STATIC_CONTENT_PATH"] ?? "/var/www/app/static";
+            config.DataPath = configuration["DATA_PATH"] ?? "/var/lib/app/data";
         });
 
-        host.AddLogging(configuration);
-        configuration.AddConfigurationSources(configuration, args);
+        host.AddLogging(builder.Configuration);
+
+        builder.Configuration.AddConfigurationSources(args);
         builder.Services.AddLazyCache();
         builder.Services.AddScoped<HostCertificateCache>();
         builder.WebHost.ConfigureWebServer();
@@ -37,6 +44,8 @@ public class Program
         builder.Services.AddGatewayHttpsRedirection();
         builder.Services.AddGatewayFastEndpoints();
         builder.Services.AddProxy();
+
+        builder.Services.AddHostedService<LoadStartup>();
 
         var app = builder.Build();
 
@@ -48,7 +57,7 @@ public class Program
         app.UseStaticFiles(new StaticFileOptions
         {
             FileProvider = new PhysicalFileProvider(envOptions.StaticFilesPath),
-            RequestPath = EnvironmentOptions.StaticRequestPath
+            RequestPath = $"/{EnvironmentOptions.StaticRequestPath}"
         });
 
         app.UseGatewayFastEndpoints(configuration);

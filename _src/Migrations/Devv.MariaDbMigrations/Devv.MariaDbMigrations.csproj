@@ -5,7 +5,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+    
     <ItemGroup>
-        <ProjectReference Include="..\..\Devv.WebServer.Api\Devv.WebServer.Api.csproj"/>
+        <ProjectReference Include="..\..\Devv.Data\Devv.Data.csproj"/>
     </ItemGroup>
+
 </Project>

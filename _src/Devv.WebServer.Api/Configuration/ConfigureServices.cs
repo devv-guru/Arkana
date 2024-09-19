@@ -8,17 +8,10 @@ namespace Devv.WebServer.Api.Configuration;
 
 public static class ConfigureServices
 {
-    public static void AddConfigurationSources(this IConfigurationBuilder configurationManager,
-        IConfiguration configuration, string[] args)
+    public static void AddConfigurationSources(this ConfigurationManager configurationManager, string[] args)
     {
-        configurationManager.AddEnvironmentVariables();
-        configurationManager.AddUserSecrets<Program>();
-
-        configurationManager.SetBasePath(Environment.GetEnvironmentVariable("CONFIG_PATH"))
-            .AddJsonFile("appsettings.json", false, true);
-
         var configurationStore =
-            configuration.GetSection(ConfigurationStore.SectionName).Get<ConfigurationStore>();
+            configurationManager.GetSection(ConfigurationStore.SectionName).Get<ConfigurationStore>();
 
         if (configurationStore is null)
             throw new Exception("The configuration store section in appsettings.json is missing or invalid.");
@@ -26,7 +19,6 @@ public static class ConfigureServices
         switch (configurationStore.Type)
         {
             case ConfigurationStoreTypes.AppSettings:
-            case ConfigurationStoreTypes.Override:
                 break;
             case ConfigurationStoreTypes.AzureKeyVault:
                 configurationManager.ConfigureAzureKeyVault(configurationStore.AzureKeyVaultUri);
