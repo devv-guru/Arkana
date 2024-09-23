@@ -2,11 +2,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY ["Migrations/Devv.SqlServerMigrations/Devv.SqlServerMigrations.csproj", "Migrations/Devv.SqlServerMigrations/"]
-COPY ["Migrations/Devv.SqliteMigrations/Devv.SqliteMigrations.csproj", "Migrations/Devv.SqliteMigrations/"]
-COPY ["Migrations/Devv.PostgreSqlMigrations/Devv.PostgreSqlMigrations.csproj", "Migrations/Devv.PostgreSqlMigrations/"]
-COPY ["Migrations/Devv.MariaDbMigrations/Devv.MariaDbMigrations.csproj", "Migrations/Devv.MariaDbMigrations/"]
-COPY ["Migrations/Devv.MySqlMigrations/Devv.MySqlMigrations.csproj", "Migrations/Devv.MySqlMigrations/"]
 COPY ["Devv.Gateway.Data/Devv.Gateway.Data.csproj", "Devv.Gateway.Data/"]
 COPY ["Devv.Gateway.Api/Devv.Gateway.Api.csproj", "Devv.Gateway.Api/"]
 
@@ -35,7 +30,7 @@ COPY Devv.Gateway.Api/appsettings.json /etc/app-config/appsettings.json
 COPY --from=publish /app/publish .
 
 # Stage 4: Use Chiseled Runtime Image for Final Output
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-noble-chiseled AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-noble-chiseled-extra AS final
 
 # Set environment variables for paths
 ENV CONFIG_PATH=/etc/app-config
@@ -43,6 +38,9 @@ ENV CERT_PATH=/etc/app/certs
 ENV LOG_PATH=/var/log/app
 ENV STATIC_CONTENT_PATH=/var/www/app/static
 ENV DATA_PATH=/var/lib/app/data
+
+# Install ICU package for full globalization support
+#RUN apt-get update && apt-get install -y libicu-dev
 
 # Copy necessary directories and files from the base stage
 COPY --from=base /etc/app-config /etc/app-config

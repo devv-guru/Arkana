@@ -25,5 +25,15 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Contexts\MariaDb\Migrations\" />
+      <Folder Include="Contexts\MySql\Migrations\" />
+      <Folder Include="Contexts\Postgre\Migrations\" />
+      <Folder Include="Contexts\SqLite\Migrations\" />
+      <Folder Include="Contexts\SqlServer\Migrations\" />
+      <Folder Include="Migrations\SqLite\" />
+      <Folder Include="Migrations\SqlServer\" />
+    </ItemGroup>
+
    
 </Project>

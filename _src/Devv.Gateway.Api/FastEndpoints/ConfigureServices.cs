@@ -11,7 +11,7 @@ public static class ConfigureServices
         services.AddFastEndpoints()
             .SwaggerDocument()
             .AddAuthorization();
-        
+
         return services;
     }
 

@@ -4,6 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <InvariantGlobalization>false</InvariantGlobalization>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <UserSecretsId>d6ccf7e3-de3a-40fd-8fd5-418e37416fae</UserSecretsId>
     </PropertyGroup>
@@ -53,12 +54,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Migrations\Devv.MariaDbMigrations\Devv.MariaDbMigrations.csproj"/>
-        <ProjectReference Include="..\Migrations\Devv.MySqlMigrations\Devv.MySqlMigrations.csproj"/>
-        <ProjectReference Include="..\Migrations\Devv.PostgreSqlMigrations\Devv.PostgreSqlMigrations.csproj"/>
-        <ProjectReference Include="..\Migrations\Devv.SqliteMigrations\Devv.SqliteMigrations.csproj"/>
-        <ProjectReference Include="..\Migrations\Devv.SqlServerMigrations\Devv.SqlServerMigrations.csproj"/>
-        <ProjectReference Include="..\Devv.Gateway.Data\Devv.Gateway.Data.csproj" />
+        <ProjectReference Include="..\Devv.Gateway.Data\Devv.Gateway.Data.csproj"/>
     </ItemGroup>
 
 </Project>

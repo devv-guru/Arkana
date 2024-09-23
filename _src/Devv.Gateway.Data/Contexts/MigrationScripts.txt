@@ -1,0 +1,10 @@
+﻿
+ef migrations add --project _src\Devv.Gateway.Data\Devv.Gateway.Data.csproj --startup-project _src\Devv.Gateway.Api\Devv.Gateway.Api.csproj --context Devv.Gateway.Data.Contexts.SqlServerWriteOnlyContext --configuration Debug --verbose Initial --output-dir Contexts\SqlServer\Migrations
+
+ef migrations add --project _src\Devv.Gateway.Data\Devv.Gateway.Data.csproj --startup-project _src\Devv.Gateway.Api\Devv.Gateway.Api.csproj --context Devv.Gateway.Data.Contexts.Postgre.PostgreSqlWriteOnlyContext --configuration Debug --verbose Initial --output-dir Contexts\Postgre\Migrations
+
+ef migrations add --project _src\Devv.Gateway.Data\Devv.Gateway.Data.csproj --startup-project _src\Devv.Gateway.Api\Devv.Gateway.Api.csproj --context Devv.Gateway.Data.Contexts.SqLite.SqLiteWriteOnlyContext --configuration Debug --verbose Initial --output-dir Contexts\SqLite\Migrations
+
+ef migrations add --project _src\Devv.Gateway.Data\Devv.Gateway.Data.csproj --startup-project _src\Devv.Gateway.Api\Devv.Gateway.Api.csproj --context Devv.Gateway.Data.Contexts.MariaDb.MariaDbWriteOnlyContext --configuration Debug --verbose Initial --output-dir Contexts\MariaDb\Migrations
+
+ef migrations add --project _src\Devv.Gateway.Data\Devv.Gateway.Data.csproj --startup-project _src\Devv.Gateway.Api\Devv.Gateway.Api.csproj --context Devv.Gateway.Data.Contexts.MySql.MySqlWriteOnlyContext --configuration Debug --verbose Initial --output-dir Contexts\MySql\Migrations

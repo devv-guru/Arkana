@@ -1,3 +1,4 @@
+using System.Globalization;
 using Devv.Gateway.Data;
 using Devv.Gateway.Api.Configuration;
 using Devv.Gateway.Api.Data;
@@ -14,6 +15,9 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+
         var builder = WebApplication.CreateBuilder(args);
         var host = builder.Host;
 

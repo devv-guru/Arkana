@@ -1,4 +1,5 @@
 ﻿using Devv.Gateway.Data.Contexts;
+using Devv.Gateway.Data.Contexts.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace Devv.Gateway.Api.WebServer;
@@ -32,7 +33,7 @@ public class LoadStartup : IHostedService
     private async Task CreateDatabaseAsync(IServiceScope scope)
     {
         _logger.LogInformation("Applying database migrations...");
-        var context = scope.ServiceProvider.GetRequiredService<WriteOnlyContext>();
+        var context = scope.ServiceProvider.GetRequiredService<IWriteOnlyContext>();
         await context.Database.MigrateAsync();
         _logger.LogInformation("Database migrations applied successfully.");
     }
