@@ -1,16 +1,14 @@
 ﻿namespace Devv.Gateway.Data.Entities;
 
-public class ClusterConfig
+public class ClusterConfig : EntityBase
 {
-    public int Id { get; set; }
-    public string ClusterId { get; set; }
-
-    public string LoadBalancingPolicy { get; set; } // "PowerOfTwoChoices", etc.
-    public SessionAffinityConfig SessionAffinity { get; set; }
-    public HealthCheckConfig HealthCheck { get; set; }
-    public HttpClientConfig HttpClient { get; set; }
-    public HttpRequestConfig HttpRequest { get; set; }
-    public MetadataConfig Metadata { get; set; }
-
-    public List<DestinationConfig> Destinations { get; set; }
+    public string? LoadBalancingPolicy { get; set; }
+    public Guid HostId { get; set; }
+    public Host? Host { get; set; }
+    public SessionAffinityConfig? SessionAffinity { get; set; }
+    public HealthCheckConfig? HealthCheck { get; set; }
+    public HttpClientConfig? HttpClient { get; set; }
+    public HttpRequestConfig? HttpRequest { get; set; }
+    public MetadataConfig? Metadata { get; set; }
+    public ICollection<DestinationConfig>? Destinations { get; set; }
 }

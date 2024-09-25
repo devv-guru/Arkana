@@ -8,6 +8,9 @@ public class TransformConfigConfiguration : IEntityTypeConfiguration<TransformCo
 {
     public void Configure(EntityTypeBuilder<TransformConfig> builder)
     {
+        // Primary Key
+        builder.HasKey(t => t.Id);
+
         // Configure properties
         builder.Property(t => t.RequestHeader).IsRequired();
         builder.Property(t => t.Set).IsRequired();

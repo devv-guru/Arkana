@@ -12,47 +12,116 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Hosts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    HostName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Url = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    CertificateId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ClusterId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Hosts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Certificates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    SourceType = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocalPath = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    KeyVaultName = table.Column<string>(type: "TEXT", nullable: false),
+                    KeyVaultCertificateName = table.Column<string>(type: "TEXT", nullable: false),
+                    KeyVaultUri = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    AwsCertificateName = table.Column<string>(type: "TEXT", nullable: false),
+                    AwsRegion = table.Column<string>(type: "TEXT", nullable: false),
+                    HostId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Certificates", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Certificates_Hosts_HostId",
+                        column: x => x.HostId,
+                        principalTable: "Hosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Clusters",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ClusterId = table.Column<string>(type: "TEXT", nullable: false),
-                    LoadBalancingPolicy = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    LoadBalancingPolicy = table.Column<string>(type: "TEXT", nullable: false),
+                    HostId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Clusters", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Clusters_Hosts_HostId",
+                        column: x => x.HostId,
+                        principalTable: "Hosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Routes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    RouteId = table.Column<string>(type: "TEXT", nullable: false),
-                    ClusterId = table.Column<string>(type: "TEXT", nullable: false),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ClusterId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Order = table.Column<int>(type: "INTEGER", nullable: true),
                     MaxRequestBodySize = table.Column<long>(type: "INTEGER", nullable: true),
-                    AuthorizationPolicy = table.Column<string>(type: "TEXT", nullable: false),
-                    CorsPolicy = table.Column<string>(type: "TEXT", nullable: false)
+                    AuthorizationPolicy = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    CorsPolicy = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    HostId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Routes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Routes_Hosts_HostId",
+                        column: x => x.HostId,
+                        principalTable: "Hosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Destinations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    DestinationId = table.Column<string>(type: "TEXT", nullable: false),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     Address = table.Column<string>(type: "TEXT", nullable: false),
-                    Health = table.Column<string>(type: "TEXT", nullable: false),
-                    ClusterConfigId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Health = table.Column<string>(type: "TEXT", nullable: true),
+                    ClusterConfigId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -69,9 +138,12 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                 name: "HealthChecks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ClusterConfigId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ClusterConfigId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -88,15 +160,18 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                 name: "HttpClients",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     SslProtocols = table.Column<string>(type: "TEXT", nullable: false),
                     DangerousAcceptAnyServerCertificate = table.Column<bool>(type: "INTEGER", nullable: false),
                     MaxConnectionsPerServer = table.Column<int>(type: "INTEGER", nullable: false),
                     EnableMultipleHttp2Connections = table.Column<bool>(type: "INTEGER", nullable: false),
-                    RequestHeaderEncoding = table.Column<string>(type: "TEXT", nullable: false),
-                    ResponseHeaderEncoding = table.Column<string>(type: "TEXT", nullable: false),
-                    ClusterConfigId = table.Column<int>(type: "INTEGER", nullable: false)
+                    RequestHeaderEncoding = table.Column<string>(type: "TEXT", nullable: true),
+                    ResponseHeaderEncoding = table.Column<string>(type: "TEXT", nullable: true),
+                    ClusterConfigId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -113,13 +188,16 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                 name: "HttpRequests",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     ActivityTimeout = table.Column<TimeSpan>(type: "TEXT", nullable: false),
                     Version = table.Column<string>(type: "TEXT", nullable: false),
-                    VersionPolicy = table.Column<string>(type: "TEXT", nullable: false),
+                    VersionPolicy = table.Column<string>(type: "TEXT", nullable: true),
                     AllowResponseBuffering = table.Column<bool>(type: "INTEGER", nullable: false),
-                    ClusterConfigId = table.Column<int>(type: "INTEGER", nullable: false)
+                    ClusterConfigId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -136,13 +214,16 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                 name: "SessionAffinities",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
                     Policy = table.Column<string>(type: "TEXT", nullable: false),
                     FailurePolicy = table.Column<string>(type: "TEXT", nullable: false),
-                    Settings = table.Column<string>(type: "TEXT", nullable: false),
-                    ClusterConfigId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Settings = table.Column<string>(type: "TEXT", nullable: true),
+                    ClusterConfigId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -156,41 +237,18 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Certificates",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    SourceType = table.Column<int>(type: "INTEGER", nullable: false),
-                    LocalPath = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
-                    KeyVaultName = table.Column<string>(type: "TEXT", nullable: false),
-                    KeyVaultSecretName = table.Column<string>(type: "TEXT", nullable: false),
-                    KeyVaultUri = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
-                    AwsSecretName = table.Column<string>(type: "TEXT", nullable: false),
-                    AwsRegion = table.Column<string>(type: "TEXT", nullable: false),
-                    RouteConfigId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Certificates", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Certificates_Routes_RouteConfigId",
-                        column: x => x.RouteConfigId,
-                        principalTable: "Routes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Matches",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Path = table.Column<string>(type: "TEXT", nullable: false),
                     Hosts = table.Column<string>(type: "TEXT", nullable: false),
                     Methods = table.Column<string>(type: "TEXT", nullable: false),
-                    RouteConfigId = table.Column<int>(type: "INTEGER", nullable: false)
+                    RouteConfigId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -207,11 +265,14 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                 name: "Metadata",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Data = table.Column<string>(type: "TEXT", nullable: false),
-                    RouteConfigId = table.Column<int>(type: "INTEGER", nullable: true),
-                    ClusterConfigId = table.Column<int>(type: "INTEGER", nullable: true)
+                    RouteConfigId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    ClusterConfigId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -232,11 +293,14 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                 name: "Transforms",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     RequestHeader = table.Column<string>(type: "TEXT", nullable: false),
                     Set = table.Column<string>(type: "TEXT", nullable: false),
-                    RouteConfigId = table.Column<int>(type: "INTEGER", nullable: false)
+                    RouteConfigId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -253,15 +317,18 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                 name: "ActiveHealthChecks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
                     Interval = table.Column<TimeSpan>(type: "TEXT", nullable: false),
-                    Timeout = table.Column<TimeSpan>(type: "TEXT", nullable: false),
-                    Policy = table.Column<string>(type: "TEXT", nullable: false),
+                    Timeout = table.Column<TimeSpan>(type: "TEXT", nullable: true),
+                    Policy = table.Column<string>(type: "TEXT", nullable: true),
                     Path = table.Column<string>(type: "TEXT", nullable: false),
-                    Query = table.Column<string>(type: "TEXT", nullable: false),
-                    HealthCheckConfigId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Query = table.Column<string>(type: "TEXT", nullable: true),
+                    HealthCheckConfigId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -277,12 +344,15 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                 name: "PassiveHealthChecks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
                     Policy = table.Column<string>(type: "TEXT", nullable: false),
-                    ReactivationPeriod = table.Column<TimeSpan>(type: "TEXT", nullable: false),
-                    HealthCheckConfigId = table.Column<int>(type: "INTEGER", nullable: false)
+                    ReactivationPeriod = table.Column<TimeSpan>(type: "TEXT", nullable: true),
+                    HealthCheckConfigId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -298,13 +368,16 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                 name: "HeaderMatches",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Values = table.Column<string>(type: "TEXT", nullable: false),
                     Mode = table.Column<string>(type: "TEXT", nullable: false),
                     IsCaseSensitive = table.Column<bool>(type: "INTEGER", nullable: false),
-                    MatchConfigId = table.Column<int>(type: "INTEGER", nullable: false)
+                    MatchConfigId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -321,13 +394,16 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                 name: "QueryParameterMatches",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Values = table.Column<string>(type: "TEXT", nullable: false),
                     Mode = table.Column<string>(type: "TEXT", nullable: false),
                     IsCaseSensitive = table.Column<bool>(type: "INTEGER", nullable: false),
-                    MatchConfigId = table.Column<int>(type: "INTEGER", nullable: false)
+                    MatchConfigId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -347,9 +423,15 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Certificates_RouteConfigId",
+                name: "IX_Certificates_HostId",
                 table: "Certificates",
-                column: "RouteConfigId",
+                column: "HostId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Clusters_HostId",
+                table: "Clusters",
+                column: "HostId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -410,6 +492,11 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                 column: "MatchConfigId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Routes_HostId",
+                table: "Routes",
+                column: "HostId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SessionAffinities_ClusterConfigId",
                 table: "SessionAffinities",
                 column: "ClusterConfigId",
@@ -468,6 +555,9 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Routes");
+
+            migrationBuilder.DropTable(
+                name: "Hosts");
         }
     }
 }

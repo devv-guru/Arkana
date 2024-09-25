@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Devv.Gateway.Ui", "_src\Dev
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Devv.Gateway.Api", "_src\Devv.Gateway.Api\Devv.Gateway.Api.csproj", "{4503BFF3-FD54-44F3-AC8A-603DADE31777}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Migrations", "Migrations", "{792EC23B-0420-40D0-A7DF-2D084327BD66}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Devv.Gateway.Data", "_src\Devv.Gateway.Data\Devv.Gateway.Data.csproj", "{A0B27F18-AA6D-403A-9A0F-55F67A4E2488}"
 EndProject
 Global

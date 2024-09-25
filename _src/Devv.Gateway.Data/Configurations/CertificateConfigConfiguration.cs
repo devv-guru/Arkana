@@ -8,6 +8,14 @@ public class CertificateConfigConfiguration : IEntityTypeConfiguration<Certifica
 {
     public void Configure(EntityTypeBuilder<CertificateConfig> builder)
     {
+        // Primary Key
+        builder.HasKey(c => c.Id);
+
+        // Configure relationships
+        builder.HasOne(c => c.Host)
+            .WithOne(h => h.Certificate)
+            .HasForeignKey<Host>(h => h.CertificateId);
+
         // Configure properties
         builder.Property(c => c.SourceType).IsRequired();
         builder.Property(c => c.LocalPath).HasMaxLength(500);

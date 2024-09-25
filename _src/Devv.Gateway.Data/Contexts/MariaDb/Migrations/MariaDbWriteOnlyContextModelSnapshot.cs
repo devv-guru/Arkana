@@ -24,35 +24,44 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.ActiveHealthCheckConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("HealthCheckConfigId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("HealthCheckConfigId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<TimeSpan>("Interval")
+                    b.Property<TimeSpan?>("Interval")
+                        .IsRequired()
                         .HasColumnType("time(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Path")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Policy")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Query")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<TimeSpan>("Timeout")
+                    b.Property<TimeSpan?>("Timeout")
                         .HasColumnType("time(6)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -64,25 +73,35 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.CertificateConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("AwsCertificateName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("AwsRegion")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("AwsSecretName")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("HostId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("KeyVaultCertificateName")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("KeyVaultName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("KeyVaultSecretName")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -96,15 +115,15 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
-                    b.Property<int>("RouteConfigId")
-                        .HasColumnType("int");
-
                     b.Property<int>("SourceType")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("RouteConfigId")
+                    b.HasIndex("HostId")
                         .IsUnique();
 
                     b.ToTable("Certificates");
@@ -112,47 +131,68 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.ClusterConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<string>("ClusterId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("HostId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("LoadBalancingPolicy")
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("HostId")
+                        .IsUnique();
 
                     b.ToTable("Clusters");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.DestinationConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("ClusterConfigId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<string>("DestinationId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Health")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -163,17 +203,24 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.HeaderMatchConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("IsCaseSensitive")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("MatchConfigId")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid>("MatchConfigId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Mode")
                         .IsRequired()
@@ -182,6 +229,9 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Values")
                         .IsRequired()
@@ -196,14 +246,24 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.HealthCheckConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("ClusterConfigId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -213,37 +273,84 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
                     b.ToTable("HealthChecks");
                 });
 
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Host", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("CertificateId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ClusterId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("HostName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Hosts");
+                });
+
             modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpClientConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("ClusterConfigId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("DangerousAcceptAnyServerCertificate")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<bool>("EnableMultipleHttp2Connections")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<int>("MaxConnectionsPerServer")
                         .HasColumnType("int");
 
                     b.Property<string>("RequestHeaderEncoding")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("ResponseHeaderEncoding")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("SslProtocols")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -255,11 +362,9 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpRequestConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("char(36)");
 
                     b.Property<TimeSpan>("ActivityTimeout")
                         .HasColumnType("time(6)");
@@ -267,15 +372,26 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
                     b.Property<bool>("AllowResponseBuffering")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("ClusterConfigId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Version")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("VersionPolicy")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -288,15 +404,22 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.MatchConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Hosts")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Methods")
                         .IsRequired()
@@ -306,8 +429,11 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("RouteConfigId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("RouteConfigId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -319,21 +445,31 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.MetadataConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid?>("ClusterConfigId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int?>("ClusterConfigId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Data")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("RouteConfigId")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid?>("RouteConfigId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -348,24 +484,34 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.PassiveHealthCheckConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("HealthCheckConfigId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("HealthCheckConfigId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Policy")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<TimeSpan>("ReactivationPeriod")
+                    b.Property<TimeSpan?>("ReactivationPeriod")
                         .HasColumnType("time(6)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -377,17 +523,24 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.QueryParameterMatchConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("IsCaseSensitive")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("MatchConfigId")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid>("MatchConfigId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Mode")
                         .IsRequired()
@@ -396,6 +549,9 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Values")
                         .IsRequired()
@@ -410,23 +566,32 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.RouteConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("AuthorizationPolicy")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
-                    b.Property<string>("ClusterId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<Guid>("ClusterId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("CorsPolicy")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("HostId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<long?>("MaxRequestBodySize")
                         .HasColumnType("bigint");
@@ -434,25 +599,30 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
                     b.Property<int?>("Order")
                         .HasColumnType("int");
 
-                    b.Property<string>("RouteId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("HostId");
 
                     b.ToTable("Routes");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.SessionAffinityConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("ClusterConfigId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("tinyint(1)");
@@ -461,13 +631,18 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Policy")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Settings")
-                        .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -479,22 +654,32 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.TransformConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("RequestHeader")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("RouteConfigId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("RouteConfigId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Set")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -514,13 +699,24 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.CertificateConfig", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.RouteConfig", "RouteConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.Host", "Host")
                         .WithOne("Certificate")
-                        .HasForeignKey("Devv.Gateway.Data.Entities.CertificateConfig", "RouteConfigId")
+                        .HasForeignKey("Devv.Gateway.Data.Entities.CertificateConfig", "HostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("RouteConfig");
+                    b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.ClusterConfig", b =>
+                {
+                    b.HasOne("Devv.Gateway.Data.Entities.Host", "Host")
+                        .WithOne("Cluster")
+                        .HasForeignKey("Devv.Gateway.Data.Entities.ClusterConfig", "HostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Host");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.DestinationConfig", b =>
@@ -624,6 +820,17 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
                     b.Navigation("MatchConfig");
                 });
 
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.RouteConfig", b =>
+                {
+                    b.HasOne("Devv.Gateway.Data.Entities.Host", "Host")
+                        .WithMany("Routes")
+                        .HasForeignKey("HostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Host");
+                });
+
             modelBuilder.Entity("Devv.Gateway.Data.Entities.SessionAffinityConfig", b =>
                 {
                     b.HasOne("Devv.Gateway.Data.Entities.ClusterConfig", "ClusterConfig")
@@ -650,20 +857,15 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
                 {
                     b.Navigation("Destinations");
 
-                    b.Navigation("HealthCheck")
-                        .IsRequired();
+                    b.Navigation("HealthCheck");
 
-                    b.Navigation("HttpClient")
-                        .IsRequired();
+                    b.Navigation("HttpClient");
 
-                    b.Navigation("HttpRequest")
-                        .IsRequired();
+                    b.Navigation("HttpRequest");
 
-                    b.Navigation("Metadata")
-                        .IsRequired();
+                    b.Navigation("Metadata");
 
-                    b.Navigation("SessionAffinity")
-                        .IsRequired();
+                    b.Navigation("SessionAffinity");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.HealthCheckConfig", b =>
@@ -671,6 +873,17 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
                     b.Navigation("Active");
 
                     b.Navigation("Passive");
+                });
+
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Host", b =>
+                {
+                    b.Navigation("Certificate")
+                        .IsRequired();
+
+                    b.Navigation("Cluster")
+                        .IsRequired();
+
+                    b.Navigation("Routes");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.MatchConfig", b =>
@@ -682,14 +895,9 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.RouteConfig", b =>
                 {
-                    b.Navigation("Certificate")
-                        .IsRequired();
+                    b.Navigation("Match");
 
-                    b.Navigation("Match")
-                        .IsRequired();
-
-                    b.Navigation("Metadata")
-                        .IsRequired();
+                    b.Navigation("Metadata");
 
                     b.Navigation("Transforms");
                 });

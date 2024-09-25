@@ -2,10 +2,8 @@
 
 namespace Devv.Gateway.Data.Entities;
 
-public class CertificateConfig
+public class CertificateConfig : EntityBase
 {
-    public int Id { get; set; }
-
     public CertificateSourceType SourceType { get; set; }
 
     // For Local storage
@@ -13,14 +11,14 @@ public class CertificateConfig
 
     // For Key Vault
     public string KeyVaultName { get; set; }
-    public string KeyVaultSecretName { get; set; }
+    public string KeyVaultCertificateName { get; set; }
     public Uri KeyVaultUri { get; set; }
 
     // For AWS
-    public string AwsSecretName { get; set; }
+    public string AwsCertificateName { get; set; }
     public string AwsRegion { get; set; }
 
     // Foreign key to RouteConfig
-    public int RouteConfigId { get; set; }
-    public RouteConfig RouteConfig { get; set; }
+    public Guid HostId { get; set; }
+    public Host Host { get; set; }
 }

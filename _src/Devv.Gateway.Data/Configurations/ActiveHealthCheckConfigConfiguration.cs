@@ -8,6 +8,9 @@ public class ActiveHealthCheckConfigConfiguration : IEntityTypeConfiguration<Act
 {
     public void Configure(EntityTypeBuilder<ActiveHealthCheckConfig> builder)
     {
+        // Primary Key
+        builder.HasKey(a => a.Id);
+        
         // Configure properties
         builder.Property(a => a.Enabled).IsRequired();
         builder.Property(a => a.Interval).IsRequired();

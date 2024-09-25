@@ -6,6 +6,7 @@ namespace Devv.Gateway.Data.Contexts.Base;
 
 public interface IWriteOnlyContext
 {
+    DbSet<Host> Hosts { get; }
     DbSet<RouteConfig> Routes { get; }
     DbSet<ClusterConfig> Clusters { get; }
     DbSet<MatchConfig> Matches { get; }

@@ -12,47 +12,116 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Hosts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HostName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    CertificateId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClusterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Hosts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Certificates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SourceType = table.Column<int>(type: "int", nullable: false),
+                    LocalPath = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    KeyVaultName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    KeyVaultCertificateName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    KeyVaultUri = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    AwsCertificateName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AwsRegion = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Certificates", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Certificates_Hosts_HostId",
+                        column: x => x.HostId,
+                        principalTable: "Hosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Clusters",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ClusterId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LoadBalancingPolicy = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LoadBalancingPolicy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Clusters", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Clusters_Hosts_HostId",
+                        column: x => x.HostId,
+                        principalTable: "Hosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Routes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RouteId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ClusterId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClusterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Order = table.Column<int>(type: "int", nullable: true),
                     MaxRequestBodySize = table.Column<long>(type: "bigint", nullable: true),
-                    AuthorizationPolicy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CorsPolicy = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    AuthorizationPolicy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    CorsPolicy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    HostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Routes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Routes_Hosts_HostId",
+                        column: x => x.HostId,
+                        principalTable: "Hosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Destinations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DestinationId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Health = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ClusterConfigId = table.Column<int>(type: "int", nullable: false)
+                    Health = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClusterConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -69,9 +138,12 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                 name: "HealthChecks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ClusterConfigId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClusterConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -88,15 +160,18 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                 name: "HttpClients",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SslProtocols = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DangerousAcceptAnyServerCertificate = table.Column<bool>(type: "bit", nullable: false),
                     MaxConnectionsPerServer = table.Column<int>(type: "int", nullable: false),
                     EnableMultipleHttp2Connections = table.Column<bool>(type: "bit", nullable: false),
-                    RequestHeaderEncoding = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ResponseHeaderEncoding = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ClusterConfigId = table.Column<int>(type: "int", nullable: false)
+                    RequestHeaderEncoding = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ResponseHeaderEncoding = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClusterConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -113,13 +188,16 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                 name: "HttpRequests",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ActivityTimeout = table.Column<TimeSpan>(type: "time", nullable: false),
                     Version = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    VersionPolicy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VersionPolicy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AllowResponseBuffering = table.Column<bool>(type: "bit", nullable: false),
-                    ClusterConfigId = table.Column<int>(type: "int", nullable: false)
+                    ClusterConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -136,13 +214,16 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                 name: "SessionAffinities",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Enabled = table.Column<bool>(type: "bit", nullable: false),
                     Policy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FailurePolicy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Settings = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ClusterConfigId = table.Column<int>(type: "int", nullable: false)
+                    Settings = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClusterConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -156,41 +237,18 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Certificates",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SourceType = table.Column<int>(type: "int", nullable: false),
-                    LocalPath = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    KeyVaultName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    KeyVaultSecretName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    KeyVaultUri = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    AwsSecretName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AwsRegion = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RouteConfigId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Certificates", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Certificates_Routes_RouteConfigId",
-                        column: x => x.RouteConfigId,
-                        principalTable: "Routes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Matches",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Path = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Hosts = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Methods = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RouteConfigId = table.Column<int>(type: "int", nullable: false)
+                    RouteConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -207,11 +265,14 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                 name: "Metadata",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Data = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RouteConfigId = table.Column<int>(type: "int", nullable: true),
-                    ClusterConfigId = table.Column<int>(type: "int", nullable: true)
+                    RouteConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ClusterConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -232,11 +293,14 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                 name: "Transforms",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RequestHeader = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Set = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RouteConfigId = table.Column<int>(type: "int", nullable: false)
+                    RouteConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -253,15 +317,18 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                 name: "ActiveHealthChecks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Enabled = table.Column<bool>(type: "bit", nullable: false),
                     Interval = table.Column<TimeSpan>(type: "time", nullable: false),
-                    Timeout = table.Column<TimeSpan>(type: "time", nullable: false),
-                    Policy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Timeout = table.Column<TimeSpan>(type: "time", nullable: true),
+                    Policy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Path = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Query = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    HealthCheckConfigId = table.Column<int>(type: "int", nullable: false)
+                    Query = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HealthCheckConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -277,12 +344,15 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                 name: "PassiveHealthChecks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Enabled = table.Column<bool>(type: "bit", nullable: false),
                     Policy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ReactivationPeriod = table.Column<TimeSpan>(type: "time", nullable: false),
-                    HealthCheckConfigId = table.Column<int>(type: "int", nullable: false)
+                    ReactivationPeriod = table.Column<TimeSpan>(type: "time", nullable: true),
+                    HealthCheckConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -298,13 +368,16 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                 name: "HeaderMatches",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Values = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Mode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsCaseSensitive = table.Column<bool>(type: "bit", nullable: false),
-                    MatchConfigId = table.Column<int>(type: "int", nullable: false)
+                    MatchConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -321,13 +394,16 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                 name: "QueryParameterMatches",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Values = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Mode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsCaseSensitive = table.Column<bool>(type: "bit", nullable: false),
-                    MatchConfigId = table.Column<int>(type: "int", nullable: false)
+                    MatchConfigId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -347,9 +423,15 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Certificates_RouteConfigId",
+                name: "IX_Certificates_HostId",
                 table: "Certificates",
-                column: "RouteConfigId",
+                column: "HostId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Clusters_HostId",
+                table: "Clusters",
+                column: "HostId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -412,6 +494,11 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                 column: "MatchConfigId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Routes_HostId",
+                table: "Routes",
+                column: "HostId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SessionAffinities_ClusterConfigId",
                 table: "SessionAffinities",
                 column: "ClusterConfigId",
@@ -470,6 +557,9 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "Routes");
+
+            migrationBuilder.DropTable(
+                name: "Hosts");
         }
     }
 }

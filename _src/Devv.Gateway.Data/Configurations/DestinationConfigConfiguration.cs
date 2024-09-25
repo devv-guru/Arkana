@@ -8,8 +8,10 @@ public class DestinationConfigConfiguration : IEntityTypeConfiguration<Destinati
 {
     public void Configure(EntityTypeBuilder<DestinationConfig> builder)
     {
+        // Primary Key
+        builder.HasKey(d => d.Id);
         // Configure properties
         builder.Property(d => d.Address).IsRequired();
-        builder.Property(d => d.DestinationId).IsRequired();
+        builder.Property(d => d.Name).IsRequired();
     }
 }

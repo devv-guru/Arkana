@@ -8,6 +8,8 @@ public class MatchConfigConfiguration : IEntityTypeConfiguration<MatchConfig>
 {
     public void Configure(EntityTypeBuilder<MatchConfig> builder)
     {
+        builder.HasKey(m => m.Id);
+        
         builder.HasMany(m => m.Headers)
             .WithOne(h => h.MatchConfig)
             .HasForeignKey(h => h.MatchConfigId);

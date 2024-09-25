@@ -8,6 +8,9 @@ public class HealthCheckConfigConfiguration : IEntityTypeConfiguration<HealthChe
 {
     public void Configure(EntityTypeBuilder<HealthCheckConfig> builder)
     {
+        // Primary Key
+        builder.HasKey(h => h.Id);
+        
         // Configure properties
         builder.HasOne(o => o.Active)
             .WithOne(o => o.HealthCheckConfig)

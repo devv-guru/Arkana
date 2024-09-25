@@ -11,6 +11,7 @@ public class ReadonlyDataContext : DbContext, IReadonlyContext
     {
     }
 
+    public IQueryable<Host> Hosts => Set<Host>().AsNoTracking();
     public IQueryable<RouteConfig> Routes => Set<RouteConfig>().AsNoTracking();
     public IQueryable<ClusterConfig> Clusters => Set<ClusterConfig>().AsNoTracking();
     public IQueryable<MatchConfig> Matches => Set<MatchConfig>().AsNoTracking();
@@ -25,7 +26,9 @@ public class ReadonlyDataContext : DbContext, IReadonlyContext
     public IQueryable<PassiveHealthCheckConfig> PassiveHealthChecks => Set<PassiveHealthCheckConfig>().AsNoTracking();
     public IQueryable<TransformConfig> Transforms => Set<TransformConfig>().AsNoTracking();
     public IQueryable<HeaderMatchConfig> HeaderMatches => Set<HeaderMatchConfig>().AsNoTracking();
-    public IQueryable<QueryParameterMatchConfig> QueryParameterMatches => Set<QueryParameterMatchConfig>().AsNoTracking();
+
+    public IQueryable<QueryParameterMatchConfig> QueryParameterMatches =>
+        Set<QueryParameterMatchConfig>().AsNoTracking();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

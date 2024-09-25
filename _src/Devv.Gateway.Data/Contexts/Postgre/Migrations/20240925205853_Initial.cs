@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -14,47 +13,116 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Hosts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    HostName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    CertificateId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ClusterId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Hosts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Certificates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    SourceType = table.Column<int>(type: "integer", nullable: false),
+                    LocalPath = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    KeyVaultName = table.Column<string>(type: "text", nullable: false),
+                    KeyVaultCertificateName = table.Column<string>(type: "text", nullable: false),
+                    KeyVaultUri = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    AwsCertificateName = table.Column<string>(type: "text", nullable: false),
+                    AwsRegion = table.Column<string>(type: "text", nullable: false),
+                    HostId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Certificates", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Certificates_Hosts_HostId",
+                        column: x => x.HostId,
+                        principalTable: "Hosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Clusters",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ClusterId = table.Column<string>(type: "text", nullable: false),
-                    LoadBalancingPolicy = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    LoadBalancingPolicy = table.Column<string>(type: "text", nullable: false),
+                    HostId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Clusters", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Clusters_Hosts_HostId",
+                        column: x => x.HostId,
+                        principalTable: "Hosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Routes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RouteId = table.Column<string>(type: "text", nullable: false),
-                    ClusterId = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ClusterId = table.Column<Guid>(type: "uuid", nullable: false),
                     Order = table.Column<int>(type: "integer", nullable: true),
                     MaxRequestBodySize = table.Column<long>(type: "bigint", nullable: true),
-                    AuthorizationPolicy = table.Column<string>(type: "text", nullable: false),
-                    CorsPolicy = table.Column<string>(type: "text", nullable: false)
+                    AuthorizationPolicy = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    CorsPolicy = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    HostId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Routes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Routes_Hosts_HostId",
+                        column: x => x.HostId,
+                        principalTable: "Hosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Destinations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DestinationId = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     Address = table.Column<string>(type: "text", nullable: false),
-                    Health = table.Column<string>(type: "text", nullable: false),
-                    ClusterConfigId = table.Column<int>(type: "integer", nullable: false)
+                    Health = table.Column<string>(type: "text", nullable: true),
+                    ClusterConfigId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -71,9 +139,12 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                 name: "HealthChecks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ClusterConfigId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ClusterConfigId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -90,15 +161,18 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                 name: "HttpClients",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     SslProtocols = table.Column<string>(type: "text", nullable: false),
                     DangerousAcceptAnyServerCertificate = table.Column<bool>(type: "boolean", nullable: false),
                     MaxConnectionsPerServer = table.Column<int>(type: "integer", nullable: false),
                     EnableMultipleHttp2Connections = table.Column<bool>(type: "boolean", nullable: false),
-                    RequestHeaderEncoding = table.Column<string>(type: "text", nullable: false),
-                    ResponseHeaderEncoding = table.Column<string>(type: "text", nullable: false),
-                    ClusterConfigId = table.Column<int>(type: "integer", nullable: false)
+                    RequestHeaderEncoding = table.Column<string>(type: "text", nullable: true),
+                    ResponseHeaderEncoding = table.Column<string>(type: "text", nullable: true),
+                    ClusterConfigId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -115,13 +189,16 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                 name: "HttpRequests",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ActivityTimeout = table.Column<TimeSpan>(type: "interval", nullable: false),
                     Version = table.Column<string>(type: "text", nullable: false),
-                    VersionPolicy = table.Column<string>(type: "text", nullable: false),
+                    VersionPolicy = table.Column<string>(type: "text", nullable: true),
                     AllowResponseBuffering = table.Column<bool>(type: "boolean", nullable: false),
-                    ClusterConfigId = table.Column<int>(type: "integer", nullable: false)
+                    ClusterConfigId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -138,13 +215,16 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                 name: "SessionAffinities",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Enabled = table.Column<bool>(type: "boolean", nullable: false),
                     Policy = table.Column<string>(type: "text", nullable: false),
                     FailurePolicy = table.Column<string>(type: "text", nullable: false),
-                    Settings = table.Column<string>(type: "text", nullable: false),
-                    ClusterConfigId = table.Column<int>(type: "integer", nullable: false)
+                    Settings = table.Column<string>(type: "text", nullable: true),
+                    ClusterConfigId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -158,41 +238,18 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Certificates",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SourceType = table.Column<int>(type: "integer", nullable: false),
-                    LocalPath = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    KeyVaultName = table.Column<string>(type: "text", nullable: false),
-                    KeyVaultSecretName = table.Column<string>(type: "text", nullable: false),
-                    KeyVaultUri = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    AwsSecretName = table.Column<string>(type: "text", nullable: false),
-                    AwsRegion = table.Column<string>(type: "text", nullable: false),
-                    RouteConfigId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Certificates", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Certificates_Routes_RouteConfigId",
-                        column: x => x.RouteConfigId,
-                        principalTable: "Routes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Matches",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Path = table.Column<string>(type: "text", nullable: false),
                     Hosts = table.Column<List<string>>(type: "text[]", nullable: false),
                     Methods = table.Column<List<string>>(type: "text[]", nullable: false),
-                    RouteConfigId = table.Column<int>(type: "integer", nullable: false)
+                    RouteConfigId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -209,11 +266,14 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                 name: "Metadata",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Data = table.Column<string>(type: "text", nullable: false),
-                    RouteConfigId = table.Column<int>(type: "integer", nullable: true),
-                    ClusterConfigId = table.Column<int>(type: "integer", nullable: true)
+                    RouteConfigId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ClusterConfigId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -234,11 +294,14 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                 name: "Transforms",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     RequestHeader = table.Column<string>(type: "text", nullable: false),
                     Set = table.Column<string>(type: "text", nullable: false),
-                    RouteConfigId = table.Column<int>(type: "integer", nullable: false)
+                    RouteConfigId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -255,15 +318,18 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                 name: "ActiveHealthChecks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Enabled = table.Column<bool>(type: "boolean", nullable: false),
                     Interval = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    Timeout = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    Policy = table.Column<string>(type: "text", nullable: false),
+                    Timeout = table.Column<TimeSpan>(type: "interval", nullable: true),
+                    Policy = table.Column<string>(type: "text", nullable: true),
                     Path = table.Column<string>(type: "text", nullable: false),
-                    Query = table.Column<string>(type: "text", nullable: false),
-                    HealthCheckConfigId = table.Column<int>(type: "integer", nullable: false)
+                    Query = table.Column<string>(type: "text", nullable: true),
+                    HealthCheckConfigId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -279,12 +345,15 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                 name: "PassiveHealthChecks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Enabled = table.Column<bool>(type: "boolean", nullable: false),
                     Policy = table.Column<string>(type: "text", nullable: false),
-                    ReactivationPeriod = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    HealthCheckConfigId = table.Column<int>(type: "integer", nullable: false)
+                    ReactivationPeriod = table.Column<TimeSpan>(type: "interval", nullable: true),
+                    HealthCheckConfigId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -300,13 +369,16 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                 name: "HeaderMatches",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Values = table.Column<List<string>>(type: "text[]", nullable: false),
+                    Values = table.Column<string>(type: "text", nullable: false),
                     Mode = table.Column<string>(type: "text", nullable: false),
                     IsCaseSensitive = table.Column<bool>(type: "boolean", nullable: false),
-                    MatchConfigId = table.Column<int>(type: "integer", nullable: false)
+                    MatchConfigId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -323,13 +395,16 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                 name: "QueryParameterMatches",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Values = table.Column<List<string>>(type: "text[]", nullable: false),
+                    Values = table.Column<string>(type: "text", nullable: false),
                     Mode = table.Column<string>(type: "text", nullable: false),
                     IsCaseSensitive = table.Column<bool>(type: "boolean", nullable: false),
-                    MatchConfigId = table.Column<int>(type: "integer", nullable: false)
+                    MatchConfigId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -349,9 +424,15 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Certificates_RouteConfigId",
+                name: "IX_Certificates_HostId",
                 table: "Certificates",
-                column: "RouteConfigId",
+                column: "HostId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Clusters_HostId",
+                table: "Clusters",
+                column: "HostId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -412,6 +493,11 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                 column: "MatchConfigId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Routes_HostId",
+                table: "Routes",
+                column: "HostId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SessionAffinities_ClusterConfigId",
                 table: "SessionAffinities",
                 column: "ClusterConfigId",
@@ -470,6 +556,9 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             migrationBuilder.DropTable(
                 name: "Routes");
+
+            migrationBuilder.DropTable(
+                name: "Hosts");
         }
     }
 }

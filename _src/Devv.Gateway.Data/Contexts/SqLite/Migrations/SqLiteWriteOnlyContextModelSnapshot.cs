@@ -19,32 +19,43 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.ActiveHealthCheckConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("HealthCheckConfigId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<TimeSpan>("Interval")
+                    b.Property<Guid>("HealthCheckConfigId")
                         .HasColumnType("TEXT");
+
+                    b.Property<TimeSpan?>("Interval")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Path")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Policy")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Query")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<TimeSpan>("Timeout")
+                    b.Property<TimeSpan?>("Timeout")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -57,23 +68,35 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.CertificateConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AwsCertificateName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("AwsRegion")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("AwsSecretName")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("HostId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("KeyVaultCertificateName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("KeyVaultName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("KeyVaultSecretName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -87,15 +110,15 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("RouteConfigId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("SourceType")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("RouteConfigId")
+                    b.HasIndex("HostId")
                         .IsUnique();
 
                     b.ToTable("Certificates");
@@ -103,42 +126,67 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.ClusterConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ClusterId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("HostId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("LoadBalancingPolicy")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("HostId")
+                        .IsUnique();
 
                     b.ToTable("Clusters");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.DestinationConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ClusterConfigId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("DestinationId")
-                        .IsRequired()
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Health")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -150,15 +198,24 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.HeaderMatchConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsCaseSensitive")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("MatchConfigId")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("MatchConfigId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Mode")
                         .IsRequired()
@@ -166,6 +223,9 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Values")
@@ -181,12 +241,24 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.HealthCheckConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ClusterConfigId")
-                        .HasColumnType("INTEGER");
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -196,34 +268,83 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                     b.ToTable("HealthChecks");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpClientConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Host", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("CertificateId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ClusterId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HostName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ClusterConfigId")
-                        .HasColumnType("INTEGER");
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Hosts");
+                });
+
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpClientConfig", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("DangerousAcceptAnyServerCertificate")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("EnableMultipleHttp2Connections")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("MaxConnectionsPerServer")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("RequestHeaderEncoding")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ResponseHeaderEncoding")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SslProtocols")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -236,9 +357,9 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpRequestConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<TimeSpan>("ActivityTimeout")
                         .HasColumnType("TEXT");
@@ -246,15 +367,26 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                     b.Property<bool>("AllowResponseBuffering")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ClusterConfigId")
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Version")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("VersionPolicy")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -267,13 +399,22 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.MatchConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Hosts")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Methods")
                         .IsRequired()
@@ -283,8 +424,11 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("RouteConfigId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("RouteConfigId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -296,19 +440,31 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.MetadataConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("ClusterConfigId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid?>("ClusterConfigId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Data")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("RouteConfigId")
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("RouteConfigId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -323,21 +479,33 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.PassiveHealthCheckConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("HealthCheckConfigId")
+                    b.Property<Guid>("HealthCheckConfigId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Policy")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<TimeSpan>("ReactivationPeriod")
+                    b.Property<TimeSpan?>("ReactivationPeriod")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -350,15 +518,24 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.QueryParameterMatchConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsCaseSensitive")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("MatchConfigId")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("MatchConfigId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Mode")
                         .IsRequired()
@@ -366,6 +543,9 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Values")
@@ -381,21 +561,32 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.RouteConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("AuthorizationPolicy")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ClusterId")
-                        .IsRequired()
+                    b.Property<string>("AuthorizationPolicy")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ClusterId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CorsPolicy")
-                        .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("HostId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<long?>("MaxRequestBodySize")
                         .HasColumnType("INTEGER");
@@ -403,23 +594,30 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                     b.Property<int?>("Order")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("RouteId")
-                        .IsRequired()
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("HostId");
 
                     b.ToTable("Routes");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.SessionAffinityConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("ClusterConfigId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("INTEGER");
@@ -428,12 +626,17 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Policy")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Settings")
-                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -446,19 +649,31 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.TransformConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("RequestHeader")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("RouteConfigId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("RouteConfigId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Set")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -479,13 +694,24 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.CertificateConfig", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.RouteConfig", "RouteConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.Host", "Host")
                         .WithOne("Certificate")
-                        .HasForeignKey("Devv.Gateway.Data.Entities.CertificateConfig", "RouteConfigId")
+                        .HasForeignKey("Devv.Gateway.Data.Entities.CertificateConfig", "HostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("RouteConfig");
+                    b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.ClusterConfig", b =>
+                {
+                    b.HasOne("Devv.Gateway.Data.Entities.Host", "Host")
+                        .WithOne("Cluster")
+                        .HasForeignKey("Devv.Gateway.Data.Entities.ClusterConfig", "HostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Host");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.DestinationConfig", b =>
@@ -589,6 +815,17 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                     b.Navigation("MatchConfig");
                 });
 
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.RouteConfig", b =>
+                {
+                    b.HasOne("Devv.Gateway.Data.Entities.Host", "Host")
+                        .WithMany("Routes")
+                        .HasForeignKey("HostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Host");
+                });
+
             modelBuilder.Entity("Devv.Gateway.Data.Entities.SessionAffinityConfig", b =>
                 {
                     b.HasOne("Devv.Gateway.Data.Entities.ClusterConfig", "ClusterConfig")
@@ -615,20 +852,15 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                 {
                     b.Navigation("Destinations");
 
-                    b.Navigation("HealthCheck")
-                        .IsRequired();
+                    b.Navigation("HealthCheck");
 
-                    b.Navigation("HttpClient")
-                        .IsRequired();
+                    b.Navigation("HttpClient");
 
-                    b.Navigation("HttpRequest")
-                        .IsRequired();
+                    b.Navigation("HttpRequest");
 
-                    b.Navigation("Metadata")
-                        .IsRequired();
+                    b.Navigation("Metadata");
 
-                    b.Navigation("SessionAffinity")
-                        .IsRequired();
+                    b.Navigation("SessionAffinity");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.HealthCheckConfig", b =>
@@ -636,6 +868,17 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                     b.Navigation("Active");
 
                     b.Navigation("Passive");
+                });
+
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Host", b =>
+                {
+                    b.Navigation("Certificate")
+                        .IsRequired();
+
+                    b.Navigation("Cluster")
+                        .IsRequired();
+
+                    b.Navigation("Routes");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.MatchConfig", b =>
@@ -647,14 +890,9 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.RouteConfig", b =>
                 {
-                    b.Navigation("Certificate")
-                        .IsRequired();
+                    b.Navigation("Match");
 
-                    b.Navigation("Match")
-                        .IsRequired();
-
-                    b.Navigation("Metadata")
-                        .IsRequired();
+                    b.Navigation("Metadata");
 
                     b.Navigation("Transforms");
                 });

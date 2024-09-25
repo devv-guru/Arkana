@@ -8,6 +8,8 @@ public class PassiveHealthCheckConfigConfiguration : IEntityTypeConfiguration<Pa
 {
     public void Configure(EntityTypeBuilder<PassiveHealthCheckConfig> builder)
     {
+        // Primary Key
+        builder.HasKey(p => p.Id);
         // Configure properties
         builder.Property(p => p.Enabled).IsRequired();
         builder.Property(p => p.Policy).IsRequired();

@@ -4,6 +4,7 @@ namespace Devv.Gateway.Data.Contexts.Base;
 
 public interface IReadonlyContext
 {
+    IQueryable<Host> Hosts { get; }
     IQueryable<RouteConfig> Routes { get; }
     IQueryable<ClusterConfig> Clusters { get; }
     IQueryable<MatchConfig> Matches { get; }

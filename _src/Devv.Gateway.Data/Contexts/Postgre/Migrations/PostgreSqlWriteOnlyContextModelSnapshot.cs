@@ -25,35 +25,44 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.ActiveHealthCheckConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("HealthCheckConfigId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("HealthCheckConfigId")
+                        .HasColumnType("uuid");
 
-                    b.Property<TimeSpan>("Interval")
+                    b.Property<TimeSpan?>("Interval")
+                        .IsRequired()
                         .HasColumnType("interval");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Path")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Policy")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Query")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<TimeSpan>("Timeout")
+                    b.Property<TimeSpan?>("Timeout")
                         .HasColumnType("interval");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -65,25 +74,35 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.CertificateConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("AwsCertificateName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("AwsRegion")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("AwsSecretName")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("HostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("KeyVaultCertificateName")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("KeyVaultName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("KeyVaultSecretName")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -97,15 +116,15 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<int>("RouteConfigId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("SourceType")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("RouteConfigId")
+                    b.HasIndex("HostId")
                         .IsUnique();
 
                     b.ToTable("Certificates");
@@ -113,47 +132,68 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.ClusterConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ClusterId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("HostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("LoadBalancingPolicy")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("HostId")
+                        .IsUnique();
 
                     b.ToTable("Clusters");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.DestinationConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("ClusterConfigId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("DestinationId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Health")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -164,17 +204,24 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.HeaderMatchConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsCaseSensitive")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("MatchConfigId")
-                        .HasColumnType("integer");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("MatchConfigId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Mode")
                         .IsRequired()
@@ -184,9 +231,12 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<List<string>>("Values")
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Values")
                         .IsRequired()
-                        .HasColumnType("text[]");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -197,14 +247,24 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.HealthCheckConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("ClusterConfigId")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -214,37 +274,84 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                     b.ToTable("HealthChecks");
                 });
 
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Host", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CertificateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClusterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("HostName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Hosts");
+                });
+
             modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpClientConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("ClusterConfigId")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("DangerousAcceptAnyServerCertificate")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("EnableMultipleHttp2Connections")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<int>("MaxConnectionsPerServer")
                         .HasColumnType("integer");
 
                     b.Property<string>("RequestHeaderEncoding")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ResponseHeaderEncoding")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SslProtocols")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -256,11 +363,9 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpRequestConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<TimeSpan>("ActivityTimeout")
                         .HasColumnType("interval");
@@ -268,15 +373,26 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                     b.Property<bool>("AllowResponseBuffering")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("ClusterConfigId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Version")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("VersionPolicy")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -289,15 +405,22 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.MatchConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<List<string>>("Hosts")
                         .IsRequired()
                         .HasColumnType("text[]");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<List<string>>("Methods")
                         .IsRequired()
@@ -307,8 +430,11 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("RouteConfigId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("RouteConfigId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -320,21 +446,31 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.MetadataConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<Guid?>("ClusterConfigId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int?>("ClusterConfigId")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Data")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("RouteConfigId")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("RouteConfigId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -349,24 +485,34 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.PassiveHealthCheckConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("HealthCheckConfigId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("HealthCheckConfigId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Policy")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<TimeSpan>("ReactivationPeriod")
+                    b.Property<TimeSpan?>("ReactivationPeriod")
                         .HasColumnType("interval");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -378,17 +524,24 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.QueryParameterMatchConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsCaseSensitive")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("MatchConfigId")
-                        .HasColumnType("integer");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("MatchConfigId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Mode")
                         .IsRequired()
@@ -398,9 +551,12 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<List<string>>("Values")
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Values")
                         .IsRequired()
-                        .HasColumnType("text[]");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -411,23 +567,32 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.RouteConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("AuthorizationPolicy")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
-                    b.Property<string>("ClusterId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("ClusterId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CorsPolicy")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("HostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<long?>("MaxRequestBodySize")
                         .HasColumnType("bigint");
@@ -435,25 +600,30 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                     b.Property<int?>("Order")
                         .HasColumnType("integer");
 
-                    b.Property<string>("RouteId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("HostId");
 
                     b.ToTable("Routes");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.SessionAffinityConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("ClusterConfigId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("ClusterConfigId")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("boolean");
@@ -462,13 +632,18 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Policy")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Settings")
-                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -480,22 +655,32 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.TransformConfig", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("RequestHeader")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("RouteConfigId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("RouteConfigId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Set")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -515,13 +700,24 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.CertificateConfig", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.RouteConfig", "RouteConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.Host", "Host")
                         .WithOne("Certificate")
-                        .HasForeignKey("Devv.Gateway.Data.Entities.CertificateConfig", "RouteConfigId")
+                        .HasForeignKey("Devv.Gateway.Data.Entities.CertificateConfig", "HostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("RouteConfig");
+                    b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.ClusterConfig", b =>
+                {
+                    b.HasOne("Devv.Gateway.Data.Entities.Host", "Host")
+                        .WithOne("Cluster")
+                        .HasForeignKey("Devv.Gateway.Data.Entities.ClusterConfig", "HostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Host");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.DestinationConfig", b =>
@@ -625,6 +821,17 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                     b.Navigation("MatchConfig");
                 });
 
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.RouteConfig", b =>
+                {
+                    b.HasOne("Devv.Gateway.Data.Entities.Host", "Host")
+                        .WithMany("Routes")
+                        .HasForeignKey("HostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Host");
+                });
+
             modelBuilder.Entity("Devv.Gateway.Data.Entities.SessionAffinityConfig", b =>
                 {
                     b.HasOne("Devv.Gateway.Data.Entities.ClusterConfig", "ClusterConfig")
@@ -651,20 +858,15 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                 {
                     b.Navigation("Destinations");
 
-                    b.Navigation("HealthCheck")
-                        .IsRequired();
+                    b.Navigation("HealthCheck");
 
-                    b.Navigation("HttpClient")
-                        .IsRequired();
+                    b.Navigation("HttpClient");
 
-                    b.Navigation("HttpRequest")
-                        .IsRequired();
+                    b.Navigation("HttpRequest");
 
-                    b.Navigation("Metadata")
-                        .IsRequired();
+                    b.Navigation("Metadata");
 
-                    b.Navigation("SessionAffinity")
-                        .IsRequired();
+                    b.Navigation("SessionAffinity");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.HealthCheckConfig", b =>
@@ -672,6 +874,17 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                     b.Navigation("Active");
 
                     b.Navigation("Passive");
+                });
+
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Host", b =>
+                {
+                    b.Navigation("Certificate")
+                        .IsRequired();
+
+                    b.Navigation("Cluster")
+                        .IsRequired();
+
+                    b.Navigation("Routes");
                 });
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.MatchConfig", b =>
@@ -683,14 +896,9 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
 
             modelBuilder.Entity("Devv.Gateway.Data.Entities.RouteConfig", b =>
                 {
-                    b.Navigation("Certificate")
-                        .IsRequired();
+                    b.Navigation("Match");
 
-                    b.Navigation("Match")
-                        .IsRequired();
-
-                    b.Navigation("Metadata")
-                        .IsRequired();
+                    b.Navigation("Metadata");
 
                     b.Navigation("Transforms");
                 });

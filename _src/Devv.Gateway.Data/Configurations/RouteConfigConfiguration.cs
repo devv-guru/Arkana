@@ -8,18 +8,20 @@ public class RouteConfigConfiguration : IEntityTypeConfiguration<RouteConfig>
 {
     public void Configure(EntityTypeBuilder<RouteConfig> builder)
     {
-        // RouteConfig and MatchConfig
+        // Primary Key
+        builder.HasKey(r => r.Id);
+        
+        // Configure relationships
         builder.HasOne(r => r.Match)
             .WithOne(m => m.RouteConfig)
             .HasForeignKey<MatchConfig>(m => m.RouteConfigId);
 
-        // RouteConfig and CertificateConfig
-        builder.HasOne(r => r.Certificate)
-            .WithOne(c => c.RouteConfig)
-            .HasForeignKey<CertificateConfig>(c => c.RouteConfigId);
-
         // Configure properties
-        builder.Property(r => r.RouteId).IsRequired();
-        builder.Property(r => r.ClusterId).IsRequired();
+        builder.Property(r => r.ClusterId)
+            .IsRequired();
+        builder.Property(r => r.AuthorizationPolicy)
+            .HasMaxLength(100);
+        builder.Property(r => r.CorsPolicy)
+            .HasMaxLength(100);
     }
 }

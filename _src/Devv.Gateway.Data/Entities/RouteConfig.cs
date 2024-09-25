@@ -1,19 +1,17 @@
 ﻿namespace Devv.Gateway.Data.Entities;
 
-public class RouteConfig
+public class RouteConfig : EntityBase
 {
-    public int Id { get; set; }
-    public string RouteId { get; set; }
-    public string ClusterId { get; set; }
+    public Guid ClusterId { get; set; }
+
     public int? Order { get; set; }
     public long? MaxRequestBodySize { get; set; }
-    public string AuthorizationPolicy { get; set; }
-    public string CorsPolicy { get; set; }
+    public string? AuthorizationPolicy { get; set; }
+    public string? CorsPolicy { get; set; }
 
-    public MatchConfig Match { get; set; }
-    public MetadataConfig Metadata { get; set; }
-    public List<TransformConfig> Transforms { get; set; }
-
-    // Certificate Configuration
-    public CertificateConfig Certificate { get; set; }
+    public Guid HostId { get; set; }
+    public Host? Host { get; set; }
+    public MatchConfig? Match { get; set; }
+    public MetadataConfig? Metadata { get; set; }
+    public ICollection<TransformConfig>? Transforms { get; set; }
 }

@@ -8,6 +8,8 @@ public class HttpRequestConfigConfiguration : IEntityTypeConfiguration<HttpReque
 {
     public void Configure(EntityTypeBuilder<HttpRequestConfig> builder)
     {
+        // Primary Key
+        builder.HasKey(h => h.Id);
         // Configure properties
         builder.Property(h => h.Version).IsRequired();
         builder.Property(h => h.ActivityTimeout).IsRequired();

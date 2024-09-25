@@ -11,6 +11,7 @@ public class WriteOnlyDataContext : DbContext, IWriteOnlyContext
     {
     }
 
+    public DbSet<Host> Hosts { get; set; }
     public DbSet<RouteConfig> Routes { get; set; }
     public DbSet<ClusterConfig> Clusters { get; set; }
     public DbSet<MatchConfig> Matches { get; set; }
@@ -26,11 +27,6 @@ public class WriteOnlyDataContext : DbContext, IWriteOnlyContext
     public DbSet<TransformConfig> Transforms { get; set; }
     public DbSet<HeaderMatchConfig> HeaderMatches { get; set; }
     public DbSet<QueryParameterMatchConfig> QueryParameterMatches { get; set; }
-
-    public int SaveChanges()
-    {
-        return base.SaveChanges();
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

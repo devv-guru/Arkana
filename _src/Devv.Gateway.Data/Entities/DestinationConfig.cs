@@ -1,13 +1,12 @@
 ﻿namespace Devv.Gateway.Data.Entities;
 
-public class DestinationConfig
+public class DestinationConfig : EntityBase
 {
-    public int Id { get; set; }
-    public string DestinationId { get; set; }
-    public string Address { get; set; }
-    public string Health { get; set; }
+    public string? Name { get; set; }
+    public string? Address { get; set; }
+    public string? Health { get; set; }
 
     // Foreign key to ClusterConfig
-    public int ClusterConfigId { get; set; }
-    public ClusterConfig ClusterConfig { get; set; }
+    public Guid ClusterConfigId { get; set; }
+    public ClusterConfig? ClusterConfig { get; set; }
 }
