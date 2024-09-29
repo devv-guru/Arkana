@@ -22,7 +22,7 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.ActiveHealthCheckConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.ActiveHealthCheck", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,20 +68,28 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.HasIndex("HealthCheckConfigId")
                         .IsUnique();
 
-                    b.ToTable("ActiveHealthChecks");
+                    b.ToTable("ActiveHealthChecks", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.CertificateConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Certificate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
                     b.Property<string>("AwsCertificateName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("AwsCertificatePasswordName")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("AwsRegion")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("CertificateSource")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -91,45 +99,41 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("HostId")
-                        .HasColumnType("char(36)");
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("KeyVaultCertificateName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("KeyVaultCertificatePasswordName")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("KeyVaultName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("KeyVaultUri")
-                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<string>("Name")
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
-
-                    b.Property<string>("LocalPath")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<int>("SourceType")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HostId")
-                        .IsUnique();
-
-                    b.ToTable("Certificates");
+                    b.ToTable("Certificates", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.ClusterConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Cluster", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -159,10 +163,10 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.HasIndex("HostId")
                         .IsUnique();
 
-                    b.ToTable("Clusters");
+                    b.ToTable("Clusters", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.DestinationConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Destination", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -198,10 +202,10 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
 
                     b.HasIndex("ClusterConfigId");
 
-                    b.ToTable("Destinations");
+                    b.ToTable("Destinations", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.HeaderMatchConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.HeaderMatch", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -241,10 +245,10 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
 
                     b.HasIndex("MatchConfigId");
 
-                    b.ToTable("HeaderMatches");
+                    b.ToTable("HeaderMatches", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.HealthCheckConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.HealthCheck", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -270,49 +274,10 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.HasIndex("ClusterConfigId")
                         .IsUnique();
 
-                    b.ToTable("HealthChecks");
+                    b.ToTable("HealthChecks", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.Host", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("CertificateId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("ClusterId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("HostName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Hosts");
-                });
-
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpClientConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpClientSettings", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -357,10 +322,10 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.HasIndex("ClusterConfigId")
                         .IsUnique();
 
-                    b.ToTable("HttpClients");
+                    b.ToTable("HttpClientSettings", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpRequestConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpRequestSettings", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -399,10 +364,10 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.HasIndex("ClusterConfigId")
                         .IsUnique();
 
-                    b.ToTable("HttpRequests");
+                    b.ToTable("HttpRequestSettings", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.MatchConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Match", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -440,10 +405,10 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.HasIndex("RouteConfigId")
                         .IsUnique();
 
-                    b.ToTable("Matches");
+                    b.ToTable("Matches", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.MetadataConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Metadata", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -476,13 +441,10 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.HasIndex("ClusterConfigId")
                         .IsUnique();
 
-                    b.HasIndex("RouteConfigId")
-                        .IsUnique();
-
-                    b.ToTable("Metadata");
+                    b.ToTable("Metadata", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.PassiveHealthCheckConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.PassiveHealthCheck", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -518,10 +480,10 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.HasIndex("HealthCheckConfigId")
                         .IsUnique();
 
-                    b.ToTable("PassiveHealthChecks");
+                    b.ToTable("PassiveHealthChecks", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.QueryParameterMatchConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.QueryParameterMatch", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -561,10 +523,10 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
 
                     b.HasIndex("MatchConfigId");
 
-                    b.ToTable("QueryParameterMatches");
+                    b.ToTable("QueryParameterMatches", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.RouteConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Route", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -606,10 +568,10 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
 
                     b.HasIndex("HostId");
 
-                    b.ToTable("Routes");
+                    b.ToTable("Routes", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.SessionAffinityConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.SessionAffinity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -649,10 +611,10 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.HasIndex("ClusterConfigId")
                         .IsUnique();
 
-                    b.ToTable("SessionAffinities");
+                    b.ToTable("SessionAffinity", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.TransformConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Transform", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -685,43 +647,76 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
 
                     b.HasIndex("RouteConfigId");
 
-                    b.ToTable("Transforms");
+                    b.ToTable("Transforms", (string)null);
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.ActiveHealthCheckConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.WebHost", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.HealthCheckConfig", "HealthCheckConfig")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("CertificateId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("ClusterId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("HostName")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CertificateId");
+
+                    b.ToTable("WebHosts", (string)null);
+                });
+
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.ActiveHealthCheck", b =>
+                {
+                    b.HasOne("Devv.Gateway.Data.Entities.HealthCheck", "HealthCheckConfig")
                         .WithOne("Active")
-                        .HasForeignKey("Devv.Gateway.Data.Entities.ActiveHealthCheckConfig", "HealthCheckConfigId");
+                        .HasForeignKey("Devv.Gateway.Data.Entities.ActiveHealthCheck", "HealthCheckConfigId");
 
                     b.Navigation("HealthCheckConfig");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.CertificateConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Cluster", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.Host", "Host")
-                        .WithOne("Certificate")
-                        .HasForeignKey("Devv.Gateway.Data.Entities.CertificateConfig", "HostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Host");
-                });
-
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.ClusterConfig", b =>
-                {
-                    b.HasOne("Devv.Gateway.Data.Entities.Host", "Host")
+                    b.HasOne("Devv.Gateway.Data.Entities.WebHost", "Host")
                         .WithOne("Cluster")
-                        .HasForeignKey("Devv.Gateway.Data.Entities.ClusterConfig", "HostId")
+                        .HasForeignKey("Devv.Gateway.Data.Entities.Cluster", "HostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Host");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.DestinationConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Destination", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.ClusterConfig", "ClusterConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.Cluster", "ClusterConfig")
                         .WithMany("Destinations")
                         .HasForeignKey("ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -730,9 +725,9 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.HeaderMatchConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.HeaderMatch", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.MatchConfig", "MatchConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.Match", "MatchConfig")
                         .WithMany("Headers")
                         .HasForeignKey("MatchConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -741,88 +736,88 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.Navigation("MatchConfig");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.HealthCheckConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.HealthCheck", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.ClusterConfig", "ClusterConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.Cluster", "ClusterConfig")
                         .WithOne("HealthCheck")
-                        .HasForeignKey("Devv.Gateway.Data.Entities.HealthCheckConfig", "ClusterConfigId")
+                        .HasForeignKey("Devv.Gateway.Data.Entities.HealthCheck", "ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpClientConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpClientSettings", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.ClusterConfig", "ClusterConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.Cluster", "ClusterConfig")
                         .WithOne("HttpClient")
-                        .HasForeignKey("Devv.Gateway.Data.Entities.HttpClientConfig", "ClusterConfigId")
+                        .HasForeignKey("Devv.Gateway.Data.Entities.HttpClientSettings", "ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpRequestConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.HttpRequestSettings", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.ClusterConfig", "ClusterConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.Cluster", "ClusterConfig")
                         .WithOne("HttpRequest")
-                        .HasForeignKey("Devv.Gateway.Data.Entities.HttpRequestConfig", "ClusterConfigId")
+                        .HasForeignKey("Devv.Gateway.Data.Entities.HttpRequestSettings", "ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.MatchConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Match", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.RouteConfig", "RouteConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.Route", "Route")
                         .WithOne("Match")
-                        .HasForeignKey("Devv.Gateway.Data.Entities.MatchConfig", "RouteConfigId")
+                        .HasForeignKey("Devv.Gateway.Data.Entities.Match", "RouteConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("RouteConfig");
+                    b.Navigation("Route");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.MetadataConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Metadata", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.ClusterConfig", "ClusterConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.Cluster", "Cluster")
                         .WithOne("Metadata")
-                        .HasForeignKey("Devv.Gateway.Data.Entities.MetadataConfig", "ClusterConfigId");
+                        .HasForeignKey("Devv.Gateway.Data.Entities.Metadata", "ClusterConfigId");
 
-                    b.HasOne("Devv.Gateway.Data.Entities.RouteConfig", "RouteConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.Route", "Route")
                         .WithOne("Metadata")
-                        .HasForeignKey("Devv.Gateway.Data.Entities.MetadataConfig", "RouteConfigId");
+                        .HasForeignKey("Devv.Gateway.Data.Entities.Metadata", "ClusterConfigId");
 
-                    b.Navigation("ClusterConfig");
+                    b.Navigation("Cluster");
 
-                    b.Navigation("RouteConfig");
+                    b.Navigation("Route");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.PassiveHealthCheckConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.PassiveHealthCheck", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.HealthCheckConfig", "HealthCheckConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.HealthCheck", "HealthCheckConfig")
                         .WithOne("Passive")
-                        .HasForeignKey("Devv.Gateway.Data.Entities.PassiveHealthCheckConfig", "HealthCheckConfigId");
+                        .HasForeignKey("Devv.Gateway.Data.Entities.PassiveHealthCheck", "HealthCheckConfigId");
 
                     b.Navigation("HealthCheckConfig");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.QueryParameterMatchConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.QueryParameterMatch", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.MatchConfig", "MatchConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.Match", "Match")
                         .WithMany("QueryParameters")
                         .HasForeignKey("MatchConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("MatchConfig");
+                    b.Navigation("Match");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.RouteConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Route", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.Host", "Host")
+                    b.HasOne("Devv.Gateway.Data.Entities.WebHost", "Host")
                         .WithMany("Routes")
                         .HasForeignKey("HostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -831,20 +826,20 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.Navigation("Host");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.SessionAffinityConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.SessionAffinity", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.ClusterConfig", "ClusterConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.Cluster", "ClusterConfig")
                         .WithOne("SessionAffinity")
-                        .HasForeignKey("Devv.Gateway.Data.Entities.SessionAffinityConfig", "ClusterConfigId")
+                        .HasForeignKey("Devv.Gateway.Data.Entities.SessionAffinity", "ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.TransformConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Transform", b =>
                 {
-                    b.HasOne("Devv.Gateway.Data.Entities.RouteConfig", "RouteConfig")
+                    b.HasOne("Devv.Gateway.Data.Entities.Route", "RouteConfig")
                         .WithMany("Transforms")
                         .HasForeignKey("RouteConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -853,7 +848,23 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.Navigation("RouteConfig");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.ClusterConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.WebHost", b =>
+                {
+                    b.HasOne("Devv.Gateway.Data.Entities.Certificate", "Certificate")
+                        .WithMany("Hosts")
+                        .HasForeignKey("CertificateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Certificate");
+                });
+
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Certificate", b =>
+                {
+                    b.Navigation("Hosts");
+                });
+
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Cluster", b =>
                 {
                     b.Navigation("Destinations");
 
@@ -868,38 +879,34 @@ namespace Devv.Gateway.Data.Contexts.MySql.Migrations
                     b.Navigation("SessionAffinity");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.HealthCheckConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.HealthCheck", b =>
                 {
                     b.Navigation("Active");
 
                     b.Navigation("Passive");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.Host", b =>
-                {
-                    b.Navigation("Certificate")
-                        .IsRequired();
-
-                    b.Navigation("Cluster")
-                        .IsRequired();
-
-                    b.Navigation("Routes");
-                });
-
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.MatchConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Match", b =>
                 {
                     b.Navigation("Headers");
 
                     b.Navigation("QueryParameters");
                 });
 
-            modelBuilder.Entity("Devv.Gateway.Data.Entities.RouteConfig", b =>
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.Route", b =>
                 {
                     b.Navigation("Match");
 
                     b.Navigation("Metadata");
 
                     b.Navigation("Transforms");
+                });
+
+            modelBuilder.Entity("Devv.Gateway.Data.Entities.WebHost", b =>
+                {
+                    b.Navigation("Cluster");
+
+                    b.Navigation("Routes");
                 });
 #pragma warning restore 612, 618
         }

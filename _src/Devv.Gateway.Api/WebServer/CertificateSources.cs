@@ -2,7 +2,7 @@
 
 public class CertificateSources
 {
-    public const string KeyVault = "KeyVault";
-    public const string LocalFile = "LocalFile";
-    public const string Fallback = "Fallback";
+    public const string AzureKeyVault = "AzureKeyVault";
+    public const string InMemory = "InMemory";
+    public const string AwsSecretManager = "AwsSecretManager";
 }

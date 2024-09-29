@@ -43,6 +43,7 @@ public class Program
         builder.Configuration.AddConfigurationSources(args);
         builder.Services.AddLazyCache();
         builder.Services.AddScoped<HostCertificateCache>();
+        builder.Services.AddScoped<CertificateManager>();
         builder.WebHost.ConfigureWebServer();
         builder.Services.AddDataContext(configuration);
         builder.Services.AddGatewayHttpsRedirection();

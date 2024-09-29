@@ -11,24 +11,24 @@ public class ReadonlyDataContext : DbContext, IReadonlyContext
     {
     }
 
-    public IQueryable<Host> Hosts => Set<Host>().AsNoTracking();
-    public IQueryable<RouteConfig> Routes => Set<RouteConfig>().AsNoTracking();
-    public IQueryable<ClusterConfig> Clusters => Set<ClusterConfig>().AsNoTracking();
-    public IQueryable<MatchConfig> Matches => Set<MatchConfig>().AsNoTracking();
-    public IQueryable<CertificateConfig> Certificates => Set<CertificateConfig>().AsNoTracking();
-    public IQueryable<SessionAffinityConfig> SessionAffinities => Set<SessionAffinityConfig>().AsNoTracking();
-    public IQueryable<DestinationConfig> Destinations => Set<DestinationConfig>().AsNoTracking();
-    public IQueryable<MetadataConfig> Metadata => Set<MetadataConfig>().AsNoTracking();
-    public IQueryable<HttpClientConfig> HttpClients => Set<HttpClientConfig>().AsNoTracking();
-    public IQueryable<HttpRequestConfig> HttpRequests => Set<HttpRequestConfig>().AsNoTracking();
-    public IQueryable<HealthCheckConfig> HealthChecks => Set<HealthCheckConfig>().AsNoTracking();
-    public IQueryable<ActiveHealthCheckConfig> ActiveHealthChecks => Set<ActiveHealthCheckConfig>().AsNoTracking();
-    public IQueryable<PassiveHealthCheckConfig> PassiveHealthChecks => Set<PassiveHealthCheckConfig>().AsNoTracking();
-    public IQueryable<TransformConfig> Transforms => Set<TransformConfig>().AsNoTracking();
-    public IQueryable<HeaderMatchConfig> HeaderMatches => Set<HeaderMatchConfig>().AsNoTracking();
+    public IQueryable<WebHost> WebHosts => Set<WebHost>().AsNoTracking();
+    public IQueryable<Route> Routes => Set<Route>().AsNoTracking();
+    public IQueryable<Cluster> Clusters => Set<Cluster>().AsNoTracking();
+    public IQueryable<Match> Matches => Set<Match>().AsNoTracking();
+    public IQueryable<Certificate> Certificates => Set<Certificate>().AsNoTracking();
+    public IQueryable<SessionAffinity> SessionAffinities => Set<SessionAffinity>().AsNoTracking();
+    public IQueryable<Destination> Destinations => Set<Destination>().AsNoTracking();
+    public IQueryable<Metadata> Metadata => Set<Metadata>().AsNoTracking();
+    public IQueryable<HttpClientSettings> HttpClients => Set<HttpClientSettings>().AsNoTracking();
+    public IQueryable<HttpRequestSettings> HttpRequests => Set<HttpRequestSettings>().AsNoTracking();
+    public IQueryable<HealthCheck> HealthChecks => Set<HealthCheck>().AsNoTracking();
+    public IQueryable<ActiveHealthCheck> ActiveHealthChecks => Set<ActiveHealthCheck>().AsNoTracking();
+    public IQueryable<PassiveHealthCheck> PassiveHealthChecks => Set<PassiveHealthCheck>().AsNoTracking();
+    public IQueryable<Transform> Transforms => Set<Transform>().AsNoTracking();
+    public IQueryable<HeaderMatch> HeaderMatches => Set<HeaderMatch>().AsNoTracking();
 
-    public IQueryable<QueryParameterMatchConfig> QueryParameterMatches =>
-        Set<QueryParameterMatchConfig>().AsNoTracking();
+    public IQueryable<QueryParameterMatch> QueryParameterMatches =>
+        Set<QueryParameterMatch>().AsNoTracking();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
