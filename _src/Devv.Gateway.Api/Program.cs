@@ -49,7 +49,7 @@ public class Program
         builder.Services.AddGatewayHttpsRedirection();
         builder.Services.AddGatewayFastEndpoints();
         builder.Services.AddProxy();
-
+        builder.Services.AddMediator();
         builder.Services.AddHostedService<LoadStartup>();
 
         var app = builder.Build();

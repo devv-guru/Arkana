@@ -40,6 +40,11 @@
         <PackageReference Include="Serilog.Sinks.Seq" Version="8.0.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3"/>
         <PackageReference Include="Yarp.ReverseProxy" Version="2.2.0"/>
+        <PackageReference Include="Mediator.SourceGenerator" Version="2.1.7">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Mediator.Abstractions" Version="2.1.7" />
     </ItemGroup>
 
     <ItemGroup>
@@ -49,12 +54,17 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Folder Include="Features\Certificates\Create\" />
+        <Folder Include="Features\Certificates\Delete\" />
+        <Folder Include="Features\Certificates\Get\" />
+        <Folder Include="Features\Certificates\Update\" />
         <Folder Include="Features\Hosts\"/>
         <Folder Include="StaticSites\"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Devv.Gateway.Data\Devv.Gateway.Data.csproj"/>
+        <ProjectReference Include="..\Devv.Gateway.Shared\Devv.Gateway.Shared.csproj" />
     </ItemGroup>
 
 </Project>

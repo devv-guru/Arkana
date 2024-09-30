@@ -26,6 +26,7 @@ namespace Devv.Gateway.Data.Contexts.SqLite.Migrations
                     AwsRegion = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
                     AwsCertificateName = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
                     AwsCertificatePasswordName = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    SubjectAlternativeNames = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),

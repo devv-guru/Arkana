@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Devv.Gateway.Data.Contexts.Base;
 
-public class ReadonlyDataContext : DbContext, IReadonlyContext
+public class ReadOnlyDataContext : DbContext, IReadOnlyContext
 {
-    public ReadonlyDataContext(DbContextOptions options)
+    public ReadOnlyDataContext(DbContextOptions options)
         : base(options)
     {
     }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Amazon.SecretsManager;
@@ -34,7 +35,8 @@ public class CertificateManager
                 certificate.AwsRegion,
                 certificate.AwsCertificateName, certificate.AwsCertificatePasswordName, ct),
 
-            CertificateSources.InMemory => GenerateSelfSignedCertificate(hostName),
+            CertificateSources.InMemory =>
+                GenerateSelfSignedCertificate(hostName, certificate?.SubjectAlternativeNames),
 
             _ => throw new ArgumentException("Unsupported certificate source.")
         };
@@ -131,14 +133,12 @@ public class CertificateManager
     //     return certificate;
     // }
 
-    private X509Certificate2 GenerateSelfSignedCertificate(string hostName)
+    private X509Certificate2 GenerateSelfSignedCertificate(string hostName, string[]? subjectAlternativeNames)
     {
         _logger.LogInformation("Generating self-signed certificate for {HostName}", hostName);
 
-        // Generate RSA key pair with 2048-bit key size
         using var rsa = RSA.Create(2048);
 
-        // Create the certificate request
         var certReq = new CertificateRequest(
             $"CN={hostName}",
             rsa,
@@ -146,7 +146,6 @@ public class CertificateManager
             RSASignaturePadding.Pkcs1
         );
 
-        // Add Key Usage extensions (Digital Signature and Key Encipherment)
         certReq.CertificateExtensions.Add(
             new X509KeyUsageExtension(
                 X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.KeyEncipherment,
@@ -154,24 +153,30 @@ public class CertificateManager
             )
         );
 
-        // Add Enhanced Key Usage (EKU) extensions (Server Authentication)
         certReq.CertificateExtensions.Add(
             new X509EnhancedKeyUsageExtension(
                 new OidCollection
                 {
-                    new Oid("1.3.6.1.5.5.7.3.1") // OID for Server Authentication
+                    new Oid("1.3.6.1.5.5.7.3.1")
                 },
                 critical: true
             )
         );
 
-        // Add Subject Alternative Names (SANs)
         var sanBuilder = new SubjectAlternativeNameBuilder();
-        sanBuilder.AddDnsName(hostName); // Add DNS SAN (hostName)
+        sanBuilder.AddDnsName(hostName);
+        
+        if (subjectAlternativeNames is not null)
+            foreach (var san in subjectAlternativeNames)
+            {
+                if (IPAddress.TryParse(san, out var ipAddress))
+                    sanBuilder.AddIpAddress(ipAddress);
+                else
+                    sanBuilder.AddDnsName(san);
+            }
 
         certReq.CertificateExtensions.Add(sanBuilder.Build());
 
-        // Add Basic Constraints (non-CA)
         certReq.CertificateExtensions.Add(
             new X509BasicConstraintsExtension(
                 certificateAuthority: false, // Not a CA certificate
@@ -181,7 +186,6 @@ public class CertificateManager
             )
         );
 
-        // Set certificate validity period (e.g., 1 year)
         var certificate = certReq.CreateSelfSigned(
             DateTimeOffset.Now,
             DateTimeOffset.Now.AddYears(1) // Increase validity period to 1 year

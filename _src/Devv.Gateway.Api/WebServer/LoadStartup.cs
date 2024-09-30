@@ -45,7 +45,7 @@ public class LoadStartup : IHostedService
     private async Task LoadDefaultsAsync(IServiceScope scope, CancellationToken ct)
     {
         _logger.LogInformation("Initializing gateway with saved hosts and certificates ...");
-        var readonlyContext = scope.ServiceProvider.GetRequiredService<IReadonlyContext>();
+        var readonlyContext = scope.ServiceProvider.GetRequiredService<IReadOnlyContext>();
 
         _logger.LogInformation("Checking for default certificate...");
         var certificate = await readonlyContext.Certificates

@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Devv.Gateway.Data.Contexts.MySql;
 
-public class MySqlReadonlyContext : ReadonlyDataContext
+public class MySqlReadOnlyContext : ReadOnlyDataContext
 {
-    public MySqlReadonlyContext(DbContextOptions<MySqlReadonlyContext> options) 
+    public MySqlReadOnlyContext(DbContextOptions<MySqlReadOnlyContext> options) 
         : base(options)
     {
     }

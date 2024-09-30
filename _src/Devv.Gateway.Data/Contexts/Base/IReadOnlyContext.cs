@@ -2,7 +2,7 @@
 
 namespace Devv.Gateway.Data.Contexts.Base;
 
-public interface IReadonlyContext
+public interface IReadOnlyContext
 {
     IQueryable<WebHost> WebHosts { get; }
     IQueryable<Route> Routes { get; }

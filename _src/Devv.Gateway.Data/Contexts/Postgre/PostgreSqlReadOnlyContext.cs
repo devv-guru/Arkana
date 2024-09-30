@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Devv.Gateway.Data.Contexts.Postgre;
 
-public class PostgreSqlReadonlyContext : ReadonlyDataContext
+public class PostgreSqlReadOnlyContext : ReadOnlyDataContext
 {
-    public PostgreSqlReadonlyContext(DbContextOptions<PostgreSqlReadonlyContext> options) 
+    public PostgreSqlReadOnlyContext(DbContextOptions<PostgreSqlReadOnlyContext> options) 
         : base(options)
     {
     }

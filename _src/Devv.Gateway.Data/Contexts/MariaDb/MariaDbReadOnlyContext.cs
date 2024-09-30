@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Devv.Gateway.Data.Contexts.MariaDb;
 
-public class MariaDbReadonlyContext : ReadonlyDataContext
+public class MariaDbReadOnlyContext : ReadOnlyDataContext
 {
-    public MariaDbReadonlyContext(DbContextOptions<MariaDbReadonlyContext> options) 
+    public MariaDbReadOnlyContext(DbContextOptions<MariaDbReadOnlyContext> options) 
         : base(options)
     {
     }

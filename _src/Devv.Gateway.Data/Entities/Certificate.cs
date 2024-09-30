@@ -17,5 +17,8 @@ public class Certificate : EntityBase
     public string? AwsCertificateName { get; set; }
     public string? AwsCertificatePasswordName { get; set; }
 
-    public ICollection<WebHost> Hosts { get; set; }
+    // For Inmemory
+    public string[]? SubjectAlternativeNames { get; set; }
+
+    public ICollection<WebHost> WebHosts { get; set; }
 }

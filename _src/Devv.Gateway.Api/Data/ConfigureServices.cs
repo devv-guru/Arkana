@@ -26,13 +26,13 @@ public static class ConfigureServices
                         x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
                 });
 
-                services.AddDbContext<SqlServerReadonlyContext>(options =>
+                services.AddDbContext<SqlServerReadOnlyContext>(options =>
                 {
                     options.UseSqlServer(dataContextOptions.ConnectionString,
                         x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
                 });
 
-                services.AddScoped<IReadonlyContext, SqlServerReadonlyContext>();
+                services.AddScoped<IReadOnlyContext, SqlServerReadOnlyContext>();
                 services.AddScoped<IWriteOnlyContext, SqlServerWriteOnlyContext>();
                 break;
             }
@@ -44,13 +44,13 @@ public static class ConfigureServices
                         x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
                 });
 
-                services.AddDbContext<PostgreSqlReadonlyContext>(options =>
+                services.AddDbContext<PostgreSqlReadOnlyContext>(options =>
                 {
                     options.UseNpgsql(dataContextOptions.ConnectionString,
                         x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
                 });
 
-                services.AddScoped<IReadonlyContext, PostgreSqlReadonlyContext>();
+                services.AddScoped<IReadOnlyContext, PostgreSqlReadOnlyContext>();
                 services.AddScoped<IWriteOnlyContext, PostgreSqlWriteOnlyContext>();
                 break;
             }
@@ -62,13 +62,13 @@ public static class ConfigureServices
                         x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
                 });
 
-                services.AddDbContext<SqLiteReadonlyContext>(options =>
+                services.AddDbContext<SqLiteReadOnlyContext>(options =>
                 {
                     options.UseSqlite(dataContextOptions.ConnectionString,
                         x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
                 });
 
-                services.AddScoped<IReadonlyContext, SqLiteReadonlyContext>();
+                services.AddScoped<IReadOnlyContext, SqLiteReadOnlyContext>();
                 services.AddScoped<IWriteOnlyContext, SqLiteWriteOnlyContext>();
                 break;
             }
@@ -79,12 +79,12 @@ public static class ConfigureServices
                     ConfigureMySql(options, dataContextOptions.ConnectionString, dataContextOptions.MySqlVersion);
                 });
 
-                services.AddDbContext<MySqlReadonlyContext>(options =>
+                services.AddDbContext<MySqlReadOnlyContext>(options =>
                 {
                     ConfigureMySql(options, dataContextOptions.ConnectionString, dataContextOptions.MySqlVersion);
                 });
 
-                services.AddScoped<IReadonlyContext, MySqlReadonlyContext>();
+                services.AddScoped<IReadOnlyContext, MySqlReadOnlyContext>();
                 services.AddScoped<IWriteOnlyContext, MySqlWriteOnlyContext>();
                 break;
             }
@@ -96,13 +96,13 @@ public static class ConfigureServices
                         dataContextOptions.MariaDbVersion);
                 });
 
-                services.AddDbContext<MariaDbReadonlyContext>(options =>
+                services.AddDbContext<MariaDbReadOnlyContext>(options =>
                 {
                     ConfigureMariaDb(options, dataContextOptions.ConnectionString,
                         dataContextOptions.MariaDbVersion);
                 });
 
-                services.AddScoped<IReadonlyContext, MariaDbReadonlyContext>();
+                services.AddScoped<IReadOnlyContext, MariaDbReadOnlyContext>();
                 services.AddScoped<IWriteOnlyContext, MariaDbWriteOnlyContext>();
                 break;
             }

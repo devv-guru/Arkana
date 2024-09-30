@@ -26,6 +26,7 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                     AwsRegion = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     AwsCertificateName = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     AwsCertificatePasswordName = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    SubjectAlternativeNames = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),

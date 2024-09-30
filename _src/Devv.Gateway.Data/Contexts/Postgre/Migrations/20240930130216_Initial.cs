@@ -27,6 +27,7 @@ namespace Devv.Gateway.Data.Contexts.Postgre.Migrations
                     AwsRegion = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     AwsCertificateName = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     AwsCertificatePasswordName = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    SubjectAlternativeNames = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),

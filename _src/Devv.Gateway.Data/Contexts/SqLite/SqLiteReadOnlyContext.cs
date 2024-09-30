@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Devv.Gateway.Data.Contexts.SqLite;
 
-public class SqLiteReadonlyContext : ReadonlyDataContext
+public class SqLiteReadOnlyContext : ReadOnlyDataContext
 {
-    public SqLiteReadonlyContext(DbContextOptions<SqLiteReadonlyContext> options) 
+    public SqLiteReadOnlyContext(DbContextOptions<SqLiteReadOnlyContext> options) 
         : base(options)
     {
     }

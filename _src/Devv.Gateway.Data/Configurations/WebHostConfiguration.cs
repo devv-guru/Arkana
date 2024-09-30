@@ -14,7 +14,7 @@ public class WebHostConfiguration : IEntityTypeConfiguration<WebHost>
 
         // Configure relationships
         builder.HasOne(o => o.Certificate)
-            .WithMany(o => o.Hosts)
+            .WithMany(o => o.WebHosts)
             .HasForeignKey(m => m.CertificateId)
             .IsRequired();
 

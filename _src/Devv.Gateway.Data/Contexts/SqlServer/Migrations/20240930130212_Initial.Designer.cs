@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
 {
     [DbContext(typeof(SqlServerWriteOnlyContext))]
-    [Migration("20240929203655_Initial")]
+    [Migration("20240930130212_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -127,6 +127,10 @@ namespace Devv.Gateway.Data.Contexts.SqlServer.Migrations
                     b.Property<string>("Name")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("SubjectAlternativeNames")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");

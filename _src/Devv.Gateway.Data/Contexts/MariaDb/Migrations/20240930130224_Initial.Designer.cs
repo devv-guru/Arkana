@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
 {
     [DbContext(typeof(MariaDbWriteOnlyContext))]
-    [Migration("20240929203709_Initial")]
+    [Migration("20240930130224_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -127,6 +127,10 @@ namespace Devv.Gateway.Data.Contexts.MariaDb.Migrations
                     b.Property<string>("Name")
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
+
+                    b.Property<string>("SubjectAlternativeNames")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)");

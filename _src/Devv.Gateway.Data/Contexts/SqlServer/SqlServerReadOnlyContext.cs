@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Devv.Gateway.Data.Contexts.SqlServer;
 
-public class SqlServerReadonlyContext : ReadonlyDataContext
+public class SqlServerReadOnlyContext : ReadOnlyDataContext
 {
-    public SqlServerReadonlyContext(DbContextOptions<SqlServerReadonlyContext> options) 
+    public SqlServerReadOnlyContext(DbContextOptions<SqlServerReadOnlyContext> options) 
         : base(options)
     {
     }

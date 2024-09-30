@@ -1,0 +1,4 @@
+﻿###
+
+GET https://localhost:8443/gateway/certificates/find?search=default&page=1&pageSize=10&sortAscending=true&sortField=id
+###
