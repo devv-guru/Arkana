@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FastEndpoints" Version="5.29.0"/>
+        <PackageReference Include="FastEndpoints.Swagger" Version="5.29.0"/>
+        <PackageReference Include="Mediator.SourceGenerator" Version="2.1.7">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Mediator.Abstractions" Version="2.1.7"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Hosts\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Data\Data.csproj" />
+        <ProjectReference Include="..\Shared\Shared.csproj" />
+    </ItemGroup>
+
+</Project>
