@@ -1,4 +1,6 @@
-﻿
+﻿@* <FluentDesignTheme @bind-Mode="DesignThemeModes" @bind-OfficeColor="OfficeColor" StorageName="theme" /> *@
+<FluentDesignTheme Mode="DesignThemeModes.Dark" OfficeColor="OfficeColor.OneNote" StorageName="theme" />
+
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
@@ -10,3 +12,8 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+@code {
+    private DesignThemeModes DesignThemeModes { get; set; } = DesignThemeModes.Dark;
+    private OfficeColor OfficeColor { get; set; } = OfficeColor.OneNote;
+}
