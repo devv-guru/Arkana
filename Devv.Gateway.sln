@@ -47,4 +47,8 @@ Global
 		{179E8D20-1103-49F8-B738-6273577077C4} = {83FB2772-4182-4869-A36E-AA16D5FC6700}
 		{C504839C-C307-4EDD-A440-4B472790E7FA} = {458F295F-1A08-40E3-AB19-669CD06E2DDB}
 	EndGlobalSection
+	GlobalSection(RiderSharedRunConfigurations) = postSolution
+		File = _src\Ui\Ui_ https.run.xml
+		File = _src\Gateway\Gateway_Dockerfile.run.xml
+	EndGlobalSection
 EndGlobal

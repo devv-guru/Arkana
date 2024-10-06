@@ -2,19 +2,21 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY ["Devv.Gateway.Data/Devv.Gateway.Data.csproj", "Devv.Gateway.Data/"]
-COPY ["Devv.Gateway.Api/Devv.Gateway.Api.csproj", "Devv.Gateway.Api/"]
+COPY ["Gateway/Gateway.csproj", "Gateway/"]
+COPY ["Data/Data.csproj", "Data/"]
+COPY ["Endpoints/Endpoints.csproj", "Endpoints/"]
+COPY ["Shared/Shared.csproj", "Shared/"]
 
-RUN dotnet restore "Devv.Gateway.Api/Devv.Gateway.Api.csproj"
+RUN dotnet restore "Gateway/Gateway.csproj"
 
 # Move this line here to optimize build caching
 COPY . . 
-WORKDIR "/src/Devv.Gateway.Api"
-RUN dotnet build "Devv.Gateway.Api.csproj" -c Release -o /app/build
+WORKDIR "/src/Gateway"
+RUN dotnet build "Gateway.csproj" -c Release -o /app/build
 
 # Stage 2: Publish Stage
 FROM build AS publish
-RUN dotnet publish "Devv.Gateway.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Gateway.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Stage 3: Prepare Environment with Standard ASP.NET Runtime Image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
@@ -24,7 +26,7 @@ WORKDIR /app
 RUN mkdir -p /etc/app-config /etc/app/certs /var/log/app /var/www/app/static /var/lib/app/data
 
 # Copy the appsettings.json to the /etc/app-config directory
-COPY Devv.Gateway.Api/appsettings.json /etc/app-config/appsettings.json
+COPY Gateway/appsettings.json /etc/app-config/appsettings.json
 
 # Copy the published app from the publish stage
 COPY --from=publish /app/publish .
@@ -38,9 +40,6 @@ ENV CERT_PATH=/etc/app/certs
 ENV LOG_PATH=/var/log/app
 ENV STATIC_CONTENT_PATH=/var/www/app/static
 ENV DATA_PATH=/var/lib/app/data
-
-# Install ICU package for full globalization support
-#RUN apt-get update && apt-get install -y libicu-dev
 
 # Copy necessary directories and files from the base stage
 COPY --from=base /etc/app-config /etc/app-config
@@ -59,4 +58,4 @@ EXPOSE 8081
 # Set working directory
 WORKDIR /app
 
-ENTRYPOINT ["dotnet", "Devv.Gateway.Api.dll"]
+ENTRYPOINT ["dotnet", "Gateway.dll"]
