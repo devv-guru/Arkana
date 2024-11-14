@@ -1,4 +1,4 @@
-using Data.Entities;
+using Data.Entities.Proxy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,7 +15,7 @@ public class TransformConfiguration : IEntityTypeConfiguration<Transform>
         // Configure properties
         builder.Property(t => t.RequestHeader).IsRequired();
         builder.Property(t => t.Set).IsRequired();
-        
+
         //Soft Delete Query Filter
         builder.HasQueryFilter(q => !q.IsDeleted);
         builder.HasIndex(i => i.IsDeleted)

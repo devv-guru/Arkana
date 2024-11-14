@@ -1,4 +1,4 @@
-using Data.Entities;
+using Data.Entities.Proxy;
 using Data.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -11,7 +11,7 @@ public class MetadataConfiguration : IEntityTypeConfiguration<Metadata>
     public void Configure(EntityTypeBuilder<Metadata> builder)
     {
         builder.ToTable("Metadata");
-        
+
         // Primary Key
         builder.HasKey(m => m.Id);
 
@@ -29,7 +29,7 @@ public class MetadataConfiguration : IEntityTypeConfiguration<Metadata>
         builder.Property(m => m.Data)
             .HasConversion(converter)
             .Metadata.SetValueComparer(dictionaryComparer);
-        
+
         //Soft Delete Query Filter
         builder.HasQueryFilter(q => !q.IsDeleted);
         builder.HasIndex(i => i.IsDeleted)

@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Contexts.SqLite;
 
-public class SqLiteReadOnlyContext : ReadOnlyDataContext
+public class SqLiteReadOnlyContext : ReadOnlyProxyContext
 {
-    public SqLiteReadOnlyContext(DbContextOptions<SqLiteReadOnlyContext> options) 
+    public SqLiteReadOnlyContext(DbContextOptions<SqLiteReadOnlyContext> options)
         : base(options)
     {
     }

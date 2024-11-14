@@ -1,7 +1,7 @@
 ﻿using Data.Contexts.Base;
-using Data.Entities;
 using Shared.Certificates;
 using Microsoft.EntityFrameworkCore;
+using Data.Entities.Proxy;
 
 namespace Gateway.WebServer;
 
@@ -38,7 +38,7 @@ public class LoadStartup : IHostedService
     private async Task CreateDatabaseAsync(IServiceScope scope, CancellationToken ct)
     {
         _logger.LogInformation("Applying database migrations...");
-        var context = scope.ServiceProvider.GetRequiredService<IWriteOnlyContext>();
+        var context = scope.ServiceProvider.GetRequiredService<IWriteOnlyProxyContext>();
         await context.Database.MigrateAsync(ct);
         _logger.LogInformation("Database migrations applied successfully.");
     }
@@ -46,7 +46,7 @@ public class LoadStartup : IHostedService
     private async Task LoadDefaultsAsync(IServiceScope scope, CancellationToken ct)
     {
         _logger.LogInformation("Initializing gateway with saved hosts and certificates ...");
-        var readonlyContext = scope.ServiceProvider.GetRequiredService<IReadOnlyContext>();
+        var readonlyContext = scope.ServiceProvider.GetRequiredService<IReadOnlyProxyContext>();
 
         _logger.LogInformation("Checking for default certificate...");
         var certificate = await readonlyContext.Certificates
@@ -79,7 +79,7 @@ public class LoadStartup : IHostedService
     private async Task<Certificate> CreateDefaultCertificateAsync(IServiceScope scope, CancellationToken ct)
     {
         _logger.LogInformation("Creating default certificate...");
-        var writeContext = scope.ServiceProvider.GetRequiredService<IWriteOnlyContext>();
+        var writeContext = scope.ServiceProvider.GetRequiredService<IWriteOnlyProxyContext>();
 
         var certificate = new Certificate
         {
@@ -98,7 +98,7 @@ public class LoadStartup : IHostedService
         CancellationToken ct)
     {
         _logger.LogInformation("Creating default host...");
-        var writeContext = scope.ServiceProvider.GetRequiredService<IWriteOnlyContext>();
+        var writeContext = scope.ServiceProvider.GetRequiredService<IWriteOnlyProxyContext>();
 
         host = new WebHost
         {

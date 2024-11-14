@@ -1,4 +1,4 @@
-using Data.Entities;
+using Data.Entities.Proxy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -22,7 +22,7 @@ public class HealthCheckConfiguration : IEntityTypeConfiguration<HealthCheck>
             .WithOne(o => o.HealthCheckConfig)
             .HasForeignKey<PassiveHealthCheck>(f => f.HealthCheckConfigId)
             .IsRequired(false);
-        
+
         //Soft Delete Query Filter
         builder.HasQueryFilter(q => !q.IsDeleted);
         builder.HasIndex(i => i.IsDeleted)

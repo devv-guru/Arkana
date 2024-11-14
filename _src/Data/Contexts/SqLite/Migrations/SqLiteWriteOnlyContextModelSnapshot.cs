@@ -15,9 +15,9 @@ namespace Data.Contexts.SqLite.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
 
-            modelBuilder.Entity("Data.Entities.ActiveHealthCheck", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.ActiveHealthCheck", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,8 +35,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.Property<Guid>("HealthCheckConfigId")
                         .HasColumnType("TEXT");
 
-                    b.Property<TimeSpan?>("Interval")
-                        .IsRequired()
+                    b.Property<TimeSpan>("Interval")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
@@ -69,7 +68,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("ActiveHealthChecks", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.Certificate", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Certificate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -138,7 +137,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("Certificates", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.Cluster", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Cluster", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -174,7 +173,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("Clusters", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.Destination", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Destination", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -216,7 +215,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("Destinations", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.HeaderMatch", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.HeaderMatch", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -262,7 +261,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("HeaderMatches", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.HealthCheck", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.HealthCheck", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -294,7 +293,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("HealthChecks", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.HttpClientSettings", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.HttpClientSettings", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -345,7 +344,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("HttpClientSettings", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.HttpRequestSettings", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.HttpRequestSettings", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -390,7 +389,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("HttpRequestSettings", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.Match", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Match", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -402,14 +401,14 @@ namespace Data.Contexts.SqLite.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Hosts")
+                    b.PrimitiveCollection<string>("Hosts")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Methods")
+                    b.PrimitiveCollection<string>("Methods")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -434,7 +433,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("Matches", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.Metadata", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Metadata", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -473,7 +472,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("Metadata", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.PassiveHealthCheck", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.PassiveHealthCheck", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -515,7 +514,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("PassiveHealthChecks", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.QueryParameterMatch", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.QueryParameterMatch", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -561,7 +560,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("QueryParameterMatches", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.Route", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Route", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -609,7 +608,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("Routes", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.SessionAffinity", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.SessionAffinity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -655,7 +654,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("SessionAffinity", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.Transform", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Transform", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -694,7 +693,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("Transforms", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.WebHost", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.WebHost", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -741,29 +740,29 @@ namespace Data.Contexts.SqLite.Migrations
                     b.ToTable("WebHosts", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.ActiveHealthCheck", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.ActiveHealthCheck", b =>
                 {
-                    b.HasOne("Data.Entities.HealthCheck", "HealthCheckConfig")
+                    b.HasOne("Data.Entities.Proxy.HealthCheck", "HealthCheckConfig")
                         .WithOne("Active")
-                        .HasForeignKey("Data.Entities.ActiveHealthCheck", "HealthCheckConfigId");
+                        .HasForeignKey("Data.Entities.Proxy.ActiveHealthCheck", "HealthCheckConfigId");
 
                     b.Navigation("HealthCheckConfig");
                 });
 
-            modelBuilder.Entity("Data.Entities.Cluster", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Cluster", b =>
                 {
-                    b.HasOne("Data.Entities.WebHost", "Host")
+                    b.HasOne("Data.Entities.Proxy.WebHost", "Host")
                         .WithOne("Cluster")
-                        .HasForeignKey("Data.Entities.Cluster", "HostId")
+                        .HasForeignKey("Data.Entities.Proxy.Cluster", "HostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Host");
                 });
 
-            modelBuilder.Entity("Data.Entities.Destination", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Destination", b =>
                 {
-                    b.HasOne("Data.Entities.Cluster", "ClusterConfig")
+                    b.HasOne("Data.Entities.Proxy.Cluster", "ClusterConfig")
                         .WithMany("Destinations")
                         .HasForeignKey("ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -772,9 +771,9 @@ namespace Data.Contexts.SqLite.Migrations
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Data.Entities.HeaderMatch", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.HeaderMatch", b =>
                 {
-                    b.HasOne("Data.Entities.Match", "MatchConfig")
+                    b.HasOne("Data.Entities.Proxy.Match", "MatchConfig")
                         .WithMany("Headers")
                         .HasForeignKey("MatchConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -783,77 +782,77 @@ namespace Data.Contexts.SqLite.Migrations
                     b.Navigation("MatchConfig");
                 });
 
-            modelBuilder.Entity("Data.Entities.HealthCheck", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.HealthCheck", b =>
                 {
-                    b.HasOne("Data.Entities.Cluster", "ClusterConfig")
+                    b.HasOne("Data.Entities.Proxy.Cluster", "ClusterConfig")
                         .WithOne("HealthCheck")
-                        .HasForeignKey("Data.Entities.HealthCheck", "ClusterConfigId")
+                        .HasForeignKey("Data.Entities.Proxy.HealthCheck", "ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Data.Entities.HttpClientSettings", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.HttpClientSettings", b =>
                 {
-                    b.HasOne("Data.Entities.Cluster", "ClusterConfig")
+                    b.HasOne("Data.Entities.Proxy.Cluster", "ClusterConfig")
                         .WithOne("HttpClient")
-                        .HasForeignKey("Data.Entities.HttpClientSettings", "ClusterConfigId")
+                        .HasForeignKey("Data.Entities.Proxy.HttpClientSettings", "ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Data.Entities.HttpRequestSettings", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.HttpRequestSettings", b =>
                 {
-                    b.HasOne("Data.Entities.Cluster", "ClusterConfig")
+                    b.HasOne("Data.Entities.Proxy.Cluster", "ClusterConfig")
                         .WithOne("HttpRequest")
-                        .HasForeignKey("Data.Entities.HttpRequestSettings", "ClusterConfigId")
+                        .HasForeignKey("Data.Entities.Proxy.HttpRequestSettings", "ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Data.Entities.Match", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Match", b =>
                 {
-                    b.HasOne("Data.Entities.Route", "Route")
+                    b.HasOne("Data.Entities.Proxy.Route", "Route")
                         .WithOne("Match")
-                        .HasForeignKey("Data.Entities.Match", "RouteConfigId")
+                        .HasForeignKey("Data.Entities.Proxy.Match", "RouteConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Route");
                 });
 
-            modelBuilder.Entity("Data.Entities.Metadata", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Metadata", b =>
                 {
-                    b.HasOne("Data.Entities.Cluster", "Cluster")
+                    b.HasOne("Data.Entities.Proxy.Cluster", "Cluster")
                         .WithOne("Metadata")
-                        .HasForeignKey("Data.Entities.Metadata", "ClusterConfigId");
+                        .HasForeignKey("Data.Entities.Proxy.Metadata", "ClusterConfigId");
 
-                    b.HasOne("Data.Entities.Route", "Route")
+                    b.HasOne("Data.Entities.Proxy.Route", "Route")
                         .WithOne("Metadata")
-                        .HasForeignKey("Data.Entities.Metadata", "ClusterConfigId");
+                        .HasForeignKey("Data.Entities.Proxy.Metadata", "ClusterConfigId");
 
                     b.Navigation("Cluster");
 
                     b.Navigation("Route");
                 });
 
-            modelBuilder.Entity("Data.Entities.PassiveHealthCheck", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.PassiveHealthCheck", b =>
                 {
-                    b.HasOne("Data.Entities.HealthCheck", "HealthCheckConfig")
+                    b.HasOne("Data.Entities.Proxy.HealthCheck", "HealthCheckConfig")
                         .WithOne("Passive")
-                        .HasForeignKey("Data.Entities.PassiveHealthCheck", "HealthCheckConfigId");
+                        .HasForeignKey("Data.Entities.Proxy.PassiveHealthCheck", "HealthCheckConfigId");
 
                     b.Navigation("HealthCheckConfig");
                 });
 
-            modelBuilder.Entity("Data.Entities.QueryParameterMatch", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.QueryParameterMatch", b =>
                 {
-                    b.HasOne("Data.Entities.Match", "Match")
+                    b.HasOne("Data.Entities.Proxy.Match", "Match")
                         .WithMany("QueryParameters")
                         .HasForeignKey("MatchConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -862,9 +861,9 @@ namespace Data.Contexts.SqLite.Migrations
                     b.Navigation("Match");
                 });
 
-            modelBuilder.Entity("Data.Entities.Route", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Route", b =>
                 {
-                    b.HasOne("Data.Entities.WebHost", "Host")
+                    b.HasOne("Data.Entities.Proxy.WebHost", "Host")
                         .WithMany("Routes")
                         .HasForeignKey("HostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -873,20 +872,20 @@ namespace Data.Contexts.SqLite.Migrations
                     b.Navigation("Host");
                 });
 
-            modelBuilder.Entity("Data.Entities.SessionAffinity", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.SessionAffinity", b =>
                 {
-                    b.HasOne("Data.Entities.Cluster", "ClusterConfig")
+                    b.HasOne("Data.Entities.Proxy.Cluster", "ClusterConfig")
                         .WithOne("SessionAffinity")
-                        .HasForeignKey("Data.Entities.SessionAffinity", "ClusterConfigId")
+                        .HasForeignKey("Data.Entities.Proxy.SessionAffinity", "ClusterConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ClusterConfig");
                 });
 
-            modelBuilder.Entity("Data.Entities.Transform", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Transform", b =>
                 {
-                    b.HasOne("Data.Entities.Route", "RouteConfig")
+                    b.HasOne("Data.Entities.Proxy.Route", "RouteConfig")
                         .WithMany("Transforms")
                         .HasForeignKey("RouteConfigId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -895,9 +894,9 @@ namespace Data.Contexts.SqLite.Migrations
                     b.Navigation("RouteConfig");
                 });
 
-            modelBuilder.Entity("Data.Entities.WebHost", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.WebHost", b =>
                 {
-                    b.HasOne("Data.Entities.Certificate", "Certificate")
+                    b.HasOne("Data.Entities.Proxy.Certificate", "Certificate")
                         .WithMany("WebHosts")
                         .HasForeignKey("CertificateId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -906,12 +905,12 @@ namespace Data.Contexts.SqLite.Migrations
                     b.Navigation("Certificate");
                 });
 
-            modelBuilder.Entity("Data.Entities.Certificate", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Certificate", b =>
                 {
                     b.Navigation("WebHosts");
                 });
 
-            modelBuilder.Entity("Data.Entities.Cluster", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Cluster", b =>
                 {
                     b.Navigation("Destinations");
 
@@ -926,21 +925,21 @@ namespace Data.Contexts.SqLite.Migrations
                     b.Navigation("SessionAffinity");
                 });
 
-            modelBuilder.Entity("Data.Entities.HealthCheck", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.HealthCheck", b =>
                 {
                     b.Navigation("Active");
 
                     b.Navigation("Passive");
                 });
 
-            modelBuilder.Entity("Data.Entities.Match", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Match", b =>
                 {
                     b.Navigation("Headers");
 
                     b.Navigation("QueryParameters");
                 });
 
-            modelBuilder.Entity("Data.Entities.Route", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.Route", b =>
                 {
                     b.Navigation("Match");
 
@@ -949,7 +948,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.Navigation("Transforms");
                 });
 
-            modelBuilder.Entity("Data.Entities.WebHost", b =>
+            modelBuilder.Entity("Data.Entities.Proxy.WebHost", b =>
                 {
                     b.Navigation("Cluster");
 

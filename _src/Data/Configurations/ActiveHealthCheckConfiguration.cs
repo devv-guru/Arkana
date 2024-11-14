@@ -1,4 +1,4 @@
-using Data.Entities;
+using Data.Entities.Proxy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

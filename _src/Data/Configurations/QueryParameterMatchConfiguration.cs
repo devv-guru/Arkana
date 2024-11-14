@@ -1,4 +1,4 @@
-using Data.Entities;
+using Data.Entities.Proxy;
 using Data.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -29,7 +29,7 @@ public class QueryParameterMatchConfiguration : IEntityTypeConfiguration<QueryPa
         builder.Property(q => q.Values)
             .HasConversion(converter)
             .Metadata.SetValueComparer(stringCollectionComparer);
-        
+
         //Soft Delete Query Filter
         builder.HasQueryFilter(q => !q.IsDeleted);
         builder.HasIndex(i => i.IsDeleted)

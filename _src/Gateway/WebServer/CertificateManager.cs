@@ -6,7 +6,7 @@ using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
-using Data.Entities;
+using Data.Entities.Proxy;
 using Shared.Certificates;
 
 namespace Gateway.WebServer;
