@@ -1,13 +1,13 @@
-using System.Globalization;
 using Data;
-using Gateway.Data;
-using Gateway.Proxy;
+using Domain.Options;
+using Gateway.Configuration;
 using Gateway.FastEndpoints;
 using Gateway.Logging;
-using Gateway.Configuration;
 using Gateway.WebServer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
+using Proxy;
+using System.Globalization;
 
 namespace Gateway;
 
@@ -23,7 +23,8 @@ public class Program
 
         // Clear the default configuration sources
         builder.Configuration.Sources.Clear();
-        builder.Configuration.SetBasePath(Environment.GetEnvironmentVariable("CONFIG_PATH"))
+        string configPath = Environment.GetEnvironmentVariable("CONFIG_PATH") ?? "/etc/app-config";
+        builder.Configuration.SetBasePath(configPath)
             .AddJsonFile("appsettings.json", false, true)
             .AddEnvironmentVariables();
 
@@ -33,7 +34,7 @@ public class Program
         {
             config.CertificatePath = configuration["CERT_PATH"] ?? "/etc/app/certs";
             config.LogsPath = configuration["LOG_PATH"] ?? "/var/log/app";
-            config.ConfigPath = configuration["CONFIG_PATH"] ?? "/etc/app-config";
+            config.ConfigPath = configPath;
             config.StaticFilesPath = configuration["STATIC_CONTENT_PATH"] ?? "/var/www/app/static";
             config.DataPath = configuration["DATA_PATH"] ?? "/var/lib/app/data";
         });
@@ -52,12 +53,18 @@ public class Program
         builder.Services.AddMediator();
         builder.Services.AddHostedService<LoadStartup>();
 
+        builder.Services.AddHealthChecks();
+
         var app = builder.Build();
 
         var envOptions = app.Services.GetRequiredService<IOptions<EnvironmentOptions>>().Value;
 
         app.UseWhen(context => !IsStaticFileRequest(context), appBuilder => { appBuilder.UseHttpsRedirection(); });
         app.UseAuthorization();
+
+        app.MapHealthChecks("/gateway/health")
+            .AllowAnonymous();
+
         // Serve static files from the path
         app.UseStaticFiles(new StaticFileOptions
         {

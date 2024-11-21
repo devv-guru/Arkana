@@ -1,6 +1,6 @@
-﻿using System.Text.Json;
-using FastEndpoints;
+﻿using FastEndpoints;
 using FastEndpoints.Swagger;
+using System.Text.Json;
 
 namespace Gateway.FastEndpoints;
 

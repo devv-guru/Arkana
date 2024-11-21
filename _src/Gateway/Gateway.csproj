@@ -2,11 +2,14 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
+		<OutputType>Exe</OutputType>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>false</InvariantGlobalization>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <UserSecretsId>d6ccf7e3-de3a-40fd-8fd5-418e37416fae</UserSecretsId>
+        <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
+        <DockerfileContext>..\..</DockerfileContext>
     </PropertyGroup>
 
     <ItemGroup>
@@ -52,6 +55,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Data\Data.csproj" />
         <ProjectReference Include="..\Endpoints\Endpoints.csproj" />
+        <ProjectReference Include="..\Proxy\Proxy.csproj" />
         <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 

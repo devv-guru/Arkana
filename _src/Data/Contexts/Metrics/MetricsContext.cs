@@ -1,5 +1,6 @@
 ﻿using Data.Common;
 using Data.Entities.Metric;
+using Domain.Options;
 using LiteDB;
 
 namespace Data.Contexts.Metrics;
@@ -8,13 +9,13 @@ public class MetricsContext : IDisposable
 {
     private readonly LiteDatabase _database;
 
-    public MetricsContext(DataContextOptions options, bool readOnly = true)
+    public MetricsContext(EnvironmentOptions environmentOptions, DataContextOptions contextOptions, bool readOnly = true)
     {
         var connection = new ConnectionString
         {
             Connection = ConnectionType.Shared,
-            Filename = options.ConfigurationConnectionString,
-            Password = options.DatabasePassword,
+            Filename = Path.Combine(environmentOptions.DataPath, "metric"),
+            Password = contextOptions.DatabasePassword,
             ReadOnly = readOnly,
         };
 

@@ -1,13 +1,15 @@
 ﻿using Data.Common;
 using Data.Entities.Metric;
+using Domain.Options;
 using LiteDB;
+using Microsoft.Extensions.Options;
 
 namespace Data.Contexts.Metrics
 {
     public sealed class ReadOnlyMetricsContext : MetricsContext, IReadOnlyMetricsContext
     {
-        public ReadOnlyMetricsContext(DataContextOptions options)
-           : base(options)
+        public ReadOnlyMetricsContext(IOptions<EnvironmentOptions> environmentOptions, IOptions<DataContextOptions> contextOptions)
+            : base(environmentOptions.Value, contextOptions.Value)
         {
 
         }
