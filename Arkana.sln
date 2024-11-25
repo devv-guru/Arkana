@@ -1,0 +1,88 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35514.174
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway", "_src\Gateway\Gateway.csproj", "{4503BFF3-FD54-44F3-AC8A-603DADE31777}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "_src\Data\Data.csproj", "{A0B27F18-AA6D-403A-9A0F-55F67A4E2488}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "_src\Shared\Shared.csproj", "{392D6F1A-8C61-4FC5-B285-42110F6402F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Endpoints", "_src\Endpoints\Endpoints.csproj", "{179E8D20-1103-49F8-B738-6273577077C4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_src", "_src", "{83FB2772-4182-4869-A36E-AA16D5FC6700}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_aspire", "_aspire", "{458F295F-1A08-40E3-AB19-669CD06E2DDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireApp1.AppHost", "_aspire\AspireApp1.AppHost\AspireApp1.AppHost.csproj", "{10004B3F-F54E-447E-907B-CBCC8DC6B464}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireApp1.ServiceDefaults", "_aspire\AspireApp1.ServiceDefaults\AspireApp1.ServiceDefaults.csproj", "{ACB306BF-1E17-46C2-A739-EB48601C66A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireApp1.ApiService", "_aspire\AspireApp1.ApiService\AspireApp1.ApiService.csproj", "{9EE34B1F-7137-4E63-A95A-2E7821C82C53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireApp1.Web", "_aspire\AspireApp1.Web\AspireApp1.Web.csproj", "{CC129EF0-BC20-482A-A3AD-358AA2899E54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireApp1.Tests", "_aspire\AspireApp1.Tests\AspireApp1.Tests.csproj", "{BF4FECE9-A15A-4F7A-A01F-6E52D0A65578}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4503BFF3-FD54-44F3-AC8A-603DADE31777}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4503BFF3-FD54-44F3-AC8A-603DADE31777}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4503BFF3-FD54-44F3-AC8A-603DADE31777}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4503BFF3-FD54-44F3-AC8A-603DADE31777}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0B27F18-AA6D-403A-9A0F-55F67A4E2488}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0B27F18-AA6D-403A-9A0F-55F67A4E2488}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0B27F18-AA6D-403A-9A0F-55F67A4E2488}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0B27F18-AA6D-403A-9A0F-55F67A4E2488}.Release|Any CPU.Build.0 = Release|Any CPU
+		{392D6F1A-8C61-4FC5-B285-42110F6402F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{392D6F1A-8C61-4FC5-B285-42110F6402F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{392D6F1A-8C61-4FC5-B285-42110F6402F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{392D6F1A-8C61-4FC5-B285-42110F6402F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{179E8D20-1103-49F8-B738-6273577077C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{179E8D20-1103-49F8-B738-6273577077C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{179E8D20-1103-49F8-B738-6273577077C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{179E8D20-1103-49F8-B738-6273577077C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10004B3F-F54E-447E-907B-CBCC8DC6B464}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10004B3F-F54E-447E-907B-CBCC8DC6B464}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10004B3F-F54E-447E-907B-CBCC8DC6B464}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10004B3F-F54E-447E-907B-CBCC8DC6B464}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACB306BF-1E17-46C2-A739-EB48601C66A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACB306BF-1E17-46C2-A739-EB48601C66A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACB306BF-1E17-46C2-A739-EB48601C66A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACB306BF-1E17-46C2-A739-EB48601C66A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EE34B1F-7137-4E63-A95A-2E7821C82C53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EE34B1F-7137-4E63-A95A-2E7821C82C53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EE34B1F-7137-4E63-A95A-2E7821C82C53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EE34B1F-7137-4E63-A95A-2E7821C82C53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC129EF0-BC20-482A-A3AD-358AA2899E54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC129EF0-BC20-482A-A3AD-358AA2899E54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC129EF0-BC20-482A-A3AD-358AA2899E54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC129EF0-BC20-482A-A3AD-358AA2899E54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF4FECE9-A15A-4F7A-A01F-6E52D0A65578}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF4FECE9-A15A-4F7A-A01F-6E52D0A65578}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF4FECE9-A15A-4F7A-A01F-6E52D0A65578}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF4FECE9-A15A-4F7A-A01F-6E52D0A65578}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4503BFF3-FD54-44F3-AC8A-603DADE31777} = {83FB2772-4182-4869-A36E-AA16D5FC6700}
+		{A0B27F18-AA6D-403A-9A0F-55F67A4E2488} = {83FB2772-4182-4869-A36E-AA16D5FC6700}
+		{392D6F1A-8C61-4FC5-B285-42110F6402F3} = {83FB2772-4182-4869-A36E-AA16D5FC6700}
+		{179E8D20-1103-49F8-B738-6273577077C4} = {83FB2772-4182-4869-A36E-AA16D5FC6700}
+		{10004B3F-F54E-447E-907B-CBCC8DC6B464} = {458F295F-1A08-40E3-AB19-669CD06E2DDB}
+		{ACB306BF-1E17-46C2-A739-EB48601C66A4} = {458F295F-1A08-40E3-AB19-669CD06E2DDB}
+		{9EE34B1F-7137-4E63-A95A-2E7821C82C53} = {458F295F-1A08-40E3-AB19-669CD06E2DDB}
+		{CC129EF0-BC20-482A-A3AD-358AA2899E54} = {458F295F-1A08-40E3-AB19-669CD06E2DDB}
+		{BF4FECE9-A15A-4F7A-A01F-6E52D0A65578} = {458F295F-1A08-40E3-AB19-669CD06E2DDB}
+	EndGlobalSection
+	GlobalSection(RiderSharedRunConfigurations) = postSolution
+		File = _src\Gateway\Gateway_Dockerfile.run.xml
+	EndGlobalSection
+EndGlobal
