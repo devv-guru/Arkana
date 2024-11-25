@@ -1,0 +1,329 @@
+﻿@page "/"
+@using System.Globalization
+@using Microsoft.FluentUI.AspNetCore.Components.Extensions
+@using Ui.Helpers
+@using Orientation = Microsoft.FluentUI.AspNetCore.Components.Orientation
+
+<FluentLabel Typo="Typography.PageTitle" Alignment="HorizontalAlignment.Center">Summary</FluentLabel>
+
+<FluentDivider Style="width: 100%; margin-bottom: 10px;margin-top: 10px;" Orientation=Orientation.Horizontal Role="DividerRole.Separator"></FluentDivider>
+
+<FluentStack VerticalAlignment="VerticalAlignment.Center"
+             HorizontalAlignment="HorizontalAlignment.Center">
+    <!-- Total Hosts -->
+    <FluentStack HorizontalAlignment="HorizontalAlignment.Center"
+                 VerticalAlignment="VerticalAlignment.Center"
+                 Class="metric-stack" Orientation="Orientation.Vertical">
+        <FluentLabel Typo="Typography.Subject">Total Hosts</FluentLabel>
+        <FluentLabel Typo="Typography.H2">25</FluentLabel>
+    </FluentStack>
+
+    <!-- Active Hosts -->
+    <FluentStack HorizontalAlignment="HorizontalAlignment.Center"
+                 VerticalAlignment="VerticalAlignment.Center"
+                 Class="metric-stack" Orientation="Orientation.Vertical">
+        <FluentLabel Typo="Typography.Subject">Active Hosts</FluentLabel>
+        <FluentLabel Typo="Typography.H2">20</FluentLabel>
+    </FluentStack>
+
+    <!-- Inactive Hosts -->
+    <FluentStack HorizontalAlignment="HorizontalAlignment.Center"
+                 VerticalAlignment="VerticalAlignment.Center"
+                 Class="metric-stack" Orientation="Orientation.Vertical">
+        <FluentLabel Typo="Typography.Subject">Inactive Hosts</FluentLabel>
+        <FluentLabel Typo="Typography.H2">5</FluentLabel>
+    </FluentStack>
+
+    <!-- Certificates -->
+    <FluentStack HorizontalAlignment="HorizontalAlignment.Center"
+                 VerticalAlignment="VerticalAlignment.Center"
+                 Class="metric-stack" Orientation="Orientation.Vertical">
+        <FluentLabel Typo="Typography.Subject">Certificates</FluentLabel>
+        <FluentLabel Typo="Typography.H2">8</FluentLabel>
+    </FluentStack>
+
+</FluentStack>
+
+<FluentStack VerticalAlignment="VerticalAlignment.Center"
+             HorizontalAlignment="HorizontalAlignment.Center"
+             Wrap="true" Class="metric-stack">
+
+    <FluentDatePicker Value="@FromDate.ToDateTime()" ValueChanged="@(e => FromDate = e.ToDateOnly())"/>
+    <FluentTimePicker Value="@FromTime.ToDateTime()" ValueChanged="@(e => FromTime = e.ToTimeOnly())"/>
+
+    <FluentSelect Value="@rangeType" TOption="string" ValueChanged="OnRangeTypeChanged">
+        <FluentOption Value="minutes">Minutes</FluentOption>
+        <FluentOption Value="hours">Hours</FluentOption>
+        <FluentOption Value="days">Days</FluentOption>
+        <FluentOption Value="weeks">Weeks</FluentOption>
+        <FluentOption Value="months">Months</FluentOption>
+    </FluentSelect>
+    <!-- Slider for Range -->
+    <FluentSlider Min="1" Max="100" TValue="int" Value="@rangeValue" ValueChanged="OnRangeValueChanged"/>
+    <FluentLabel Typo="Typography.Body">Range: @rangeValue @rangeType</FluentLabel>
+
+    <!-- Apply Filters Button -->
+    <FluentButton OnClick="FilterData">Apply Filters</FluentButton>
+</FluentStack>
+
+<div class="chart-container">
+    <div class="chart-item">
+        <ApexChart Title="Requests"
+                   Options="@requestChartOptions"
+                   Width="@("100%")"
+                   Height="250"
+                   XAxisType="XAxisType.Datetime"
+                   @ref=requestChart>
+            <ApexPointSeries Name="All"
+                             TItem="TrafficData"
+                             Items="filteredTrafficData"
+                             SeriesType="SeriesType.Area"
+                             XValue="e => e.Time"
+                             YValue="e => e.SuccessfulRequests + e.FailedRequests"
+                             OrderByDescending="e => e.X"
+                             Stroke="@(new SeriesStroke { Width = 2, Color = "var(--accent-fill-rest)" })"/>
+
+            <ApexPointSeries Name="Successful"
+                             TItem="TrafficData"
+                             Items="filteredTrafficData"
+                             SeriesType="SeriesType.Area"
+                             XValue="e => e.Time"
+                             YValue="e => e.SuccessfulRequests"
+                             OrderByDescending="e => e.X"
+                             Stroke="@(new SeriesStroke { Width = 2, Color = "#7DDA58" })"/>
+
+            <!-- Failed Requests Series -->
+            <ApexPointSeries Name="Failed"
+                             TItem="TrafficData"
+                             Items="filteredTrafficData"
+                             SeriesType="SeriesType.Area"
+                             XValue="e => e.Time"
+                             YValue="e => e.FailedRequests"
+                             OrderByDescending="e => e.X"
+                             Stroke="@(new SeriesStroke { Width = 2, Color = "#D20103" })"/>
+        </ApexChart>
+    </div>
+    <div class="chart-item">
+        <ApexChart Title="Error Rate"
+                   Options="@errorRateChartOptions"
+                   Width="@("100%")"
+                   Height="250"
+                   XAxisType="XAxisType.Datetime"
+                   @ref=errorRateChart>
+            <ApexPointSeries Name="Error Rate"
+                             TItem="TrafficData"
+                             Items="filteredTrafficData"
+                             SeriesType="SeriesType.Line"
+                             XValue="e => e.Time"
+                             YValue="e => e.ErrorRate"
+                             Stroke="@(new SeriesStroke { Width = 2, Color = "#FF4560" })"/>
+        </ApexChart>
+    </div>
+    <div class="chart-item">
+        <ApexChart Title="Load Distribution Across Hosts"
+                   Options="@loadDistributionChartOptions"
+                   Width="@("100%")"
+                   Height="250"
+                   XAxisType="XAxisType.Datetime"
+                   @ref=loadDistributionChart>
+            @foreach (var host in Hosts)
+            {
+                <ApexPointSeries Name="@host"
+                                 TItem="TrafficData"
+                                 Items="filteredTrafficData"
+                                 SeriesType="SeriesType.Bar"
+                                 XValue="e => e.Time"
+                                 YValue="e => e.HostLoads[host]"/>
+            }
+        </ApexChart>
+    </div>
+</div>
+
+@code {
+
+    private ApexChart<TrafficData>? requestChart;
+    private ApexChartOptions<TrafficData> requestChartOptions;
+    private ApexChart<TrafficData>? errorRateChart;
+    private ApexChartOptions<TrafficData> errorRateChartOptions;
+    private ApexChart<TrafficData>? loadDistributionChart;
+    private ApexChartOptions<TrafficData> loadDistributionChartOptions;
+
+    private List<TrafficData> trafficData = new List<TrafficData>();
+    private List<TrafficData> filteredTrafficData = new List<TrafficData>();
+    private string[] Hosts = new string[] { "Host A", "Host B", "Host C" };
+
+    private DateOnly? FromDate = DateOnly.FromDateTime(DateTime.Now);
+    private TimeOnly? FromTime = TimeOnly.FromDateTime(DateTime.Now);
+
+    private string rangeType = "hours"; // Default range type
+    private int rangeValue = 1; // Default slider value
+
+    protected override async Task OnInitializedAsync()
+    {
+        var random = new Random();
+        for (var i = 0; i < 10000; i++)
+        {
+            var tempData = new TrafficData
+            {
+                Time = DateTime.Now.AddMinutes(-i),
+                SuccessfulRequests = random.Next(100, 1000),
+                FailedRequests = random.Next(0, 1000),
+                ResponseTime = random.Next(100, 1000),
+                ErrorRate = random.Next(0, 100),
+                HostLoads = new Dictionary<string, int>()
+            };
+
+            foreach (var host in Hosts)
+            {
+                tempData.HostLoads.Add(host, random.Next(0, 100));
+            }
+
+            trafficData.Add(tempData);
+        }
+
+        requestChartOptions = new ApexChartOptions<TrafficData>
+        {
+            Theme = new Theme
+            {
+                Mode = Mode.Dark,
+                Palette = PaletteType.Palette10
+            },
+            Chart = new Chart
+            {
+                Toolbar = new ApexCharts.Toolbar
+                {
+                    Tools = new Tools { Zoomin = false, Zoomout = false, }
+                }
+            },
+            Tooltip = new ApexCharts.Tooltip { X = new TooltipX { Format = @"dd/mm/yy hh:mm" } }
+        };
+
+        errorRateChartOptions = new ApexChartOptions<TrafficData>
+        {
+            Theme = new Theme
+            {
+                Mode = Mode.Dark,
+                Palette = PaletteType.Palette10
+            },
+            Chart = new Chart
+            {
+                Toolbar = new ApexCharts.Toolbar
+                {
+                    Tools = new Tools { Zoomin = false, Zoomout = false, }
+                }
+            },
+            Tooltip = new ApexCharts.Tooltip { X = new TooltipX { Format = @"dd/mm/yy hh:mm" } }
+        };
+
+        loadDistributionChartOptions = new ApexChartOptions<TrafficData>
+        {
+            Theme = new Theme
+            {
+                Mode = Mode.Dark,
+                Palette = PaletteType.Palette10
+            },
+            Chart = new Chart
+            {
+                Toolbar = new ApexCharts.Toolbar
+                {
+                    Tools = new Tools { Zoomin = false, Zoomout = false, }
+                }
+            },
+            Tooltip = new ApexCharts.Tooltip { X = new TooltipX { Format = @"dd/mm/yy hh:mm" } }
+        };
+
+        // Initialize the filter to default range
+        await ApplyFilters();
+    }
+
+    public class TrafficData
+    {
+        public DateTime Time { get; set; }
+        public int SuccessfulRequests { get; set; }
+        public int FailedRequests { get; set; }
+        public int ResponseTime { get; set; }
+        public int ErrorRate { get; set; }
+        public Dictionary<string, int> HostLoads { get; set; }
+    }
+
+    // Handle Range Type Change
+    private void OnRangeTypeChanged(string? obj)
+    {
+        rangeType = obj;
+        UpdateSliderRange(); // Update the slider range based on type
+    }
+
+    // Handle Slider Value Change
+    private void OnRangeValueChanged(int obj)
+    {
+        rangeValue = obj;
+    }
+
+    private void UpdateSliderRange()
+    {
+        switch (rangeType)
+        {
+            case "minutes":
+                rangeValue = 60; // Set default to 60 minutes
+                break;
+            case "hours":
+                rangeValue = 24; // Set default to 24 hours
+                break;
+            case "days":
+                rangeValue = 30; // Set default to 30 days
+                break;
+            case "weeks":
+                rangeValue = 52; // Set default to 52 weeks
+                break;
+            case "months":
+                rangeValue = 12; // Set default to 12 months
+                break;
+        }
+    }
+
+    private async Task ApplyFilters()
+    {
+        var startDate = FromDate?.ToDateTime().Add(FromTime?.ToTimeSpan() ?? TimeSpan.Zero);
+        if (startDate != null)
+        {
+            DateTime endDate = startDate.Value;
+            DateTime filterEndDate = startDate.Value;
+
+            // Calculate end date based on selected range
+            switch (rangeType)
+            {
+                case "minutes":
+                    filterEndDate = endDate.AddMinutes(-rangeValue);
+                    break;
+                case "hours":
+                    filterEndDate = endDate.AddHours(-rangeValue);
+                    break;
+                case "days":
+                    filterEndDate = endDate.AddDays(-rangeValue);
+                    break;
+                case "weeks":
+                    filterEndDate = endDate.AddDays(-rangeValue * 7);
+                    break;
+                case "months":
+                    filterEndDate = endDate.AddMonths(-rangeValue);
+                    break;
+            }
+
+            // Filter the data based on calculated range
+            filteredTrafficData = trafficData
+                .Where(d => d.Time >= filterEndDate && d.Time <= startDate)
+                .GroupByDataByRange(rangeType) // Group data by range (smart grouping)
+                .ToList();
+        }
+    }
+
+    private async Task FilterData()
+    {
+        await ApplyFilters();
+
+        await requestChart?.UpdateSeriesAsync(true);
+        await errorRateChart?.UpdateSeriesAsync(true);
+        await loadDistributionChart?.UpdateSeriesAsync(true);
+    }
+
+}
