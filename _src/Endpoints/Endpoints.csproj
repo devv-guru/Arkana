@@ -7,17 +7,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FastEndpoints" Version="5.31.0" />
-        <PackageReference Include="FastEndpoints.Swagger" Version="5.31.0" />
+        <PackageReference Include="FastEndpoints" Version="5.30.0" />
+        <PackageReference Include="FastEndpoints.Swagger" Version="5.30.0" />
         <PackageReference Include="Mediator.SourceGenerator" Version="2.1.7">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Mediator.Abstractions" Version="2.1.7" />
+        <PackageReference Include="Mediator.Abstractions" Version="2.1.7"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Hosts\" />
+        <Folder Include="Hosts\"/>
     </ItemGroup>
 
     <ItemGroup>

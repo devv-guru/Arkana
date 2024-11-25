@@ -7,9 +7,9 @@ namespace Endpoints.Certificates.Find;
 
 public class QueryHandler : IQueryHandler<Request, PagedResult<Response, Response[]>>
 {
-    private readonly IReadOnlyProxyContext _context;
+    private readonly IReadOnlyContext _context;
 
-    public QueryHandler(IReadOnlyProxyContext context)
+    public QueryHandler(IReadOnlyContext context)
     {
         _context = context;
     }

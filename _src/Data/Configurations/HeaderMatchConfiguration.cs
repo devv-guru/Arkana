@@ -1,4 +1,4 @@
-using Data.Entities.Proxy;
+using Data.Entities;
 using Data.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -11,7 +11,7 @@ public class HeaderMatchConfiguration : IEntityTypeConfiguration<HeaderMatch>
     public void Configure(EntityTypeBuilder<HeaderMatch> builder)
     {
         builder.ToTable("HeaderMatches");
-
+        
         // Primary Key
         builder.HasKey(h => h.Id);
 
@@ -30,7 +30,7 @@ public class HeaderMatchConfiguration : IEntityTypeConfiguration<HeaderMatch>
         builder.Property(h => h.Values)
             .HasConversion(converter)
             .Metadata.SetValueComparer(stringCollectionComparer);
-
+        
         //Soft Delete Query Filter
         builder.HasQueryFilter(q => !q.IsDeleted);
         builder.HasIndex(i => i.IsDeleted)

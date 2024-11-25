@@ -1,4 +1,4 @@
-using Data.Entities.Proxy;
+using Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -28,7 +28,7 @@ public class RouteConfiguration : IEntityTypeConfiguration<Route>
             .HasMaxLength(100);
         builder.Property(r => r.CorsPolicy)
             .HasMaxLength(100);
-
+        
         //Soft Delete Query Filter
         builder.HasQueryFilter(q => !q.IsDeleted);
         builder.HasIndex(i => i.IsDeleted)

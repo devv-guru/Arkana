@@ -1,4 +1,4 @@
-using Data.Entities.Proxy;
+using Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,7 +14,7 @@ public class PassiveHealthCheckConfiguration : IEntityTypeConfiguration<PassiveH
         // Configure properties
         builder.Property(p => p.Enabled).IsRequired();
         builder.Property(p => p.Policy).IsRequired();
-
+        
         //Soft Delete Query Filter
         builder.HasQueryFilter(q => !q.IsDeleted);
         builder.HasIndex(i => i.IsDeleted)

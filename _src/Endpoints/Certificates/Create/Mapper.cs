@@ -1,4 +1,4 @@
-﻿using Data.Entities.Proxy;
+﻿using Data.Entities;
 using Shared.Certificates;
 
 namespace Endpoints.Certificates.Create;

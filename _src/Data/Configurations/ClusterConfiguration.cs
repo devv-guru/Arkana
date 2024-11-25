@@ -1,4 +1,4 @@
-using Data.Entities.Proxy;
+using Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -28,7 +28,7 @@ public class ClusterConfiguration : IEntityTypeConfiguration<Cluster>
         // Configure properties
         builder.Property(c => c.LoadBalancingPolicy)
             .IsRequired();
-
+        
         //Soft Delete Query Filter
         builder.HasQueryFilter(q => !q.IsDeleted);
         builder.HasIndex(i => i.IsDeleted)

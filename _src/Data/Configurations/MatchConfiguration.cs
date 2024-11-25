@@ -1,4 +1,4 @@
-using Data.Entities.Proxy;
+using Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,7 +9,7 @@ public class MatchConfiguration : IEntityTypeConfiguration<Match>
     public void Configure(EntityTypeBuilder<Match> builder)
     {
         builder.ToTable("Matches");
-
+        
         builder.HasKey(m => m.Id);
 
         builder.HasMany(m => m.Headers)
@@ -21,7 +21,7 @@ public class MatchConfiguration : IEntityTypeConfiguration<Match>
             .HasForeignKey(q => q.MatchConfigId);
 
         builder.Property(m => m.Path).IsRequired();
-
+        
         //Soft Delete Query Filter
         builder.HasQueryFilter(q => !q.IsDeleted);
         builder.HasIndex(i => i.IsDeleted)

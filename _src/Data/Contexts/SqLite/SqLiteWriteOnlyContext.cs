@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Contexts.SqLite;
 
-public class SqLiteWriteOnlyContext : WriteOnlyProxyContext
+public class SqLiteWriteOnlyContext : WriteOnlyDataContext
 {
-    public SqLiteWriteOnlyContext(DbContextOptions<SqLiteWriteOnlyContext> options)
+    public SqLiteWriteOnlyContext(DbContextOptions<SqLiteWriteOnlyContext> options) 
         : base(options)
     {
     }

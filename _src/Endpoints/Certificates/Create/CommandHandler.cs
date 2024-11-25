@@ -5,9 +5,9 @@ namespace Endpoints.Certificates.Create;
 
 public class CommandHandler : ICommandHandler<Request, Response>
 {
-    private readonly IWriteOnlyProxyContext _context;
+    private readonly IWriteOnlyContext _context;
 
-    public CommandHandler(IWriteOnlyProxyContext context)
+    public CommandHandler(IWriteOnlyContext context)
     {
         _context = context;
     }

@@ -1,0 +1,50 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="true" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+    <deployment type="dockerfile">
+      <settings>
+        <option name="imageTag" value="dev" />
+        <option name="containerName" value="Gateway" />
+        <option name="contextFolderPath" value="_src" />
+        <option name="envVars">
+          <list>
+            <DockerEnvVarImpl>
+              <option name="name" value="CERT_PATH" />
+              <option name="value" value="/etc/app/certs" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="CONFIG_PATH" />
+              <option name="value" value="/etc/app-config" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="DATA_PATH" />
+              <option name="value" value="/var/lib/app/data" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="LOG_PATH" />
+              <option name="value" value="/var/log/app" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="STATIC_CONTENT_PATH" />
+              <option name="value" value="/var/www/app/static" />
+            </DockerEnvVarImpl>
+          </list>
+        </option>
+        <option name="portBindings">
+          <list>
+            <DockerPortBindingImpl>
+              <option name="containerPort" value="8080" />
+              <option name="hostPort" value="8080" />
+            </DockerPortBindingImpl>
+            <DockerPortBindingImpl>
+              <option name="containerPort" value="8081" />
+              <option name="hostPort" value="8081" />
+            </DockerPortBindingImpl>
+          </list>
+        </option>
+        <option name="sourceFilePath" value="_src/Gateway/Dockerfile" />
+      </settings>
+    </deployment>
+    <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="false" isSslEnabled="false" />
+    <method v="2" />
+  </configuration>
+</component>

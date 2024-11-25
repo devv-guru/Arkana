@@ -1,4 +1,4 @@
-using Data.Entities.Proxy;
+using Data.Entities;
 using Data.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -35,7 +35,7 @@ public class CertificateConfiguration : IEntityTypeConfiguration<Certificate>
         builder.Property(c => c.SubjectAlternativeNames).HasMaxLength(1000)
             .HasConversion(converter)
             .Metadata.SetValueComparer(stringCollectionComparer);
-
+        
         //Soft Delete Query Filter
         builder.HasQueryFilter(q => !q.IsDeleted);
         builder.HasIndex(i => i.IsDeleted)

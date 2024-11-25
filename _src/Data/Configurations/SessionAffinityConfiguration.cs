@@ -1,4 +1,4 @@
-using Data.Entities.Proxy;
+using Data.Entities;
 using Data.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -30,7 +30,7 @@ public class SessionAffinityConfiguration : IEntityTypeConfiguration<SessionAffi
         builder.Property(s => s.Settings)
             .HasConversion(converter)
             .Metadata.SetValueComparer(dictionaryComparer);
-
+        
         //Soft Delete Query Filter
         builder.HasQueryFilter(q => !q.IsDeleted);
         builder.HasIndex(i => i.IsDeleted)

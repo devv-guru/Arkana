@@ -1,4 +1,4 @@
-using Data.Entities.Proxy;
+using Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,11 +11,11 @@ public class HttpClientSettingsConfiguration : IEntityTypeConfiguration<HttpClie
         builder.ToTable("HttpClientSettings");
         // Primary Key
         builder.HasKey(h => h.Id);
-
+        
         // Configure properties
         builder.Property(h => h.SslProtocols).IsRequired();
         builder.Property(h => h.MaxConnectionsPerServer).IsRequired();
-
+        
         //Soft Delete Query Filter
         builder.HasQueryFilter(q => !q.IsDeleted);
         builder.HasIndex(i => i.IsDeleted)

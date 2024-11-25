@@ -1,4 +1,4 @@
-﻿using Data.Entities.Proxy;
+﻿using Data.Entities;
 
 namespace Endpoints.Certificates.Get;
 

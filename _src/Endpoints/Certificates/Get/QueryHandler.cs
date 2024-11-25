@@ -6,9 +6,9 @@ namespace Endpoints.Certificates.Get;
 
 public class QueryHandler : IQueryHandler<Request, Response?>
 {
-    private readonly IReadOnlyProxyContext _context;
+    private readonly IReadOnlyContext _context;
 
-    public QueryHandler(IReadOnlyProxyContext context)
+    public QueryHandler(IReadOnlyContext context)
     {
         _context = context;
     }
