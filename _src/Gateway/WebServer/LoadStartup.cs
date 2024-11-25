@@ -1,7 +1,7 @@
 ﻿using Data.Contexts.Base;
-using Data.Entities.Proxy;
-using Microsoft.EntityFrameworkCore;
 using Shared.Certificates;
+using Microsoft.EntityFrameworkCore;
+using Data.Entities.Proxy;
 
 namespace Gateway.WebServer;
 

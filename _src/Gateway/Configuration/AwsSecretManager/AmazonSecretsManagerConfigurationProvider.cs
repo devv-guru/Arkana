@@ -1,7 +1,7 @@
-﻿using Amazon;
+﻿using System.Text.Json;
+using Amazon;
 using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
-using System.Text.Json;
 
 namespace Gateway.Configuration.AwsSecretManager;
 

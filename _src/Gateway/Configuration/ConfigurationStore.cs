@@ -1,6 +1,6 @@
 ﻿namespace Gateway.Configuration;
 
-public class ConfigurationStoreOptions
+public class ConfigurationStore
 {
     public const string SectionName = "ConfigurationStore";
 

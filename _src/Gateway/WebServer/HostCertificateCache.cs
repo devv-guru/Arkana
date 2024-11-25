@@ -1,6 +1,6 @@
-﻿using LazyCache;
+﻿using System.Security.Cryptography.X509Certificates;
+using LazyCache;
 using Microsoft.Extensions.Caching.Memory;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Gateway.WebServer;
 

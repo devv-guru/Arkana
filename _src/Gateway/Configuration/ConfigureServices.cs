@@ -1,4 +1,5 @@
 ﻿using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Gateway.Configuration.AwsSecretManager;
 using Gateway.Configuration.EnvironmentVariables;
 using Gateway.Configuration.StartParameters;
@@ -10,7 +11,7 @@ public static class ConfigureServices
     public static void AddConfigurationSources(this ConfigurationManager configurationManager, string[] args)
     {
         var configurationStore =
-            configurationManager.GetSection(ConfigurationStoreOptions.SectionName).Get<ConfigurationStoreOptions>();
+            configurationManager.GetSection(ConfigurationStore.SectionName).Get<ConfigurationStore>();
 
         if (configurationStore is null)
             throw new Exception("The configuration store section in appsettings.json is missing or invalid.");

@@ -1,4 +1,4 @@
-﻿namespace Domain.Options;
+﻿namespace Gateway.Configuration;
 
 public class EnvironmentOptions
 {

@@ -1,12 +1,13 @@
-﻿using Amazon.SecretsManager;
+﻿using System.Collections.Concurrent;
+using System.Net;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Data.Entities.Proxy;
 using Shared.Certificates;
-using System.Net;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Gateway.WebServer;
 
@@ -165,7 +166,7 @@ public class CertificateManager
 
         var sanBuilder = new SubjectAlternativeNameBuilder();
         sanBuilder.AddDnsName(hostName);
-
+        
         if (subjectAlternativeNames is not null)
             foreach (var san in subjectAlternativeNames)
             {

@@ -2,22 +2,21 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY ["_src/Gateway/Gateway.csproj", "Gateway/"]
-COPY ["_src/Data/Data.csproj", "Data/"]
-COPY ["_src/Domain/Domain.csproj", "Domain/"]
-COPY ["_src/Endpoints/Endpoints.csproj", "Endpoints/"]
-COPY ["_src/Shared/Shared.csproj", "Shared/"]
-COPY ["_src/Proxy/Proxy.csproj", "Proxy/"]
-RUN dotnet restore "./Gateway/Gateway.csproj"
+COPY ["Gateway/Gateway.csproj", "Gateway/"]
+COPY ["Data/Data.csproj", "Data/"]
+COPY ["Endpoints/Endpoints.csproj", "Endpoints/"]
+COPY ["Shared/Shared.csproj", "Shared/"]
+
+RUN dotnet restore "Gateway/Gateway.csproj"
 
 # Move this line here to optimize build caching
 COPY . . 
 WORKDIR "/src/Gateway"
-RUN dotnet build "./Gateway.csproj" -c Release -o /app/build
+RUN dotnet build "Gateway.csproj" -c Release -o /app/build
 
 # Stage 2: Publish Stage
 FROM build AS publish
-RUN dotnet publish "./Gateway.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Gateway.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Stage 3: Prepare Environment with Standard ASP.NET Runtime Image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
