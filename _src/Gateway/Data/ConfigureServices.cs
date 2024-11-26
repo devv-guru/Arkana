@@ -1,5 +1,4 @@
 ﻿using Data.Common;
-using Data.Contexts;
 using Data.Contexts.Base;
 using Data.Contexts.MariaDb;
 using Data.Contexts.MySql;
@@ -7,129 +6,138 @@ using Data.Contexts.Postgre;
 using Data.Contexts.SqLite;
 using Data.Contexts.SqlServer;
 using Microsoft.EntityFrameworkCore;
+using Shared.Common;
+using Shared.Options;
 
 namespace Gateway.Data;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddDataContext(this IServiceCollection services, IConfiguration configuration)
+    public static WebApplicationBuilder? AddDataContext(this WebApplicationBuilder? builder, IConfiguration configuration)
     {
         var dataContextOptions = configuration.GetSection(DataContextOptions.SectionName).Get<DataContextOptions>();
+        string connectionName = "Arkana";
 
         switch (dataContextOptions.Provider)
         {
             case DataContextProviders.SqlServer:
-            {
-                services.AddDbContext<SqlServerWriteOnlyContext>(options =>
                 {
-                    options.UseSqlServer(dataContextOptions.ConnectionString,
-                        x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
-                });
+                    builder.AddSqlServerDbContext<SqlServerWriteOnlyContext>(connectionName, configureDbContextOptions: options =>
+                    {
+                        options.UseSqlServer(x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
+                    });
 
-                services.AddDbContext<SqlServerReadOnlyContext>(options =>
-                {
-                    options.UseSqlServer(dataContextOptions.ConnectionString,
-                        x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
-                });
+                    builder.AddSqlServerDbContext<SqlServerReadOnlyContext>(connectionName, configureDbContextOptions: options =>
+                    {
+                        options.UseSqlServer(x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
+                    });
 
-                services.AddScoped<IReadOnlyContext, SqlServerReadOnlyContext>();
-                services.AddScoped<IWriteOnlyContext, SqlServerWriteOnlyContext>();
-                break;
-            }
+                    builder.Services.AddScoped<IReadOnlyContext, SqlServerReadOnlyContext>();
+                    builder.Services.AddScoped<IWriteOnlyContext, SqlServerWriteOnlyContext>();
+                    break;
+                }
             case DataContextProviders.PostgreSql:
-            {
-                services.AddDbContext<PostgreSqlWriteOnlyContext>(options =>
                 {
-                    options.UseNpgsql(dataContextOptions.ConnectionString,
-                        x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
-                });
+                    builder.AddNpgsqlDbContext<PostgreSqlWriteOnlyContext>(connectionName, configureDbContextOptions: options =>
+                    {
+                        options.UseNpgsql(x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
+                    });
 
-                services.AddDbContext<PostgreSqlReadOnlyContext>(options =>
-                {
-                    options.UseNpgsql(dataContextOptions.ConnectionString,
-                        x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
-                });
+                    builder.AddNpgsqlDbContext<PostgreSqlReadOnlyContext>(connectionName, configureDbContextOptions: options =>
+                    {
+                        options.UseNpgsql(x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
+                    });
 
-                services.AddScoped<IReadOnlyContext, PostgreSqlReadOnlyContext>();
-                services.AddScoped<IWriteOnlyContext, PostgreSqlWriteOnlyContext>();
-                break;
-            }
+                    builder.Services.AddScoped<IReadOnlyContext, PostgreSqlReadOnlyContext>();
+                    builder.Services.AddScoped<IWriteOnlyContext, PostgreSqlWriteOnlyContext>();
+                    break;
+                }
             case DataContextProviders.SqLite:
-            {
-                services.AddDbContext<SqLiteWriteOnlyContext>(options =>
                 {
-                    options.UseSqlite(dataContextOptions.ConnectionString,
-                        x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
-                });
+                    builder.Services.AddDbContext<SqLiteWriteOnlyContext>(options =>
+                    {
+                        options.UseSqlite(dataContextOptions.ConnectionString,
+                            x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
+                    });
 
-                services.AddDbContext<SqLiteReadOnlyContext>(options =>
-                {
-                    options.UseSqlite(dataContextOptions.ConnectionString,
-                        x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
-                });
+                    builder.Services.AddDbContext<SqLiteReadOnlyContext>(options =>
+                    {
+                        options.UseSqlite(dataContextOptions.ConnectionString,
+                            x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
+                    });
 
-                services.AddScoped<IReadOnlyContext, SqLiteReadOnlyContext>();
-                services.AddScoped<IWriteOnlyContext, SqLiteWriteOnlyContext>();
-                break;
-            }
+                    builder.Services.AddScoped<IReadOnlyContext, SqLiteReadOnlyContext>();
+                    builder.Services.AddScoped<IWriteOnlyContext, SqLiteWriteOnlyContext>();
+                    break;
+                }
             case DataContextProviders.MySql:
-            {
-                services.AddDbContext<MySqlWriteOnlyContext>(options =>
                 {
-                    ConfigureMySql(options, dataContextOptions.ConnectionString, dataContextOptions.MySqlVersion);
-                });
+                    builder.AddMySqlDbContext<MySqlWriteOnlyContext>(connectionName,
+                        settings =>
+                        {
+                            settings.ServerVersion = new Version(dataContextOptions.MySqlVersion).ToString();
+                        },
+                        options =>
+                        {
+                            ConfigureMySql(options, dataContextOptions.ConnectionString, dataContextOptions.MySqlVersion);
+                        });
 
-                services.AddDbContext<MySqlReadOnlyContext>(options =>
-                {
-                    ConfigureMySql(options, dataContextOptions.ConnectionString, dataContextOptions.MySqlVersion);
-                });
+                    builder.AddMySqlDbContext<MySqlReadOnlyContext>(connectionName,
+                        settings =>
+                        {
+                            settings.ServerVersion = new Version(dataContextOptions.MySqlVersion).ToString();
+                        },
+                        options =>
+                        {
+                            ConfigureMySql(options, dataContextOptions.ConnectionString, dataContextOptions.MySqlVersion);
+                        });
 
-                services.AddScoped<IReadOnlyContext, MySqlReadOnlyContext>();
-                services.AddScoped<IWriteOnlyContext, MySqlWriteOnlyContext>();
-                break;
-            }
+                    builder.Services.AddScoped<IReadOnlyContext, MySqlReadOnlyContext>();
+                    builder.Services.AddScoped<IWriteOnlyContext, MySqlWriteOnlyContext>();
+                    break;
+                }
             case DataContextProviders.MariaDb:
-            {
-                services.AddDbContext<MariaDbWriteOnlyContext>(options =>
                 {
-                    ConfigureMariaDb(options, dataContextOptions.ConnectionString,
-                        dataContextOptions.MariaDbVersion);
-                });
+                    builder.AddMySqlDbContext<MariaDbWriteOnlyContext>(connectionName, configureDbContextOptions: options =>
+                    {
+                        ConfigureMariaDb(options, dataContextOptions.ConnectionString,
+                            dataContextOptions.MariaDbVersion);
+                    });
 
-                services.AddDbContext<MariaDbReadOnlyContext>(options =>
-                {
-                    ConfigureMariaDb(options, dataContextOptions.ConnectionString,
-                        dataContextOptions.MariaDbVersion);
-                });
+                    builder.AddMySqlDbContext<MariaDbReadOnlyContext>(connectionName, configureDbContextOptions: options =>
+                    {
+                        ConfigureMariaDb(options, dataContextOptions.ConnectionString,
+                            dataContextOptions.MariaDbVersion);
+                    });
 
-                services.AddScoped<IReadOnlyContext, MariaDbReadOnlyContext>();
-                services.AddScoped<IWriteOnlyContext, MariaDbWriteOnlyContext>();
-                break;
-            }
+                    builder.Services.AddScoped<IReadOnlyContext, MariaDbReadOnlyContext>();
+                    builder.Services.AddScoped<IWriteOnlyContext, MariaDbWriteOnlyContext>();
+                    break;
+                }
             default:
                 throw new NotSupportedException($"The provider '{dataContextOptions.Provider}' is not supported.");
         }
 
-        return services;
+        return builder;
     }
 
     private static void ConfigureMySql(DbContextOptionsBuilder options, string connectionString, string version)
     {
         if (version != "AutoDetect")
-            options.UseMySql(connectionString, new MySqlServerVersion(new Version(version)),
+            options.UseMySql(new MySqlServerVersion(new Version(version)),
                 x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
         else
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+            options.UseMySql(ServerVersion.AutoDetect(connectionString),
                 x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
     }
 
     private static void ConfigureMariaDb(DbContextOptionsBuilder options, string connectionString, string version)
     {
         if (version != "AutoDetect")
-            options.UseMySql(connectionString, new MariaDbServerVersion(new Version(version)),
+            options.UseMySql(new MariaDbServerVersion(new Version(version)),
                 x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
         else
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+            options.UseMySql(ServerVersion.AutoDetect(connectionString),
                 x => x.MigrationsAssembly(typeof(Marker).Assembly.GetName().Name!));
     }
 }

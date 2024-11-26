@@ -1,4 +1,6 @@
-﻿namespace Endpoints.Certificates.Find;
+﻿using System;
+
+namespace Endpoints.Certificates.Find;
 
 public class Response
 {

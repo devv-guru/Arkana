@@ -10,12 +10,16 @@ public static class ConfigureServices
             options.ListenAnyIP(8080);
             options.ListenAnyIP(8081,
                 listenOptions =>
-                {
-                    var hostCache = options.ApplicationServices.GetRequiredService<HostCertificateCache>();
+                {                    
                     listenOptions.UseHttps(httpsOptions =>
                     {
                         httpsOptions.ServerCertificateSelector =
-                            (context, hostName) => hostCache.GetCertificate(hostName);
+                            (context, hostName) =>
+                            {
+                                using var scope = options.ApplicationServices.CreateScope();
+                                var hostCache = scope.ServiceProvider.GetRequiredService<HostCertificateCache>();
+                                return hostCache.GetCertificate(hostName);
+                            };
                     });
                 });
         });

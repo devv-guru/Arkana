@@ -2,6 +2,8 @@
 using Endpoints.Common.Paging;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Endpoints.Certificates.Find;
 
