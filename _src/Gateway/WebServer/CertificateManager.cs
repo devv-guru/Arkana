@@ -120,20 +120,6 @@ public class CertificateManager
         return response.SecretString;
     }
 
-    // private X509Certificate2 GenerateSelfSignedCertificate(string hostName)
-    // {
-    //     _logger.LogInformation("Generating self-signed certificate for {HostName}", hostName);
-    //     var rsa = RSA.Create(2048);
-    //     var certReq =
-    //         new CertificateRequest($"CN={hostName}", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-    //
-    //     var certificate = certReq.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddDays(30));
-    //
-    //     _logger.LogInformation("Self-signed certificate generated for {HostName} with expiry {Expiry}", hostName,
-    //         certificate.NotAfter);
-    //     return certificate;
-    // }
-
     private X509Certificate2 GenerateSelfSignedCertificate(string hostName, string[]? subjectAlternativeNames)
     {
         _logger.LogInformation("Generating self-signed certificate for {HostName}", hostName);

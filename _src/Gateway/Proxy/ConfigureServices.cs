@@ -1,14 +1,19 @@
-﻿using Yarp.ReverseProxy.Configuration;
+﻿using Data.Entities;
+using FastEndpoints;
+using Gateway.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Yarp.ReverseProxy.Configuration;
+using Yarp.ReverseProxy.Forwarder;
 
 namespace Gateway.Proxy;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddProxy(this IServiceCollection services)
+    public static IServiceCollection AddProxy(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton(new InMemoryConfigProvider(GetDefaultRoute(), GetDefaultCluster()));
-        services.AddSingleton<IProxyConfigProvider>(s => s.GetRequiredService<InMemoryConfigProvider>());
-        services.AddReverseProxy();
+        var configurationOptions = configuration.GetSection(ConfigurationOptions.SectionName).Get<ConfigurationOptions>();
+
+        services.AddReverseProxy().LoadFromMemory(BuildRoutes(configurationOptions), BuildClusters(configurationOptions));
         return services;
     }
 
@@ -23,35 +28,140 @@ public static class ConfigureServices
         return app;
     }
 
-    private static RouteConfig[] GetDefaultRoute()
+    private static RouteConfig[] BuildRoutes(ConfigurationOptions configurationOptions)
     {
-        return new[]
+        var routes = new List<RouteConfig>();
+
+        if (configurationOptions?.Services != null)
         {
-            new RouteConfig()
+            foreach (var service in configurationOptions.Services)
             {
-                RouteId = "defaultRoute",
-                ClusterId = "defaultCluster",
-                Match = new RouteMatch
-                {
-                    Path = "api/{**catch-all}",
-                    Methods = new[] { "POST", "GET", "PUT", "DELETE" }
-                }
+                // Build one route per service
+                // You can customize the route matching logic (Hosts, Path, etc.) as you see fit
+                routes.Add(
+                    new RouteConfig
+                    {
+                        RouteId = service.Name,                 // or "Route_" + service.Name
+                        ClusterId = $"{service.Name}Cluster",   // tie route to the same cluster
+                        Match = new RouteMatch
+                        {
+                            // If you want to match the service's target host, include it here
+                            // If TargetHost is null or empty, default to "localhost" or skip it
+                            Hosts = new[] { service.TargetHost ?? "localhost" },
+
+                            // Example path match - forward everything:
+                            Path = "/{**catchAll}",
+
+                            // Example methods - add or remove as needed
+                            Methods = new[] { "GET", "POST", "PUT", "DELETE" }
+                        },
+                        Transforms = service.Transforms
+                    }
+                );
             }
-        };
+        }
+
+        return routes.ToArray();
     }
 
-    private static ClusterConfig[] GetDefaultCluster()
+    private static ClusterConfig[] BuildClusters(ConfigurationOptions configurationOptions)
     {
-        return new[]
+        var clusters = new List<ClusterConfig>();
+
+        if (configurationOptions?.Services != null)
         {
-            new ClusterConfig()
+            foreach (var service in configurationOptions.Services)
             {
-                ClusterId = "defaultCluster",
-                Destinations = new Dictionary<string, DestinationConfig>(StringComparer.OrdinalIgnoreCase)
+                // Create one cluster per service
+                var cluster = new ClusterConfig
                 {
-                    { "default", new DestinationConfig() { Address = "https://localhost" } }
+                    ClusterId = $"{service.Name}Cluster",
+                    Destinations = new Dictionary<string, DestinationConfig>(StringComparer.OrdinalIgnoreCase)
+                };
+
+                Dictionary<string, DestinationConfig> destinations = new(StringComparer.OrdinalIgnoreCase);
+                // Populate the destinations
+                if (service.Destinations != null)
+                {
+
+
+                    foreach (var destination in service.Destinations)
+                    {
+                        // If 'Name' is missing, use a default name
+                        var destinationKey = string.IsNullOrEmpty(destination.Name)
+                            ? "default"
+                            : destination.Name;
+
+                        if (!string.IsNullOrEmpty(destination.Address))
+                        {
+                            destinations[destinationKey] = new DestinationConfig
+                            {
+                                Address = destination.Address
+                            };
+                        }
+                    }
+
+                    cluster = new ClusterConfig
+                    {
+                        ClusterId = $"{service.Name}Cluster",
+                        Destinations = destinations
+                    };
                 }
+
+                HealthCheckConfig? healthCheckConfig = null;
+                // Map health check settings
+                if (service.HealthCheck != null)
+                {
+                    bool enabled = bool.TryParse(service.HealthCheck.Enabled, out var isEnabled) && isEnabled;
+
+                    var config = new HealthCheckConfig
+                    {
+                        Active = new ActiveHealthCheckConfig
+                        {
+                            Enabled = enabled,
+                            Interval = TimeSpan.Parse(service.HealthCheck.Interval),
+                            Timeout = TimeSpan.Parse(service.HealthCheck.Timeout),
+                            Path = service.HealthCheck.Path,
+                            Query = service.HealthCheck.Query,
+                            Policy = "ConsecutiveFailuresHealthPolicy",
+                        }
+                    };
+                }
+
+                ForwarderRequestConfig? requestConfig = null;
+
+                if (service.HttpRequest != null)
+                {
+
+                    var versionPolicy = Enum.TryParse<HttpVersionPolicy>(service.HttpRequest.VersionPolicy, true, out var policy)
+                        ? policy
+                        : HttpVersionPolicy.RequestVersionOrLower;
+
+                    requestConfig = new ForwarderRequestConfig
+                    {
+                        Version = new Version(service.HttpRequest.Version),
+                        VersionPolicy = versionPolicy,
+                        AllowResponseBuffering = service.HttpRequest.AllowResponseBuffering,
+                        ActivityTimeout = TimeSpan.Parse(service.HttpRequest.ActivityTimeout)
+                    };
+                }
+
+                cluster = new ClusterConfig
+                {
+                    ClusterId = $"{service.Name}Cluster",
+                    Destinations = cluster.Destinations,
+                    HealthCheck = healthCheckConfig,
+                    HttpRequest = requestConfig,
+                    Metadata = new Dictionary<string, string>
+                    {
+                        { "TransportFailureRateHealthPolicy.RateLimit", service.HealthCheck.Threshold ?? "5" }
+                    }
+                };
+
+                clusters.Add(cluster);
             }
-        };
+        }
+
+        return clusters.ToArray();
     }
 }

@@ -1,0 +1,35 @@
+{
+  "Services": [
+    {
+      "Name": "Portainer",
+      "TargetHost": "localhost",      
+      "HealthCheck": {
+        "Enabled": "true",
+        "Interval": "00:00:10",
+        "Timeout": "00:00:10",
+        "Threshold": "5",
+        "Path": "/api/health",
+        "Query": "?foo=bar"
+      },
+      "HttpRequest": {
+        "Version": "2",
+        "VersionPolicy": "RequestVersionOrLower", //RequestVersionOrHigher, RequestVersionExact
+        "AllowResponseBuffering": false,
+        "ActivityTimeout": "00:02:00"
+      },
+      "Transforms": [
+        {
+          "RequestHeader": "X-Forwarded-Host",
+          "Set": "{Host}"
+        }
+      ],
+      "Destinations": [
+        {
+          "Name": "portainer",
+          "Address": "https://192.168.68.5:9443"
+        }
+      ]
+    }
+
+  ]
+}
