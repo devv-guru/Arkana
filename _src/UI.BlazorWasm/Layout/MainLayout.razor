@@ -1,16 +1,67 @@
 ﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+<FluentLayout Style="margin-top: 10px;">
+    <FluentHeader>
+        <FluentSpacer />
+        ARKANA
+        <FluentSpacer />
+    </FluentHeader>
+    <FluentStack Orientation="Orientation.Vertical" Width="100%">
+        <FluentBodyContent >
+            <FluentStack Orientation="Orientation.Vertical" Width="100%">
+                <FluentGrid Style="padding:1rem;width:100%;" Spacing="3" Justify="JustifyContent.SpaceEvenly">
+                    <FluentGridItem xs="12" sm="4">
+                        <FluentCard>
+                            <FluentStack Orientation="FluentOrientation.Horizontal">
+                                <FluentIcon Value="@(new Icons.Regular.Size20.Settings())" Color="Color.Accent"></FluentIcon>
+                                <FluentLabel Typo="Typography.H4">Configuration</FluentLabel>
+                            </FluentStack>
+                            <FluentDivider Style="width: 100%;" Orientation=Orientation.Horizontal Role="DividerRole.Presentation"></FluentDivider>
+                            <FluentLabel Style="height:50px;" Typo="Typography.Body">
+                                Manage your gateway configuration including hosts, routes, and certificates.
+                            </FluentLabel>
+                            <FluentDivider Style="width: 100%;" Orientation=Orientation.Horizontal Role="DividerRole.Presentation"></FluentDivider>
+                            <FluentAnchor Appearance="Appearance.Accent" Href="/configuration" Style="width:100%;">Manage</FluentAnchor>
+                        </FluentCard>
+                    </FluentGridItem>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+                    <FluentGridItem xs="12" sm="4">
+                        <FluentCard>
+                            <FluentStack Orientation="FluentOrientation.Horizontal">
+                                <FluentIcon Value="@(new Icons.Regular.Size24.Shield())" Color="Color.Accent" />
+                                <FluentLabel Typo="Typography.H4">Certificates</FluentLabel>
+                            </FluentStack>
+                            <FluentDivider Style="width: 100%;" Orientation=Orientation.Horizontal Role="DividerRole.Presentation"></FluentDivider>
+                            <FluentLabel Style="height:50px;" Typo="Typography.Body">
+                                Manage SSL/TLS certificates for secure communication.
+
+                            </FluentLabel>
+                            <FluentDivider Style="width: 100%;" Orientation=Orientation.Horizontal Role="DividerRole.Presentation"></FluentDivider>
+                            <FluentAnchor Appearance="Appearance.Accent" Href="/certificates" Style="width:100%;">Manage</FluentAnchor>
+                        </FluentCard>
+                    </FluentGridItem>
+
+                    <FluentGridItem xs="12" sm="4">
+                        <FluentCard>
+                            <FluentStack Orientation="FluentOrientation.Horizontal">
+                                <FluentIcon Value="@(new Icons.Regular.Size20.ChartMultiple())" Color="Color.Accent" />
+                                <FluentLabel Typo="Typography.H4">Metrics</FluentLabel>
+                            </FluentStack>
+                            <FluentDivider Style="width: 100%;" Orientation=Orientation.Horizontal Role="DividerRole.Presentation"></FluentDivider>
+                            <FluentLabel Style="height:50px;" Typo="Typography.Body">
+                                View system and request metrics to monitor your gateway performance.
+                            </FluentLabel>
+                            <FluentDivider Style="width: 100%;" Orientation=Orientation.Horizontal Role="DividerRole.Presentation"></FluentDivider>
+                            <FluentAnchor Appearance="Appearance.Accent" Href="/metrics" Style="width:100%;">View</FluentAnchor>
+                        </FluentCard>
+                    </FluentGridItem>
+
+
+                </FluentGrid>
+                <div style="padding-top:1rem;padding-left:2rem;padding-right:2rem;">
+                    @Body
+                </div>                
+            </FluentStack>
+        </FluentBodyContent>
+    </FluentStack>
+</FluentLayout>
