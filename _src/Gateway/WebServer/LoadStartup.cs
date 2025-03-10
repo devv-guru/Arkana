@@ -1,7 +1,9 @@
-﻿using Data.Contexts.Base;
+﻿﻿using Data.Contexts.Base;
 using Data.Entities;
-using Shared.Certificates;
+using Gateway.Configuration;
+using Gateway.Proxy;
 using Microsoft.EntityFrameworkCore;
+using Shared.Certificates;
 
 namespace Gateway.WebServer;
 
@@ -10,13 +12,21 @@ public class LoadStartup : IHostedService
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<LoadStartup> _logger;
     private readonly IConfiguration _configuration;
+    private readonly GatewayConfigurationService _gatewayConfigurationService;
+    private readonly YarpConfigurationService _yarpConfigurationService;
 
-    public LoadStartup(IServiceScopeFactory serviceScopeFactory, ILogger<LoadStartup> logger,
-        IConfiguration configuration)
+    public LoadStartup(
+        IServiceScopeFactory serviceScopeFactory, 
+        ILogger<LoadStartup> logger,
+        IConfiguration configuration,
+        GatewayConfigurationService gatewayConfigurationService,
+        YarpConfigurationService yarpConfigurationService)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
         _configuration = configuration;
+        _gatewayConfigurationService = gatewayConfigurationService;
+        _yarpConfigurationService = yarpConfigurationService;
     }
 
     public async Task StartAsync(CancellationToken ct)
@@ -27,10 +37,18 @@ public class LoadStartup : IHostedService
             {
                 await CreateDatabaseAsync(scope, ct);
                 await LoadDefaultsAsync(scope, ct);
+                
+                // Load the gateway configuration
+                await _gatewayConfigurationService.LoadConfigurationAsync(ct);
+                
+                // Update the YARP configuration
+                _yarpConfigurationService.UpdateConfig();
+                
+                _logger.LogInformation("Gateway configuration loaded and YARP configuration updated successfully.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while applying database migrations.");
+                _logger.LogError(ex, "An error occurred during startup.");
             }
         }
     }

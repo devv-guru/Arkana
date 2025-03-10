@@ -1,0 +1,191 @@
+@page "/configuration"
+@using Microsoft.FluentUI.AspNetCore.Components
+@using System.Text.Json
+@using System.Linq
+
+
+@inject HttpClient Http
+
+<PageTitle>Arkana Gateway - Configuration</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+    <FluentLabel Typo="Typography.H2">Gateway Configuration</FluentLabel>
+    
+    <FluentDivider></FluentDivider>
+    
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10">
+        <FluentButton Appearance="Appearance.Accent" OnClick="LoadConfiguration">Refresh</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="SaveConfiguration">Save</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="ReloadConfiguration">Reload</FluentButton>
+    </FluentStack>
+    
+    @if (isLoading)
+    {
+        <FluentProgressRing></FluentProgressRing>
+    }
+    else if (errorMessage != null)
+    {
+        <FluentMessageBar Intent="MessageIntent.Error">
+            @errorMessage
+        </FluentMessageBar>
+    }
+    else if (configuration != null)
+    {
+        <FluentTabs>
+            <FluentTab Label="Hosts">
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+                    <FluentLabel Typo="Typography.H4">Hosts</FluentLabel>
+                    <FluentDataGrid Items="@configuration.Hosts.AsQueryable()" TGridItem="HostConfig">
+                        <PropertyColumn Property="@(h => h.Name)" Title="Name" />
+                        <PropertyColumn Property="@(h => string.Join(", ", h.HostNames))" Title="Host Names" />
+                        <PropertyColumn Property="@(h => GetCertificateName(h.Certificate))" Title="Certificate" />
+                    </FluentDataGrid>
+                </FluentStack>
+            </FluentTab>
+            
+            <FluentTab Label="Proxy Rules">
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+                    <FluentLabel Typo="Typography.H4">Proxy Rules</FluentLabel>
+                    <FluentDataGrid Items="@configuration.ProxyRules.AsQueryable()" TGridItem="ProxyRuleConfig">
+                        <PropertyColumn Property="@(r => r.Name)" Title="Name" />
+                        <PropertyColumn Property="@(r => string.Join(", ", r.Hosts))" Title="Hosts" />
+                        <PropertyColumn Property="@(r => r.PathPrefix)" Title="Path Prefix" />
+                        <PropertyColumn Property="@(r => r.StripPrefix)" Title="Strip Prefix" />
+                        <PropertyColumn Property="@(r => GetClusterName(r.Cluster))" Title="Cluster" />
+                    </FluentDataGrid>
+                </FluentStack>
+            </FluentTab>
+            
+            <FluentTab Label="UI Settings">
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+                    <FluentLabel Typo="Typography.H4">UI Settings</FluentLabel>
+                    <FluentCheckbox @bind-Value="configuration.UI.Enabled" Label="Enable UI" />
+                    <FluentTextField @bind-Value="configuration.UI.Path" Label="UI Path" />
+                    <FluentCheckbox @bind-Value="configuration.UI.RequireAuthentication" Label="Require Authentication" />
+                </FluentStack>
+            </FluentTab>
+            
+            <FluentTab Label="JSON">
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+                    <FluentLabel Typo="Typography.H4">Raw JSON</FluentLabel>
+                    <FluentTextArea @bind-Value="configurationJson" Rows="20" ReadOnly="true" />
+                </FluentStack>
+            </FluentTab>
+        </FluentTabs>
+    }
+</FluentStack>
+
+@code {
+    private GatewayConfigurationViewModel configuration;
+    private string configurationJson;
+    private bool isLoading = false;
+    private string errorMessage;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadConfiguration();
+    }
+    
+    private string GetCertificateName(CertificateConfig certificate)
+    {
+        return certificate != null ? certificate.Name : string.Empty;
+    }
+    
+    private string GetClusterName(ClusterConfig cluster)
+    {
+        return cluster != null ? cluster.Name : string.Empty;
+    }
+    
+    private async Task LoadConfiguration()
+    {
+        isLoading = true;
+        errorMessage = null;
+        
+        try
+        {
+            var response = await Http.GetAsync("/api/gateway/configuration");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                configuration = JsonSerializer.Deserialize<GatewayConfigurationViewModel>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                
+                configurationJson = JsonSerializer.Serialize(configuration, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+            }
+            else
+            {
+                errorMessage = $"Failed to load configuration: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+    
+    private async Task SaveConfiguration()
+    {
+        isLoading = true;
+        errorMessage = null;
+        
+        try
+        {
+            var response = await Http.PutAsJsonAsync("/api/gateway/configuration", configuration);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadConfiguration();
+            }
+            else
+            {
+                errorMessage = $"Failed to save configuration: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+    
+    private async Task ReloadConfiguration()
+    {
+        isLoading = true;
+        errorMessage = null;
+        
+        try
+        {
+            var response = await Http.PostAsync("/api/gateway/configuration/reload", null);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadConfiguration();
+            }
+            else
+            {
+                errorMessage = $"Failed to reload configuration: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

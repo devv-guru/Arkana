@@ -1,0 +1,20 @@
+using Data.Entities;
+
+namespace Data.Entities.Metrics;
+
+public class SystemMetric : EntityBase
+{
+    public double CpuUsagePercent { get; set; }
+    public double MemoryUsageMB { get; set; }
+    public double TotalMemoryMB { get; set; }
+    public double MemoryUsagePercent => TotalMemoryMB > 0 ? (MemoryUsageMB / TotalMemoryMB) * 100 : 0;
+    public int ThreadCount { get; set; }
+    public int HandleCount { get; set; }
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+    public double NetworkInboundKbps { get; set; }
+    public double NetworkOutboundKbps { get; set; }
+    public double DiskReadKbps { get; set; }
+    public double DiskWriteKbps { get; set; }
+    public int ActiveConnections { get; set; }
+    public string? HostName { get; set; }
+}

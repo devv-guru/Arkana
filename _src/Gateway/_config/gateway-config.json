@@ -1,0 +1,98 @@
+{
+  "Hosts": [
+    {
+      "Name": "Main Host",
+      "HostNames": ["localhost", "example.com"],
+      "Certificate": {
+        "Name": "Default Certificate",
+        "Source": "InMemory",
+        "SubjectAlternativeNames": ["localhost", "example.com"]
+      }
+    },
+    {
+      "Name": "API Host",
+      "HostNames": ["api.example.com"],
+      "Certificate": {
+        "Name": "API Certificate",
+        "Source": "InMemory",
+        "SubjectAlternativeNames": ["api.example.com"]
+      }
+    }
+  ],
+  "ProxyRules": [
+    {
+      "Name": "Portainer Rule",
+      "Hosts": ["localhost", "example.com"],
+      "PathPrefix": "/portainer",
+      "StripPrefix": true,
+      "Methods": ["GET", "POST", "PUT", "DELETE"],
+      "Cluster": {
+        "Name": "Portainer",
+        "LoadBalancingPolicy": "RoundRobin",
+        "HealthCheck": {
+          "Enabled": true,
+          "Interval": "00:00:10",
+          "Timeout": "00:00:10",
+          "Threshold": 5,
+          "Path": "/api/health",
+          "Query": "?foo=bar"
+        },
+        "HttpRequest": {
+          "Version": "2",
+          "VersionPolicy": "RequestVersionOrLower",
+          "AllowResponseBuffering": false,
+          "ActivityTimeout": "00:02:00"
+        },
+        "Transforms": [
+          {
+            "RequestHeader": "X-Forwarded-Host",
+            "Set": "{Host}"
+          }
+        ],
+        "Destinations": [
+          {
+            "Name": "portainer",
+            "Address": "https://192.168.68.100:9443"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "API Rule",
+      "Hosts": ["api.example.com"],
+      "PathPrefix": "/api",
+      "StripPrefix": false,
+      "Methods": ["GET", "POST", "PUT", "DELETE"],
+      "Cluster": {
+        "Name": "API",
+        "LoadBalancingPolicy": "RoundRobin",
+        "HealthCheck": {
+          "Enabled": true,
+          "Interval": "00:00:10",
+          "Timeout": "00:00:10",
+          "Threshold": 5,
+          "Path": "/health",
+          "Query": null
+        },
+        "HttpRequest": {
+          "Version": "2",
+          "VersionPolicy": "RequestVersionOrLower",
+          "AllowResponseBuffering": false,
+          "ActivityTimeout": "00:02:00"
+        },
+        "Transforms": [
+          {
+            "RequestHeader": "X-Forwarded-Host",
+            "Set": "{Host}"
+          }
+        ],
+        "Destinations": [
+          {
+            "Name": "api-service",
+            "Address": "http://localhost:5000"
+          }
+        ]
+      }
+    }
+  ]
+}

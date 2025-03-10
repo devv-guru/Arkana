@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+﻿﻿﻿﻿﻿using System.Collections.Concurrent;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -7,6 +7,8 @@ using Amazon.SecretsManager.Model;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Data.Entities;
+using Gateway.Configuration;
+using Microsoft.Extensions.Options;
 using Shared.Certificates;
 
 namespace Gateway.WebServer;
@@ -15,13 +17,16 @@ public class CertificateManager
 {
     private readonly ILogger<CertificateManager> _logger;
     private readonly HostCertificateCache _hostCertificateCache;
+    private readonly EnvironmentOptions _environmentOptions;
 
-
-    public CertificateManager(HostCertificateCache hostCertificateCache,
-        ILogger<CertificateManager> logger)
+    public CertificateManager(
+        HostCertificateCache hostCertificateCache,
+        ILogger<CertificateManager> logger,
+        IOptions<EnvironmentOptions> environmentOptions)
     {
         _logger = logger;
         _hostCertificateCache = hostCertificateCache;
+        _environmentOptions = environmentOptions.Value;
     }
 
     public async Task LoadCertificateAsync(Certificate certificate, CancellationToken ct = default,
@@ -35,6 +40,8 @@ public class CertificateManager
             CertificateSources.AwsSecretManager => await LoadCertificateFromAwsSecretsManagerAsync(
                 certificate.AwsRegion,
                 certificate.AwsCertificateName, certificate.AwsCertificatePasswordName, ct),
+
+            CertificateSources.File => LoadCertificateFromFile(certificate.FilePath, certificate.FilePassword),
 
             CertificateSources.InMemory =>
                 GenerateSelfSignedCertificate(hostName, certificate?.SubjectAlternativeNames),
@@ -118,6 +125,38 @@ public class CertificateManager
 
         var response = await client.GetSecretValueAsync(request);
         return response.SecretString;
+    }
+
+    private X509Certificate2 LoadCertificateFromFile(string? filePath, string? password)
+    {
+        _logger.LogInformation("Loading certificate from file {FilePath}", filePath);
+        
+        if (string.IsNullOrWhiteSpace(filePath))
+            throw new ArgumentNullException(nameof(filePath));
+        
+        // Resolve the file path relative to the certificate path if it's not absolute
+        string resolvedPath = Path.IsPathRooted(filePath) 
+            ? filePath 
+            : Path.Combine(_environmentOptions.CertificatePath, filePath);
+        
+        if (!File.Exists(resolvedPath))
+            throw new FileNotFoundException($"Certificate file not found at {resolvedPath}");
+        
+        X509Certificate2 cert;
+        
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            cert = new X509Certificate2(resolvedPath);
+        }
+        else
+        {
+            cert = new X509Certificate2(resolvedPath, password, X509KeyStorageFlags.MachineKeySet);
+        }
+        
+        _logger.LogInformation("Certificate loaded from file {FilePath} with expiry {Expiry}", 
+            resolvedPath, cert.NotAfter);
+        
+        return cert;
     }
 
     private X509Certificate2 GenerateSelfSignedCertificate(string hostName, string[]? subjectAlternativeNames)

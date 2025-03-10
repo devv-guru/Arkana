@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Data.Entities;
+using Data.Entities.Metrics;
 using Data.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +29,10 @@ public class WriteOnlyDataContext : DbContext, IWriteOnlyContext
     public DbSet<Transform> Transforms { get; set; }
     public DbSet<HeaderMatch> HeaderMatches { get; set; }
     public DbSet<QueryParameterMatch> QueryParameterMatches { get; set; }
+    
+    // Metrics
+    public DbSet<RequestMetric> RequestMetrics { get; set; }
+    public DbSet<SystemMetric> SystemMetrics { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

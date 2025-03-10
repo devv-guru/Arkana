@@ -2,7 +2,8 @@
   "Services": [
     {
       "Name": "Portainer",
-      "TargetHost": "localhost",      
+      "TargetHost": "localhost",
+      //"TargetHost": "portainer.devv.guru",
       "HealthCheck": {
         "Enabled": "true",
         "Interval": "00:00:10",
@@ -26,7 +27,7 @@
       "Destinations": [
         {
           "Name": "portainer",
-          "Address": "https://192.168.68.5:9443"
+          "Address": "https://192.168.68.100:9443"
         }
       ]
     }

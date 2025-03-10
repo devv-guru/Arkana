@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿﻿using Data.Entities;
+using Data.Entities.Metrics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -22,6 +23,10 @@ public interface IWriteOnlyContext
     DbSet<Transform> Transforms { get; }
     DbSet<HeaderMatch> HeaderMatches { get; }
     DbSet<QueryParameterMatch> QueryParameterMatches { get; }
+    
+    // Metrics
+    DbSet<RequestMetric> RequestMetrics { get; }
+    DbSet<SystemMetric> SystemMetrics { get; }
 
     int SaveChanges();
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

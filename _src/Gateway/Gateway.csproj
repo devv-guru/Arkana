@@ -25,19 +25,19 @@
         <PackageReference Include="FastEndpoints" Version="5.33.0.12-beta" />
         <PackageReference Include="FastEndpoints.Swagger" Version="5.33.0.12-beta" />
         <PackageReference Include="LazyCache.AspNetCore" Version="2.4.0" />		
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
         <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.11.0-beta.1" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.2.efcore.9.0.0" />
@@ -69,8 +69,19 @@
     <ItemGroup>
         <ProjectReference Include="..\..\_aspire\AspireApp1.ServiceDefaults\ServiceDefaults.csproj" />
         <ProjectReference Include="..\Data\Data.csproj" />
+        <ProjectReference Include="..\Domain\Domain.csproj" />
         <ProjectReference Include="..\Endpoints\Endpoints.csproj" />
         <ProjectReference Include="..\Shared\Shared.csproj" />
+        <ProjectReference Include="..\UI.BlazorWasm\UI.BlazorWasm.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="UI\BlazorWasm\App.razor" />
+      <_ContentIncludedByDefault Remove="UI\BlazorWasm\Pages\Certificates.razor" />
+      <_ContentIncludedByDefault Remove="UI\BlazorWasm\Pages\Configuration.razor" />
+      <_ContentIncludedByDefault Remove="UI\BlazorWasm\Pages\Index.razor" />
+      <_ContentIncludedByDefault Remove="UI\BlazorWasm\Pages\Metrics.razor" />
+      <_ContentIncludedByDefault Remove="UI\BlazorWasm\Shared\MainLayout.razor" />
     </ItemGroup>
 
 </Project>

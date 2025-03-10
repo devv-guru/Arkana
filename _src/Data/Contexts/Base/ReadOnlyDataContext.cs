@@ -1,5 +1,6 @@
-﻿using System.Reflection;
+﻿﻿using System.Reflection;
 using Data.Entities;
+using Data.Entities.Metrics;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Contexts.Base;
@@ -26,9 +27,11 @@ public class ReadOnlyDataContext : DbContext, IReadOnlyContext
     public IQueryable<PassiveHealthCheck> PassiveHealthChecks => Set<PassiveHealthCheck>().AsNoTracking();
     public IQueryable<Transform> Transforms => Set<Transform>().AsNoTracking();
     public IQueryable<HeaderMatch> HeaderMatches => Set<HeaderMatch>().AsNoTracking();
-
-    public IQueryable<QueryParameterMatch> QueryParameterMatches =>
-        Set<QueryParameterMatch>().AsNoTracking();
+    public IQueryable<QueryParameterMatch> QueryParameterMatches => Set<QueryParameterMatch>().AsNoTracking();
+    
+    // Metrics
+    public IQueryable<RequestMetric> RequestMetrics => Set<RequestMetric>().AsNoTracking();
+    public IQueryable<SystemMetric> SystemMetrics => Set<SystemMetric>().AsNoTracking();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

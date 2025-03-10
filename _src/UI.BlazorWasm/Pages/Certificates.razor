@@ -1,0 +1,278 @@
+@page "/certificates"
+@using Microsoft.FluentUI.AspNetCore.Components
+@using System.Text.Json
+@inject HttpClient Http
+
+<PageTitle>Arkana Gateway - Certificates</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+    <FluentLabel Typo="Typography.H2">Certificate Management</FluentLabel>
+
+    <FluentDivider></FluentDivider>
+
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10">
+        <FluentButton Appearance="Appearance.Accent" OnClick="LoadCertificates">Refresh</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="() => showAddDialog = true">Add Certificate</FluentButton>
+    </FluentStack>
+
+    @if (isLoading)
+    {
+        <FluentProgressRing></FluentProgressRing>
+    }
+    else if (errorMessage != null)
+    {
+        <FluentMessageBar Intent="MessageIntent.Error">
+            @errorMessage
+        </FluentMessageBar>
+    }
+    else if (certificates?.Count() > 0)
+    {
+        <FluentDataGrid Items="@certificates" TGridItem="CertificateDto">
+            <PropertyColumn Property="@(c => c.Name)" Title="Name" />
+            <PropertyColumn Property="@(c => c.Source)" Title="Source" />
+            <PropertyColumn Property="@(c => c.SubjectAlternativeNames != null ? string.Join(", ", c.SubjectAlternativeNames) : string.Empty)" Title="Subject Alternative Names" />
+            <TemplateColumn Title="Actions">
+                <FluentButton Appearance="Appearance.Lightweight" OnClick="() => ViewCertificate(context)">View</FluentButton>
+                <FluentButton Appearance="Appearance.Lightweight" OnClick="() => DeleteCertificate(context)">Delete</FluentButton>
+            </TemplateColumn>
+        </FluentDataGrid>
+    }
+    else
+    {
+        <FluentLabel>No certificates available</FluentLabel>
+    }
+
+    @if (showAddDialog)
+    {
+        <FluentDialog @bind-Visible="showAddDialog" Title="Add Certificate">
+            <ChildContent>
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+                    <FluentTextField @bind-Value="newCertificate.Name" Label="Name" Required="true" />
+
+                    <FluentSelect TOption="string" @bind-Value="newCertificate.Source" Label="Source" Required="true">
+                        <FluentOption Value="file">File</FluentOption>
+                        <FluentOption Value="azurekeyvault">Azure Key Vault</FluentOption>
+                        <FluentOption Value="awssecretmanager">AWS Secret Manager</FluentOption>
+                    </FluentSelect>
+
+                    @if (newCertificate.Source == "file")
+                    {
+                        <FluentTextField @bind-Value="newCertificate.FilePath" Label="File Path" Required="true" />
+                        <FluentTextField @bind-Value="newCertificate.FilePassword" Label="Password" Type="password" />
+                    }
+                    else if (newCertificate.Source == "azurekeyvault")
+                    {
+                        <FluentTextField @bind-Value="newCertificate.KeyVaultUri" Label="Key Vault URI" Required="true" />
+                        <FluentTextField @bind-Value="newCertificate.KeyVaultCertificateName" Label="Certificate Name" Required="true" />
+                        <FluentTextField @bind-Value="newCertificate.KeyVaultCertificatePasswordName" Label="Certificate Password Secret Name" />
+                    }
+                    else if (newCertificate.Source == "awssecretmanager")
+                    {
+                        <FluentTextField @bind-Value="newCertificate.AwsRegion" Label="AWS Region" Required="true" />
+                        <FluentTextField @bind-Value="newCertificate.AwsCertificateName" Label="Certificate Secret Name" Required="true" />
+                        <FluentTextField @bind-Value="newCertificate.AwsCertificatePasswordName" Label="Certificate Password Secret Name" />
+                    }
+
+                    <FluentTextField @bind-Value="subjectAlternativeNamesText" Label="Subject Alternative Names (comma separated)" />
+                    <FluentButton Appearance="Appearance.Accent" OnClick="AddCertificate">Add</FluentButton>
+                    <FluentButton Appearance="Appearance.Neutral" OnClick="() => showAddDialog = false">Cancel</FluentButton>
+                </FluentStack>
+            </ChildContent>
+        </FluentDialog>
+    }
+
+    @if (selectedCertificate != null)
+    {
+        <FluentDialog @bind-Visible="showViewDialog" Title="Certificate Details">
+            <ChildContent>
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+                    <FluentLabel><strong>Name:</strong> @selectedCertificate.Name</FluentLabel>
+                    <FluentLabel><strong>Source:</strong> @selectedCertificate.Source</FluentLabel>
+
+                    @if (selectedCertificate.Source == "file")
+                    {
+                        <FluentLabel><strong>File Path:</strong> @selectedCertificate.FilePath</FluentLabel>
+                    }
+                    else if (selectedCertificate.Source == "azurekeyvault")
+                    {
+                        <FluentLabel><strong>Key Vault URI:</strong> @selectedCertificate.KeyVaultUri</FluentLabel>
+                        <FluentLabel><strong>Certificate Name:</strong> @selectedCertificate.KeyVaultCertificateName</FluentLabel>
+                    }
+                    else if (selectedCertificate.Source == "awssecretmanager")
+                    {
+                        <FluentLabel><strong>AWS Region:</strong> @selectedCertificate.AwsRegion</FluentLabel>
+                        <FluentLabel><strong>Certificate Secret Name:</strong> @selectedCertificate.AwsCertificateName</FluentLabel>
+                    }
+
+                    <FluentLabel><strong>Subject Alternative Names:</strong> @(selectedCertificate.SubjectAlternativeNames != null ? string.Join(", ", selectedCertificate.SubjectAlternativeNames) : "None")</FluentLabel>
+                    <FluentButton Appearance="Appearance.Neutral" OnClick="() => showViewDialog = false">Close</FluentButton>
+                </FluentStack>
+            </ChildContent>
+        </FluentDialog>
+    }
+
+    @if (showDeleteDialog)
+    {
+        <FluentDialog @bind-Visible="showDeleteDialog" Title="Confirm Delete">
+            <ChildContent>
+                <FluentLabel>Are you sure you want to delete certificate '@(selectedCertificate?.Name)'?</FluentLabel>
+                <FluentButton Appearance="Appearance.Accent" OnClick="ConfirmDeleteCertificate">Delete</FluentButton>
+                <FluentButton Appearance="Appearance.Neutral" OnClick="() => showDeleteDialog = false">Cancel</FluentButton>
+            </ChildContent>
+        </FluentDialog>
+    }
+</FluentStack>
+
+@code {
+    private IQueryable<CertificateDto> certificates;
+    private bool isLoading = false;
+    private string errorMessage;
+    private bool showAddDialog = false;
+    private bool showViewDialog = false;
+    private bool showDeleteDialog = false;
+    private CertificateDto selectedCertificate;
+    private CertificateDto newCertificate = new CertificateDto { Source = "file" };
+    private string subjectAlternativeNamesText = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCertificates();
+    }
+
+    private async Task LoadCertificates()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            var response = await Http.GetAsync("/api/certificates");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<CertificatesResponse>(content, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                certificates = result?.Certificates.AsQueryable() ?? Enumerable.Empty<CertificateDto>().AsQueryable();
+            }
+            else
+            {
+                errorMessage = $"Failed to load certificates: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ViewCertificate(CertificateDto certificate)
+    {
+        selectedCertificate = certificate;
+        showViewDialog = true;
+    }
+
+    private void DeleteCertificate(CertificateDto certificate)
+    {
+        selectedCertificate = certificate;
+        showDeleteDialog = true;
+    }
+
+    private async Task ConfirmDeleteCertificate()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            var response = await Http.DeleteAsync($"/api/certificates/{selectedCertificate.Id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadCertificates();
+            }
+            else
+            {
+                errorMessage = $"Failed to delete certificate: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            showDeleteDialog = false;
+        }
+    }
+
+    private async Task AddCertificate()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            // Parse subject alternative names
+            if (!string.IsNullOrWhiteSpace(subjectAlternativeNamesText))
+            {
+                newCertificate.SubjectAlternativeNames = subjectAlternativeNamesText
+                    .Split(',')
+                    .Select(s => s.Trim())
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .ToList();
+            }
+
+            var response = await Http.PostAsJsonAsync("/api/certificates", newCertificate);
+
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadCertificates();
+                newCertificate = new CertificateDto { Source = "file" };
+                subjectAlternativeNamesText = "";
+                showAddDialog = false;
+            }
+            else
+            {
+                errorMessage = $"Failed to add certificate: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private class CertificatesResponse
+    {
+        public List<CertificateDto> Certificates { get; set; }
+    }
+
+    private class CertificateDto
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Source { get; set; }
+        public string FilePath { get; set; }
+        public string FilePassword { get; set; }
+        public string KeyVaultUri { get; set; }
+        public string KeyVaultCertificateName { get; set; }
+        public string KeyVaultCertificatePasswordName { get; set; }
+        public string AwsRegion { get; set; }
+        public string AwsCertificateName { get; set; }
+        public string AwsCertificatePasswordName { get; set; }
+        public List<string> SubjectAlternativeNames { get; set; }
+    }
+}

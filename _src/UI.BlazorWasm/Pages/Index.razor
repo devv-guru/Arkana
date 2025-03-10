@@ -1,0 +1,49 @@
+@page "/"
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<PageTitle>Arkana Gateway - Home</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+    <FluentLabel Typo="Typography.H2">Welcome to Arkana Gateway</FluentLabel>
+
+    <FluentDivider></FluentDivider>
+
+    <FluentLabel Typo="Typography.Body">
+        Arkana Gateway is a powerful API gateway that provides routing, load balancing, and security features for your microservices architecture.
+    </FluentLabel>
+
+    <FluentGrid Columns="3" ColumnGap="20" RowGap="20">
+        <FluentGridItem>
+            <FluentCard>
+                <FluentIcon Value="@(new Icons.Regular.Size20.Settings())" Color="Color.Accent"></FluentIcon>
+                <FluentLabel Typo="Typography.H4">Configuration</FluentLabel>
+                <FluentLabel Typo="Typography.Body">
+                    Manage your gateway configuration including hosts, routes, and certificates.
+                </FluentLabel>
+                <FluentButton Appearance="Appearance.Accent" Href="/configuration">Manage Configuration</FluentButton>
+            </FluentCard>
+        </FluentGridItem>
+
+        <FluentGridItem>
+            <FluentCard>
+                <FluentIcon Value="@(new Icons.Regular.Size20.ChartMultiple())" Color="Color.Accent" />
+                <FluentLabel Typo="Typography.H4">Metrics</FluentLabel>
+                <FluentLabel Typo="Typography.Body">
+                    View system and request metrics to monitor your gateway performance.
+                </FluentLabel>
+                <FluentButton Appearance="Appearance.Accent" Href="/metrics">View Metrics</FluentButton>
+            </FluentCard>
+        </FluentGridItem>
+
+        <FluentGridItem>
+            <FluentCard>
+                <FluentIcon Value="@(new Icons.Regular.Size24.Shield())" Color="Color.Accent" />
+                <FluentLabel Typo="Typography.H4">Certificates</FluentLabel>
+                <FluentLabel Typo="Typography.Body">
+                    Manage SSL/TLS certificates for secure communication.
+                </FluentLabel>
+                <FluentButton Appearance="Appearance.Accent" Href="/certificates">Manage Certificates</FluentButton>
+            </FluentCard>
+        </FluentGridItem>
+    </FluentGrid>
+</FluentStack>

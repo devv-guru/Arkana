@@ -2,7 +2,9 @@ using Endpoints;
 using Gateway.Configuration;
 using Gateway.Data;
 using Gateway.Logging;
+using Gateway.Metrics;
 using Gateway.Proxy;
+using Gateway.UI;
 using Gateway.WebServer;
 using Microsoft.Extensions.FileProviders;
 using System.Globalization;
@@ -27,7 +29,6 @@ public class Program
 #if DEBUG
         builder.Configuration.AddJsonFile("appsettings.Development.json", false, true);
 #else
-
         builder.Configuration.SetBasePath(Environment.GetEnvironmentVariable("CONFIG_PATH"))
             .AddJsonFile("appsettings.json", false, true)
             .AddEnvironmentVariables();
@@ -61,20 +62,21 @@ public class Program
 
         host.AddLogging(builder.Configuration);
 
-        builder.Configuration.AddConfigurationSources(args);
         builder.Services.AddLazyCache();
-        builder.Services.AddScoped<HostCertificateCache>();
-        builder.Services.AddScoped<CertificateManager>();
+        builder.Services.AddSingleton<HostCertificateCache>();
+        builder.Services.AddSingleton<CertificateManager>();
         builder.WebHost.ConfigureWebServer();
         builder.AddDataContext(configuration);
         builder.Services.AddGatewayHttpsRedirection();
         builder.Services.AddGatewayFastEndpoints();
-        builder.Services.AddProxy();
+        builder.Services.AddProxy(configuration);
+        builder.Services.AddConfiguration();
+        builder.Services.AddMetrics(configuration);
+        builder.Services.AddUI(configuration);
         
         builder.Services.AddHostedService<LoadStartup>();
 
         var app = builder.Build();
-
 
         app.MapDefaultEndpoints();
 
@@ -87,8 +89,10 @@ public class Program
             RequestPath = $"/{EnvironmentOptions.StaticRequestPath}"
         });
 
+        app.UseMetricsMiddleware();
         app.UseGatewayFastEndpoints(configuration);
         app.UseProxy();
+        app.UseUI(builder.Environment);
 
         await app.RunAsync();
     }

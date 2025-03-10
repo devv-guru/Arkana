@@ -1,0 +1,579 @@
+@page "/metrics-charts"
+@using Microsoft.FluentUI.AspNetCore.Components
+@using System.Text.Json
+@using ApexCharts
+@inject HttpClient Http
+
+<PageTitle>Arkana Gateway - Metrics Charts</PageTitle>
+
+<FluentStack Orientation="FluentOrientation.Vertical" VerticalGap="20">
+    <FluentLabel Typo="Typography.H2">Gateway Metrics Charts</FluentLabel>
+
+    <FluentDivider></FluentDivider>
+
+    <FluentTabs>
+        <FluentTab Label="System Metrics">
+            <FluentStack Orientation="FluentOrientation.Vertical" VerticalGap="10">
+                <FluentStack Orientation="FluentOrientation.Horizontal" HorizontalGap="10">
+                    <FluentLabel Typo="Typography.H4">System Metrics</FluentLabel>
+                    <FluentButton Appearance="Appearance.Accent" OnClick="LoadSystemMetrics">Refresh</FluentButton>
+                    <FluentNumberField @bind-Value="systemMetricsCount" Min="10" Max="100" Label="Count" />
+                </FluentStack>
+
+                @if (isLoadingSystem)
+                {
+                    <FluentProgressRing></FluentProgressRing>
+                }
+                else if (systemErrorMessage != null)
+                {
+                    <FluentMessageBar Intent="MessageIntent.Error">
+                        @systemErrorMessage
+                    </FluentMessageBar>
+                }
+                else if (systemMetrics?.Count > 0)
+                {
+                    <FluentGrid>
+                        <FluentGridItem xs="12" md="6">
+                            <FluentCard>
+                                <ApexChart TItem="SystemMetricViewModel"
+                                           Title="CPU Usage (%)"
+                                           Options="cpuChartOptions">
+                                    <ApexPointSeries TItem="SystemMetricViewModel"
+                                                     Items="systemMetrics"
+                                                     Name="CPU Usage"
+                                                     XValue="@(x => x.Timestamp)"
+                                                     YValue="@(x => Convert.ToDecimal(x.CpuUsage * 100))"
+                                                     SeriesType="SeriesType.Line" />
+                                </ApexChart>
+                            </FluentCard>
+                        </FluentGridItem>
+                        <FluentGridItem xs="12" md="6">
+                            <FluentCard>
+                                <ApexChart TItem="SystemMetricViewModel"
+                                           Title="Memory Usage (MB)"
+                                           Options="memoryChartOptions">
+                                    <ApexPointSeries TItem="SystemMetricViewModel"
+                                                     Items="systemMetrics"
+                                                     Name="Memory Usage"
+                                                     XValue="@(x => x.Timestamp)"
+                                                     YValue="@(x => Convert.ToDecimal(x.MemoryUsage))"
+                                                     SeriesType="SeriesType.Line" />
+                                </ApexChart>
+                            </FluentCard>
+                        </FluentGridItem>
+                        <FluentGridItem xs="12" md="6">
+                            <FluentCard>
+                                <ApexChart TItem="SystemMetricViewModel"
+                                           Title="Requests Per Second"
+                                           Options="rpsChartOptions">
+                                    <ApexPointSeries TItem="SystemMetricViewModel"
+                                                     Items="systemMetrics"
+                                                     Name="Requests/Sec"
+                                                     XValue="@(x => x.Timestamp)"
+                                                     YValue="@(x => Convert.ToDecimal(x.RequestsPerSecond))"
+                                                     SeriesType="SeriesType.Line" />
+                                </ApexChart>
+                            </FluentCard>
+                        </FluentGridItem>
+                        <FluentGridItem xs="12" md="6">
+                            <FluentCard>
+                                <ApexChart TItem="SystemMetricViewModel"
+                                           Title="Active Connections"
+                                           Options="connectionsChartOptions">
+                                    <ApexPointSeries TItem="SystemMetricViewModel"
+                                                     Items="systemMetrics"
+                                                     Name="Connections"
+                                                     XValue="@(x => x.Timestamp)"
+                                                     YValue="@(x => Convert.ToDecimal(x.ActiveConnections))"
+                                                     SeriesType="SeriesType.Line" />
+                                </ApexChart>
+                            </FluentCard>
+                        </FluentGridItem>
+                    </FluentGrid>
+                }
+                else
+                {
+                    <FluentLabel>No system metrics available</FluentLabel>
+                }
+            </FluentStack>
+        </FluentTab>
+
+        <FluentTab Label="Request Metrics">
+            <FluentStack Orientation="FluentOrientation.Vertical" VerticalGap="10">
+                <FluentStack Orientation="FluentOrientation.Horizontal" HorizontalGap="10">
+                    <FluentLabel Typo="Typography.H4">Request Metrics</FluentLabel>
+                    <FluentButton Appearance="Appearance.Accent" OnClick="LoadRequestMetrics">Refresh</FluentButton>
+                    <FluentNumberField @bind-Value="requestMetricsCount" Min="10" Max="100" Label="Count" />
+                </FluentStack>
+
+                @if (isLoadingRequest)
+                {
+                    <FluentProgressRing></FluentProgressRing>
+                }
+                else if (requestErrorMessage != null)
+                {
+                    <FluentMessageBar Intent="MessageIntent.Error">
+                        @requestErrorMessage
+                    </FluentMessageBar>
+                }
+                else if (requestMetrics?.Count > 0)
+                {
+                    <FluentGrid>
+                        <FluentGridItem xs="12" md="6">
+                            <FluentCard>
+                                <ApexChart TItem="RequestMetricViewModel"
+                                           Title="Response Time (ms)"
+                                           Options="responseTimeChartOptions">
+                                    <ApexPointSeries TItem="RequestMetricViewModel"
+                                                     Items="requestMetrics"
+                                                     Name="Response Time"
+                                                     XValue="@(x => x.Timestamp)"
+                                                     YValue="@(x => Convert.ToDecimal(x.ElapsedMilliseconds))"
+                                                     SeriesType="SeriesType.Line" />
+                                </ApexChart>
+                            </FluentCard>
+                        </FluentGridItem>
+                        <FluentGridItem xs="12" md="6">
+                            <FluentCard>
+                                <ApexChart TItem="object"
+                                           Title="Status Codes"
+                                           Options="statusCodeChartOptions">
+                                    <ApexPointSeries TItem="object"
+                                                     Items="statusCodeData"
+                                                     Name="Count"
+                                                     XValue="@(x => GetPropertyValue(x, "StatusCode"))"
+                                                     YValue="@(x => Convert.ToDecimal(GetPropertyValue(x, "Count")))"
+                                                     SeriesType="SeriesType.Bar" />
+                                </ApexChart>
+                            </FluentCard>
+                        </FluentGridItem>
+                        <FluentGridItem xs="12" md="6">
+                            <FluentCard>
+                                <ApexChart TItem="object"
+                                           Title="Requests by Method"
+                                           Options="methodChartOptions">
+                                    <ApexPointSeries TItem="object"
+                                                     Items="methodData"
+                                                     Name="Count"
+                                                     XValue="@(x => GetPropertyValue(x, "Method"))"
+                                                     YValue="@(x => Convert.ToDecimal(GetPropertyValue(x, "Count")))"
+                                                     SeriesType="SeriesType.Bar" />
+                                </ApexChart>
+                            </FluentCard>
+                        </FluentGridItem>
+                        <FluentGridItem xs="12" md="6">
+                            <FluentCard>
+                                <ApexChart TItem="object"
+                                           Title="Requests by Route"
+                                           Options="routeChartOptions">
+                                    <ApexPointSeries TItem="object"
+                                                     Items="routeData"
+                                                     Name="Count"
+                                                     XValue="@(x => GetPropertyValue(x, "Route"))"
+                                                     YValue="@(x => Convert.ToDecimal(GetPropertyValue(x, "Count")))"
+                                                     SeriesType="SeriesType.Bar" />
+                                </ApexChart>
+                            </FluentCard>
+                        </FluentGridItem>
+                    </FluentGrid>
+                }
+                else
+                {
+                    <FluentLabel>No request metrics available</FluentLabel>
+                }
+            </FluentStack>
+        </FluentTab>
+    </FluentTabs>
+</FluentStack>
+
+@code {
+    private List<SystemMetricViewModel> systemMetrics;
+    private List<RequestMetricViewModel> requestMetrics;
+    private bool isLoadingSystem = false;
+    private bool isLoadingRequest = false;
+    private string systemErrorMessage;
+    private string requestErrorMessage;
+    private int systemMetricsCount = 30;
+    private int requestMetricsCount = 50;
+
+    // Chart options
+    private ApexChartOptions<SystemMetricViewModel> cpuChartOptions;
+    private ApexChartOptions<SystemMetricViewModel> memoryChartOptions;
+    private ApexChartOptions<SystemMetricViewModel> rpsChartOptions;
+    private ApexChartOptions<SystemMetricViewModel> connectionsChartOptions;
+    private ApexChartOptions<RequestMetricViewModel> responseTimeChartOptions;
+    private ApexChartOptions<object> statusCodeChartOptions;
+    private ApexChartOptions<object> methodChartOptions;
+    private ApexChartOptions<object> routeChartOptions;
+
+    // Aggregated data for charts
+    private List<object> statusCodeData = new List<object>();
+    private List<object> methodData = new List<object>();
+    private List<object> routeData = new List<object>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        InitializeChartOptions();
+        await LoadSystemMetrics();
+        await LoadRequestMetrics();
+    }
+
+    private object GetPropertyValue(object obj, string propertyName)
+    {
+        if (obj == null) return null;
+        var property = obj.GetType().GetProperty(propertyName);
+        return property != null ? property.GetValue(obj, null) : null;
+    }
+
+    private void InitializeChartOptions()
+    {
+        // Common options for time series charts
+        var timeSeriesOptions = new ApexChartOptions<object>
+            {
+                Chart = new Chart
+                {
+                    Height = 300,
+                    Zoom = new Zoom { Enabled = true }
+                },
+                Stroke = new Stroke
+                {
+                    Curve = Curve.Smooth,
+                    Width = 2
+                },
+                Markers = new Markers { Size = 4 },
+                Grid = new Grid { Show = true },
+                Tooltip = new Tooltip { Enabled = true },
+                Xaxis = new XAxis
+                {
+                    Type = XAxisType.Datetime,
+                    Labels = new XAxisLabels
+                    {
+                        Format = "HH:mm:ss"
+                    }
+                },
+                Theme = new Theme
+                {
+                    Mode = Mode.Light,
+                    Palette = PaletteType.Palette1
+                }
+            };
+
+        // CPU chart options
+        cpuChartOptions = new ApexChartOptions<SystemMetricViewModel>
+            {
+                Chart = timeSeriesOptions.Chart,
+                Stroke = timeSeriesOptions.Stroke,
+                Markers = timeSeriesOptions.Markers,
+                Grid = timeSeriesOptions.Grid,
+                Tooltip = timeSeriesOptions.Tooltip,
+                Xaxis = timeSeriesOptions.Xaxis,
+                Theme = timeSeriesOptions.Theme,
+                Yaxis = new List<YAxis>
+                {
+                    new YAxis
+                    {
+                        Title = new AxisTitle { Text = "CPU Usage (%)" },
+                        Min = 0,
+                        Max = 100
+                    }
+                }
+            };
+
+        // Memory chart options
+        memoryChartOptions = new ApexChartOptions<SystemMetricViewModel>
+            {
+                Chart = timeSeriesOptions.Chart,
+                Stroke = timeSeriesOptions.Stroke,
+                Markers = timeSeriesOptions.Markers,
+                Grid = timeSeriesOptions.Grid,
+                Tooltip = timeSeriesOptions.Tooltip,
+                Xaxis = timeSeriesOptions.Xaxis,
+                Theme = timeSeriesOptions.Theme,
+                Yaxis = new List<YAxis>
+                {
+                    new YAxis
+                    {
+                        Title = new AxisTitle { Text = "Memory Usage (MB)" },
+                        Min = 0
+                    }
+                }
+            };
+
+        // RPS chart options
+        rpsChartOptions = new ApexChartOptions<SystemMetricViewModel>
+            {
+                Chart = timeSeriesOptions.Chart,
+                Stroke = timeSeriesOptions.Stroke,
+                Markers = timeSeriesOptions.Markers,
+                Grid = timeSeriesOptions.Grid,
+                Tooltip = timeSeriesOptions.Tooltip,
+                Xaxis = timeSeriesOptions.Xaxis,
+                Theme = timeSeriesOptions.Theme,
+                Yaxis = new List<YAxis>
+                {
+                    new YAxis
+                    {
+                        Title = new AxisTitle { Text = "Requests/Sec" },
+                        Min = 0
+                    }
+                }
+            };
+
+        // Connections chart options
+        connectionsChartOptions = new ApexChartOptions<SystemMetricViewModel>
+            {
+                Chart = timeSeriesOptions.Chart,
+                Stroke = timeSeriesOptions.Stroke,
+                Markers = timeSeriesOptions.Markers,
+                Grid = timeSeriesOptions.Grid,
+                Tooltip = timeSeriesOptions.Tooltip,
+                Xaxis = timeSeriesOptions.Xaxis,
+                Theme = timeSeriesOptions.Theme,
+                Yaxis = new List<YAxis>
+                {
+                    new YAxis
+                    {
+                        Title = new AxisTitle { Text = "Active Connections" },
+                        Min = 0
+                    }
+                }
+            };
+
+        // Response time chart options
+        responseTimeChartOptions = new ApexChartOptions<RequestMetricViewModel>
+            {
+                Chart = timeSeriesOptions.Chart,
+                Stroke = timeSeriesOptions.Stroke,
+                Markers = timeSeriesOptions.Markers,
+                Grid = timeSeriesOptions.Grid,
+                Tooltip = timeSeriesOptions.Tooltip,
+                Xaxis = timeSeriesOptions.Xaxis,
+                Theme = timeSeriesOptions.Theme,
+                Yaxis = new List<YAxis>
+                {
+                    new YAxis
+                    {
+                        Title = new AxisTitle { Text = "Response Time (ms)" },
+                        Min = 0
+                    }
+                }
+            };
+
+        // Common options for bar charts
+        var barChartOptions = new ApexChartOptions<object>
+            {
+                Chart = new Chart
+                {
+                    Height = 300,
+                    Type = ChartType.Bar
+                },
+                PlotOptions = new PlotOptions
+                {
+                    Bar = new PlotOptionsBar
+                    {
+                        Horizontal = false,
+                        ColumnWidth = "70%"
+                    }
+                },
+                Grid = new Grid { Show = true },
+                Tooltip = new Tooltip { Enabled = true },
+                Theme = new Theme
+                {
+                    Mode = Mode.Light,
+                    Palette = PaletteType.Palette1
+                }
+            };
+
+        // Status code chart options
+        statusCodeChartOptions = new ApexChartOptions<object>
+            {
+                Chart = barChartOptions.Chart,
+                PlotOptions = barChartOptions.PlotOptions,
+                Grid = barChartOptions.Grid,
+                Tooltip = barChartOptions.Tooltip,
+                Theme = barChartOptions.Theme,
+                Xaxis = new XAxis
+                {
+                    Type = XAxisType.Category,
+                    Title = new AxisTitle { Text = "Status Code" }
+                },
+                Yaxis = new List<YAxis>
+                {
+                    new YAxis
+                    {
+                        Title = new AxisTitle { Text = "Count" },
+                        Min = 0
+                    }
+                }
+            };
+
+        // Method chart options
+        methodChartOptions = new ApexChartOptions<object>
+            {
+                Chart = barChartOptions.Chart,
+                PlotOptions = barChartOptions.PlotOptions,
+                Grid = barChartOptions.Grid,
+                Tooltip = barChartOptions.Tooltip,
+                Theme = barChartOptions.Theme,
+                Xaxis = new XAxis
+                {
+                    Type = XAxisType.Category,
+                    Title = new AxisTitle { Text = "HTTP Method" }
+                },
+                Yaxis = new List<YAxis>
+                {
+                    new YAxis
+                    {
+                        Title = new AxisTitle { Text = "Count" },
+                        Min = 0
+                    }
+                }
+            };
+
+        // Route chart options
+        routeChartOptions = new ApexChartOptions<object>
+            {
+                Chart = barChartOptions.Chart,
+                PlotOptions = barChartOptions.PlotOptions,
+                Grid = barChartOptions.Grid,
+                Tooltip = barChartOptions.Tooltip,
+                Theme = barChartOptions.Theme,
+                Xaxis = new XAxis
+                {
+                    Type = XAxisType.Category,
+                    Title = new AxisTitle { Text = "Route" }
+                },
+                Yaxis = new List<YAxis>
+                {
+                    new YAxis
+                    {
+                        Title = new AxisTitle { Text = "Count" },
+                        Min = 0
+                    }
+                }
+            };
+    }
+
+    private async Task LoadSystemMetrics()
+    {
+        isLoadingSystem = true;
+        systemErrorMessage = null;
+
+        try
+        {
+            var response = await Http.GetAsync($"/api/metrics/system?count={systemMetricsCount}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<SystemMetricsResponse>(content, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                systemMetrics = result?.Metrics ?? new List<SystemMetricViewModel>();
+
+                // Sort by timestamp to ensure proper chart rendering
+                systemMetrics = systemMetrics.OrderBy(m => m.Timestamp).ToList();
+            }
+            else
+            {
+                systemErrorMessage = $"Failed to load system metrics: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            systemErrorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoadingSystem = false;
+        }
+    }
+
+    private async Task LoadRequestMetrics()
+    {
+        isLoadingRequest = true;
+        requestErrorMessage = null;
+
+        try
+        {
+            var response = await Http.GetAsync($"/api/metrics/request?count={requestMetricsCount}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<RequestMetricsResponse>(content, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                requestMetrics = result?.Metrics ?? new List<RequestMetricViewModel>();
+
+                // Sort by timestamp to ensure proper chart rendering
+                requestMetrics = requestMetrics.OrderBy(m => m.Timestamp).ToList();
+
+                // Prepare aggregated data for charts
+                PrepareAggregatedData();
+            }
+            else
+            {
+                requestErrorMessage = $"Failed to load request metrics: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            requestErrorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoadingRequest = false;
+        }
+    }
+
+    private void PrepareAggregatedData()
+    {
+        if (requestMetrics == null || requestMetrics.Count == 0)
+        {
+            return;
+        }
+
+        // Status code data
+        var statusCodes = requestMetrics
+            .GroupBy(m => m.StatusCode)
+            .Select(g => new { StatusCode = g.Key.ToString(), Count = g.Count() })
+            .OrderBy(x => x.StatusCode)
+            .ToList<object>();
+
+        statusCodeData = statusCodes;
+
+        // Method data
+        var methods = requestMetrics
+            .GroupBy(m => m.Method)
+            .Select(g => new { Method = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count)
+            .ToList<object>();
+
+        methodData = methods;
+
+        // Route data
+        var routes = requestMetrics
+            .GroupBy(m => string.IsNullOrEmpty(m.RouteId) ? "Unknown" : m.RouteId)
+            .Select(g => new { Route = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count)
+            .Take(10) // Limit to top 10 routes
+            .ToList<object>();
+
+        routeData = routes;
+    }
+
+    private class SystemMetricsResponse
+    {
+        public List<SystemMetricViewModel> Metrics { get; set; }
+    }
+
+    private class RequestMetricsResponse
+    {
+        public List<RequestMetricViewModel> Metrics { get; set; }
+    }
+}

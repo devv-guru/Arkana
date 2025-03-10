@@ -1,4 +1,4 @@
-﻿namespace Gateway.WebServer;
+﻿﻿﻿﻿namespace Gateway.WebServer;
 
 public static class ConfigureServices
 {
@@ -16,8 +16,7 @@ public static class ConfigureServices
                         httpsOptions.ServerCertificateSelector =
                             (context, hostName) =>
                             {
-                                using var scope = options.ApplicationServices.CreateScope();
-                                var hostCache = scope.ServiceProvider.GetRequiredService<HostCertificateCache>();
+                                var hostCache = options.ApplicationServices.GetRequiredService<HostCertificateCache>();
                                 return hostCache.GetCertificate(hostName);
                             };
                     });

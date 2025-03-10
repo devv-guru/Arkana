@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿﻿using Data.Entities;
+using Data.Entities.Metrics;
 
 namespace Data.Contexts.Base;
 
@@ -20,4 +21,8 @@ public interface IReadOnlyContext
     IQueryable<Transform> Transforms { get; }
     IQueryable<HeaderMatch> HeaderMatches { get; }
     IQueryable<QueryParameterMatch> QueryParameterMatches { get; }
+    
+    // Metrics
+    IQueryable<RequestMetric> RequestMetrics { get; }
+    IQueryable<SystemMetric> SystemMetrics { get; }
 }

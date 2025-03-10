@@ -1,0 +1,171 @@
+{
+  "Hosts": [
+    {
+      "Name": "Main Host",
+      "HostNames": ["example.com", "www.example.com"],
+      "Certificate": {
+        "Name": "Example Certificate",
+        "Source": "InMemory",
+        "SubjectAlternativeNames": ["example.com", "www.example.com"]
+      }
+    },
+    {
+      "Name": "API Host",
+      "HostNames": ["api.example.com"],
+      "Certificate": {
+        "Name": "API Certificate",
+        "Source": "InMemory",
+        "SubjectAlternativeNames": ["api.example.com"]
+      }
+    },
+    {
+      "Name": "Admin Host",
+      "HostNames": ["admin.example.com"],
+      "Certificate": {
+        "Name": "Admin Certificate",
+        "Source": "AzureKeyVault",
+        "KeyVaultUri": "https://your-keyvault.vault.azure.net/",
+        "KeyVaultCertificateName": "admin-certificate",
+        "KeyVaultCertificatePasswordName": "admin-certificate-password"
+      }
+    }
+  ],
+  "ProxyRules": [
+    {
+      "Name": "Main Website Rule",
+      "Hosts": ["example.com", "www.example.com"],
+      "PathPrefix": "/",
+      "StripPrefix": false,
+      "Methods": ["GET", "POST", "PUT", "DELETE"],
+      "Cluster": {
+        "Name": "WebsiteCluster",
+        "LoadBalancingPolicy": "RoundRobin",
+        "HealthCheck": {
+          "Enabled": true,
+          "Interval": "00:00:10",
+          "Timeout": "00:00:10",
+          "Threshold": 5,
+          "Path": "/health",
+          "Query": null
+        },
+        "HttpRequest": {
+          "Version": "2",
+          "VersionPolicy": "RequestVersionOrLower",
+          "AllowResponseBuffering": false,
+          "ActivityTimeout": "00:02:00"
+        },
+        "Transforms": [
+          {
+            "RequestHeader": "X-Forwarded-Host",
+            "Set": "{Host}"
+          }
+        ],
+        "Destinations": [
+          {
+            "Name": "website-service-1",
+            "Address": "http://website-service-1:8080"
+          },
+          {
+            "Name": "website-service-2",
+            "Address": "http://website-service-2:8080"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "API Rule",
+      "Hosts": ["api.example.com"],
+      "PathPrefix": "/api",
+      "StripPrefix": true,
+      "Methods": ["GET", "POST", "PUT", "DELETE"],
+      "Cluster": {
+        "Name": "APICluster",
+        "LoadBalancingPolicy": "RoundRobin",
+        "HealthCheck": {
+          "Enabled": true,
+          "Interval": "00:00:10",
+          "Timeout": "00:00:10",
+          "Threshold": 5,
+          "Path": "/health",
+          "Query": null
+        },
+        "HttpRequest": {
+          "Version": "2",
+          "VersionPolicy": "RequestVersionOrLower",
+          "AllowResponseBuffering": false,
+          "ActivityTimeout": "00:02:00"
+        },
+        "Transforms": [
+          {
+            "RequestHeader": "X-Forwarded-Host",
+            "Set": "{Host}"
+          }
+        ],
+        "Destinations": [
+          {
+            "Name": "api-service-1",
+            "Address": "http://api-service-1:5000"
+          },
+          {
+            "Name": "api-service-2",
+            "Address": "http://api-service-2:5000"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "Admin Rule",
+      "Hosts": ["admin.example.com"],
+      "PathPrefix": "/",
+      "StripPrefix": false,
+      "Methods": ["GET", "POST", "PUT", "DELETE"],
+      "Cluster": {
+        "Name": "AdminCluster",
+        "LoadBalancingPolicy": "RoundRobin",
+        "HealthCheck": {
+          "Enabled": true,
+          "Interval": "00:00:10",
+          "Timeout": "00:00:10",
+          "Threshold": 5,
+          "Path": "/health",
+          "Query": null
+        },
+        "HttpRequest": {
+          "Version": "2",
+          "VersionPolicy": "RequestVersionOrLower",
+          "AllowResponseBuffering": false,
+          "ActivityTimeout": "00:02:00"
+        },
+        "Transforms": [
+          {
+            "RequestHeader": "X-Forwarded-Host",
+            "Set": "{Host}"
+          }
+        ],
+        "Destinations": [
+          {
+            "Name": "admin-service",
+            "Address": "http://admin-service:3000"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "Shared API Rule",
+      "Hosts": ["example.com", "www.example.com", "admin.example.com"],
+      "PathPrefix": "/shared-api",
+      "StripPrefix": true,
+      "Methods": ["GET", "POST"],
+      "Cluster": {
+        "Name": "SharedAPICluster",
+        "LoadBalancingPolicy": "RoundRobin",
+        "Destinations": [
+          {
+            "Name": "shared-api-service",
+            "Address": "http://shared-api-service:4000"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+@page "/metrics"
+@using Microsoft.FluentUI.AspNetCore.Components
+@using System.Text.Json
+
+@inject HttpClient Http
+
+<PageTitle>Arkana Gateway - Metrics</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+    <FluentLabel Typo="Typography.H2">Gateway Metrics</FluentLabel>
+    
+    <FluentDivider></FluentDivider>
+    
+    <FluentTabs>
+        <FluentTab Label="System Metrics">
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10">
+                    <FluentLabel Typo="Typography.H4">System Metrics</FluentLabel>
+                    <FluentButton Appearance="Appearance.Accent" OnClick="LoadSystemMetrics">Refresh</FluentButton>
+                    <FluentNumberField @bind-Value="systemMetricsCount" Min="1" Max="100" Label="Count" />
+                </FluentStack>
+                
+                @if (isLoadingSystem)
+                {
+                    <FluentProgressRing></FluentProgressRing>
+                }
+                else if (systemErrorMessage != null)
+                {
+                    <FluentMessageBar Intent="MessageIntent.Error">
+                        @systemErrorMessage
+                    </FluentMessageBar>
+                }
+                else if (systemMetrics?.Count() > 0)
+                {
+                    <FluentDataGrid Items="@systemMetrics" TGridItem="SystemMetricViewModel">
+                        <PropertyColumn Property="@(m => m.Timestamp)" Title="Timestamp" />
+                        <PropertyColumn Property="@(m => m.CpuUsage)" Title="CPU Usage %" Format="P1" />
+                        <PropertyColumn Property="@(m => m.MemoryUsage)" Title="Memory Usage (MB)" Format="N0" />
+                        <PropertyColumn Property="@(m => m.TotalRequests)" Title="Total Requests" Format="N0" />
+                        <PropertyColumn Property="@(m => m.ActiveConnections)" Title="Active Connections" Format="N0" />
+                        <PropertyColumn Property="@(m => m.RequestsPerSecond)" Title="Requests/Sec" Format="N2" />
+                    </FluentDataGrid>
+                }
+                else
+                {
+                    <FluentLabel>No system metrics available</FluentLabel>
+                }
+            </FluentStack>
+        </FluentTab>
+        
+        <FluentTab Label="Request Metrics">
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10">
+                    <FluentLabel Typo="Typography.H4">Request Metrics</FluentLabel>
+                    <FluentButton Appearance="Appearance.Accent" OnClick="LoadRequestMetrics">Refresh</FluentButton>
+                    <FluentNumberField @bind-Value="requestMetricsCount" Min="1" Max="100" Label="Count" />
+                </FluentStack>
+                
+                @if (isLoadingRequest)
+                {
+                    <FluentProgressRing></FluentProgressRing>
+                }
+                else if (requestErrorMessage != null)
+                {
+                    <FluentMessageBar Intent="MessageIntent.Error">
+                        @requestErrorMessage
+                    </FluentMessageBar>
+                }
+                else if (requestMetrics?.Count() > 0)
+                {
+                    <FluentDataGrid Items="@requestMetrics" TGridItem="RequestMetricViewModel">
+                        <PropertyColumn Property="@(m => m.Timestamp)" Title="Timestamp" />
+                        <PropertyColumn Property="@(m => m.Method)" Title="Method" />
+                        <PropertyColumn Property="@(m => m.Path)" Title="Path" />
+                        <PropertyColumn Property="@(m => m.StatusCode)" Title="Status" />
+                        <PropertyColumn Property="@(m => m.ElapsedMilliseconds)" Title="Duration (ms)" Format="N0" />
+                        <PropertyColumn Property="@(m => m.RouteId)" Title="Route" />
+                        <PropertyColumn Property="@(m => m.ClusterId)" Title="Cluster" />
+                        <PropertyColumn Property="@(m => m.DestinationId)" Title="Destination" />
+                    </FluentDataGrid>
+                }
+                else
+                {
+                    <FluentLabel>No request metrics available</FluentLabel>
+                }
+            </FluentStack>
+        </FluentTab>
+    </FluentTabs>
+</FluentStack>
+
+@code {
+    private IQueryable<SystemMetricViewModel> systemMetrics;
+    private IQueryable<RequestMetricViewModel> requestMetrics;
+    private bool isLoadingSystem = false;
+    private bool isLoadingRequest = false;
+    private string systemErrorMessage;
+    private string requestErrorMessage;
+    private int systemMetricsCount = 10;
+    private int requestMetricsCount = 10;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSystemMetrics();
+        await LoadRequestMetrics();
+    }
+    
+    private async Task LoadSystemMetrics()
+    {
+        isLoadingSystem = true;
+        systemErrorMessage = null;
+        
+        try
+        {
+            var response = await Http.GetAsync($"/api/metrics/system?count={systemMetricsCount}");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<SystemMetricsResponse>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                
+                systemMetrics = result?.Metrics.AsQueryable() ?? Enumerable.Empty<SystemMetricViewModel>().AsQueryable();
+            }
+            else
+            {
+                systemErrorMessage = $"Failed to load system metrics: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            systemErrorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoadingSystem = false;
+        }
+    }
+    
+    private async Task LoadRequestMetrics()
+    {
+        isLoadingRequest = true;
+        requestErrorMessage = null;
+        
+        try
+        {
+            var response = await Http.GetAsync($"/api/metrics/request?count={requestMetricsCount}");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<RequestMetricsResponse>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                
+                requestMetrics = result?.Metrics.AsQueryable() ?? Enumerable.Empty<RequestMetricViewModel>().AsQueryable();
+            }
+            else
+            {
+                requestErrorMessage = $"Failed to load request metrics: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            requestErrorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoadingRequest = false;
+        }
+    }
+    
+    private class SystemMetricsResponse
+    {
+        public List<SystemMetricViewModel> Metrics { get; set; }
+    }
+    
+    private class RequestMetricsResponse
+    {
+        public List<RequestMetricViewModel> Metrics { get; set; }
+    }
+}
