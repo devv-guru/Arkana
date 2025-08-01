@@ -23,17 +23,45 @@ public class CertificateConfiguration : IEntityTypeConfiguration<Certificate>
             c => c.ToArray()); // Cloning logic, deep copy
 
         // Configure properties
-        builder.Property(c => c.Name).HasMaxLength(500);
-        builder.Property(c => c.CertificateSource).IsRequired();
-        builder.Property(c => c.KeyVaultUri).HasMaxLength(1000);
-        builder.Property(c => c.KeyVaultName).HasMaxLength(500);
-        builder.Property(c => c.KeyVaultCertificateName).HasMaxLength(500);
-        builder.Property(c => c.KeyVaultCertificatePasswordName).HasMaxLength(500);
-        builder.Property(c => c.AwsRegion).HasMaxLength(500);
-        builder.Property(c => c.AwsCertificateName).HasMaxLength(500);
-        builder.Property(c => c.AwsCertificatePasswordName).HasMaxLength(500);
-        builder.Property(c => c.SubjectAlternativeNames).HasMaxLength(1000)
+        builder.Property(c => c.Name)
+            .HasMaxLength(500)
+            .HasComment("Certificate display name");
+            
+        builder.Property(c => c.CertificateSource)
+            .IsRequired()
+            .HasComment("Certificate source type: Local, KeyVault, InMemory, SelfSigned");
+            
+        // Azure Key Vault properties
+        builder.Property(c => c.KeyVaultUri)
+            .HasMaxLength(1000)
+            .HasComment("Azure Key Vault URI");
+            
+        builder.Property(c => c.KeyVaultName)
+            .HasMaxLength(500)
+            .HasComment("Azure Key Vault name");
+            
+        builder.Property(c => c.KeyVaultCertificateName)
+            .HasMaxLength(500)
+            .HasComment("Certificate name in Azure Key Vault");
+            
+        builder.Property(c => c.KeyVaultCertificatePasswordName)
+            .HasMaxLength(500)
+            .HasComment("Certificate password secret name in Azure Key Vault");
+            
+        // Local file properties
+        builder.Property(c => c.FilePath)
+            .HasMaxLength(2000)
+            .HasComment("Local certificate file path");
+            
+        builder.Property(c => c.FilePassword)
+            .HasMaxLength(500)
+            .HasComment("Local certificate file password");
+            
+        // In-memory/self-signed properties
+        builder.Property(c => c.SubjectAlternativeNames)
+            .HasMaxLength(1000)
             .HasConversion(converter)
+            .HasComment("Subject Alternative Names for self-signed certificates")
             .Metadata.SetValueComparer(stringCollectionComparer);
         
         //Soft Delete Query Filter

@@ -21,12 +21,6 @@ public static class Mapper
             certificate.KeyVaultCertificateName = request.KeyVaultCertificateName;
             certificate.KeyVaultCertificatePasswordName = request.KeyVaultCertificatePasswordName;
         }
-        else if (request.CertificateSource == CertificateSources.AwsSecretManager)
-        {
-            certificate.AwsRegion = request.AwsRegion;
-            certificate.AwsCertificateName = request.AwsCertificateName;
-            certificate.AwsCertificatePasswordName = request.AwsCertificatePasswordName;
-        }
         else if (request.CertificateSource == CertificateSources.InMemory)
         {
             certificate.SubjectAlternativeNames = request.SubjectAlternativeNames;
@@ -47,9 +41,6 @@ public static class Mapper
             KeyVaultUri = certificate.KeyVaultUri,
             KeyVaultCertificateName = certificate.KeyVaultCertificateName,
             KeyVaultCertificatePasswordName = certificate.KeyVaultCertificatePasswordName,
-            AwsRegion = certificate.AwsRegion,
-            AwsCertificateName = certificate.AwsCertificateName,
-            AwsCertificatePasswordName = certificate.AwsCertificatePasswordName,
             SubjectAlternativeNames = certificate.SubjectAlternativeNames,
             CreatedAt = certificate.CreatedAt,
             UpdatedAt = certificate.UpdatedAt

@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Data.Entities;
 using Data.Entities.Metrics;
+using Data.Entities.Mcp;
 using Data.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,6 +34,14 @@ public class WriteOnlyDataContext : DbContext, IWriteOnlyContext
     // Metrics
     public DbSet<RequestMetric> RequestMetrics { get; set; }
     public DbSet<SystemMetric> SystemMetrics { get; set; }
+    
+    // MCP
+    public DbSet<McpServer> McpServers { get; set; }
+    public DbSet<McpUserAssignment> McpUserAssignments { get; set; }
+    public DbSet<McpRoleAssignment> McpRoleAssignments { get; set; }
+    public DbSet<McpBackendAuth> McpBackendAuths { get; set; }
+    public DbSet<McpUserApiKey> McpUserApiKeys { get; set; }
+    public DbSet<McpAuditLog> McpAuditLogs { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

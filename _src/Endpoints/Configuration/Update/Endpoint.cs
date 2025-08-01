@@ -25,11 +25,11 @@ public class Endpoint : Endpoint<Request, Response>
         
         if (result.Success)
         {
-            await SendOkAsync(result, ct);
+            await Send.OkAsync(result, ct);
         }
         else
         {
-            await SendAsync(result, 400, ct);
+            await Send.ResponseAsync(result, 400, ct);
         }
     }
 }

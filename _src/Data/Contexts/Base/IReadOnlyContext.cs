@@ -1,5 +1,6 @@
 ﻿﻿using Data.Entities;
 using Data.Entities.Metrics;
+using Data.Entities.Mcp;
 
 namespace Data.Contexts.Base;
 
@@ -25,4 +26,12 @@ public interface IReadOnlyContext
     // Metrics
     IQueryable<RequestMetric> RequestMetrics { get; }
     IQueryable<SystemMetric> SystemMetrics { get; }
+    
+    // MCP
+    IQueryable<McpServer> McpServers { get; }
+    IQueryable<McpUserAssignment> McpUserAssignments { get; }
+    IQueryable<McpRoleAssignment> McpRoleAssignments { get; }
+    IQueryable<McpBackendAuth> McpBackendAuths { get; }
+    IQueryable<McpUserApiKey> McpUserApiKeys { get; }
+    IQueryable<McpAuditLog> McpAuditLogs { get; }
 }

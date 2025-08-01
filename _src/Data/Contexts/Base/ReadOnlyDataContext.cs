@@ -1,6 +1,7 @@
 ﻿﻿using System.Reflection;
 using Data.Entities;
 using Data.Entities.Metrics;
+using Data.Entities.Mcp;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Contexts.Base;
@@ -32,6 +33,14 @@ public class ReadOnlyDataContext : DbContext, IReadOnlyContext
     // Metrics
     public IQueryable<RequestMetric> RequestMetrics => Set<RequestMetric>().AsNoTracking();
     public IQueryable<SystemMetric> SystemMetrics => Set<SystemMetric>().AsNoTracking();
+    
+    // MCP
+    public IQueryable<McpServer> McpServers => Set<McpServer>().AsNoTracking();
+    public IQueryable<McpUserAssignment> McpUserAssignments => Set<McpUserAssignment>().AsNoTracking();
+    public IQueryable<McpRoleAssignment> McpRoleAssignments => Set<McpRoleAssignment>().AsNoTracking();
+    public IQueryable<McpBackendAuth> McpBackendAuths => Set<McpBackendAuth>().AsNoTracking();
+    public IQueryable<McpUserApiKey> McpUserApiKeys => Set<McpUserApiKey>().AsNoTracking();
+    public IQueryable<McpAuditLog> McpAuditLogs => Set<McpAuditLog>().AsNoTracking();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

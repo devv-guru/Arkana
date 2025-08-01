@@ -2,8 +2,6 @@
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using Amazon.SecretsManager;
-using Amazon.SecretsManager.Model;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Data.Entities;
@@ -37,20 +35,19 @@ public class CertificateManager
             CertificateSources.AzureKeyVault => await LoadCertificateFromAzureKeyVaultAsync(certificate.KeyVaultUri,
                 certificate.KeyVaultCertificateName, certificate.KeyVaultCertificatePasswordName, ct),
 
-            CertificateSources.AwsSecretManager => await LoadCertificateFromAwsSecretsManagerAsync(
-                certificate.AwsRegion,
-                certificate.AwsCertificateName, certificate.AwsCertificatePasswordName, ct),
-
             CertificateSources.File => LoadCertificateFromFile(certificate.FilePath, certificate.FilePassword),
 
             CertificateSources.InMemory =>
                 GenerateSelfSignedCertificate(hostName, certificate?.SubjectAlternativeNames),
 
-            _ => throw new ArgumentException("Unsupported certificate source.")
+            CertificateSources.SelfSigned => 
+                GenerateSelfSignedCertificate(hostName, certificate?.SubjectAlternativeNames),
+
+            _ => throw new ArgumentException($"Unsupported certificate source: {certificate.CertificateSource}")
         };
 
         _logger.LogInformation("Certificate loaded for {HostName}", hostName);
-        _hostCertificateCache.SetCertificate(hostName, cert);
+        await _hostCertificateCache.SetCertificateAsync(hostName, cert, ct);
         _logger.LogInformation("Certificate cached for {HostName}", hostName);
     }
 
@@ -87,45 +84,6 @@ public class CertificateManager
         return cert;
     }
 
-    private async Task<X509Certificate2> LoadCertificateFromAwsSecretsManagerAsync(string? certificateSecretName,
-        string? passwordSecretName, string? region,
-        CancellationToken ct)
-    {
-        if (string.IsNullOrWhiteSpace(certificateSecretName))
-            throw new ArgumentNullException(nameof(certificateSecretName));
-
-        if (string.IsNullOrWhiteSpace(passwordSecretName))
-            throw new ArgumentNullException(nameof(passwordSecretName));
-
-        if (string.IsNullOrWhiteSpace(region))
-            throw new ArgumentNullException(nameof(region));
-
-        _logger.LogInformation("Loading certificate from AWS Secrets Manager for {CertificateName}",
-            certificateSecretName);
-
-        var secretsManagerClient = new AmazonSecretsManagerClient(Amazon.RegionEndpoint.GetBySystemName(region));
-        var base64Certificate = await GetSecretValueAsync(secretsManagerClient, certificateSecretName);
-        var certificatePassword = await GetSecretValueAsync(secretsManagerClient, passwordSecretName);
-        var pfxBytes = Convert.FromBase64String(base64Certificate);
-
-        var cert = new X509Certificate2(pfxBytes, certificatePassword, X509KeyStorageFlags.MachineKeySet);
-        _logger.LogInformation(
-            "Certificate loaded from AWS Secrets Manager for {CertificateSecretName} with expiry {Expiry}",
-            certificateSecretName, cert.NotAfter);
-
-        return cert;
-    }
-
-    private static async Task<string> GetSecretValueAsync(AmazonSecretsManagerClient client, string secretName)
-    {
-        var request = new GetSecretValueRequest
-        {
-            SecretId = secretName
-        };
-
-        var response = await client.GetSecretValueAsync(request);
-        return response.SecretString;
-    }
 
     private X509Certificate2 LoadCertificateFromFile(string? filePath, string? password)
     {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Gateway.Configuration;
 using Gateway.Tests.Helpers;
 using Gateway.WebServer;
-using LazyCache;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

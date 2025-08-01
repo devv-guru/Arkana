@@ -23,6 +23,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireApp1.Tests", "_test\A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_test", "_test", "{10D71BC2-CE3B-4E5D-AD2C-B7E30CCA2FD6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_docs", "_docs", "{E85B1F92-9A3C-4D2B-8F4E-A7B2C3D4E5F6}"
+	ProjectSection(SolutionItems) = preProject
+		_docs\MCP_GATEWAY_IMPLEMENTATION.md = _docs\MCP_GATEWAY_IMPLEMENTATION.md
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway.Tests", "_test\Gateway.Tests\Gateway.Tests.csproj", "{3ED46CA4-6934-404C-9F5E-B4D3195CA606}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "_src\Domain\Domain.csproj", "{91F094DE-BECF-44FF-B690-FEECE85C73F7}"

@@ -1,4 +1,4 @@
-﻿﻿﻿﻿namespace Gateway.WebServer;
+﻿namespace Gateway.WebServer;
 
 public static class ConfigureServices
 {
@@ -17,7 +17,8 @@ public static class ConfigureServices
                             (context, hostName) =>
                             {
                                 var hostCache = options.ApplicationServices.GetRequiredService<HostCertificateCache>();
-                                return hostCache.GetCertificate(hostName);
+                                // HybridCache is async, so we need to use the synchronous fallback
+                                return hostCache.GetCertificateSync(hostName);
                             };
                     });
                 });

@@ -30,6 +30,6 @@ public class Endpoint : Endpoint<Request, Response>
     public override async Task HandleAsync(Request req, CancellationToken ct)
     {
         var result = await _mediator.Send(req, ct);
-        await SendCreatedAtAsync<Get.Endpoint>(result.Id, result, cancellation: ct);
+        await Send.CreatedAtAsync<Get.Endpoint>(result.Id, result, cancellation: ct);
     }
 }

@@ -6,22 +6,17 @@ public class Certificate : EntityBase
     public bool IsDefault { get; set; }
     public string? CertificateSource { get; set; }
 
-    // For Key Vault
+    // For Azure Key Vault
     public string? KeyVaultName { get; set; }
     public string? KeyVaultUri { get; set; }
     public string? KeyVaultCertificateName { get; set; }
     public string? KeyVaultCertificatePasswordName { get; set; }
 
-    // For AWS
-    public string? AwsRegion { get; set; }
-    public string? AwsCertificateName { get; set; }
-    public string? AwsCertificatePasswordName { get; set; }
-
-    // For File
+    // For Local File
     public string? FilePath { get; set; }
     public string? FilePassword { get; set; }
 
-    // For Inmemory
+    // For In-Memory/Self-Signed
     public string[]? SubjectAlternativeNames { get; set; }
 
     public ICollection<WebHost> WebHosts { get; set; }

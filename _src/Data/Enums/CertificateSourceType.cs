@@ -4,5 +4,6 @@ public enum CertificateSourceType
 {
     Local,
     KeyVault,
-    Aws
+    InMemory,
+    SelfSigned
 }

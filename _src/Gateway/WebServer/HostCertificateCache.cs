@@ -1,6 +1,5 @@
 ﻿using System.Security.Cryptography.X509Certificates;
-using LazyCache;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Gateway.WebServer;
 
@@ -8,43 +7,65 @@ public class HostCertificateCache
 {
     private const string CacheKeyPrefix = "HostCert-";
     private readonly ILogger<HostCertificateCache> _logger;
-    private readonly IAppCache _cache;
+    private readonly HybridCache _cache;
 
-    public HostCertificateCache(ILogger<HostCertificateCache> logger, IAppCache cache)
+    public HostCertificateCache(ILogger<HostCertificateCache> logger, HybridCache cache)
     {
         _cache = cache;
         _logger = logger;
     }
 
-    public X509Certificate2? GetCertificate(string? hostName)
+    public async Task<X509Certificate2?> GetCertificateAsync(string? hostName, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("GetCertificate: {HostName}", hostName);
-        if (_cache.TryGetValue($"{CacheKeyPrefix}{hostName}", out X509Certificate2 certificate))
+        try
         {
+            var certificate = await _cache.GetOrCreateAsync<X509Certificate2>($"{CacheKeyPrefix}{hostName}",_ => throw new NotSupportedException(), cancellationToken);
             _logger.LogInformation("Certificate found for {HostName}", hostName);
             return certificate;
         }
-
-        _logger.LogWarning("Certificate not found for {HostName}", hostName);
-        return null;
+        catch (Exception)
+        {
+            _logger.LogWarning("Certificate not found for {HostName}", hostName);
+            return null;
+        }
     }
 
-    public void SetCertificate(string hostName, X509Certificate2 certificate)
+    public X509Certificate2? GetCertificateSync(string? hostName)
     {
-        var options = new MemoryCacheEntryOptions
+        _logger.LogInformation("GetCertificateSync: {HostName}", hostName);
+        try
         {
-            AbsoluteExpiration = certificate.NotAfter.AddDays(-1)
+            // For synchronous access, we use GetAwaiter().GetResult() with a timeout
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            var certificate = _cache.GetAsync<X509Certificate2>($"{CacheKeyPrefix}{hostName}", cts.Token).GetAwaiter().GetResult();
+            _logger.LogInformation("Certificate found for {HostName}", hostName);
+            return certificate;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Certificate not found for {HostName}", hostName);
+            return null;
+        }
+    }
+
+    public async Task SetCertificateAsync(string hostName, X509Certificate2 certificate, CancellationToken cancellationToken = default)
+    {
+        var expiration = certificate.NotAfter.AddDays(-1);
+        
+        _logger.LogInformation("SetCertificate: {HostName} with expiration {date}", hostName, expiration);
+
+        var options = new HybridCacheEntryOptions
+        {
+            Expiration = expiration - DateTimeOffset.Now
         };
 
-        _logger.LogInformation("SetCertificate: {HostName} with expiration {date}", hostName,
-            options.AbsoluteExpiration);
-
-        _cache.Add($"{CacheKeyPrefix}{hostName}", certificate, options);
+        await _cache.SetAsync($"{CacheKeyPrefix}{hostName}", certificate, options, cancellationToken);
     }
 
-    public void RemoveCertificate(string hostName)
+    public async Task RemoveCertificateAsync(string hostName, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("RemoveCertificate: {HostName}", hostName);
-        _cache.Remove($"{CacheKeyPrefix}{hostName}");
+        await _cache.RemoveAsync($"{CacheKeyPrefix}{hostName}", cancellationToken);
     }
 }

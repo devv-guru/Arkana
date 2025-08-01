@@ -197,9 +197,6 @@ public class GatewayConfigurationService
                         KeyVaultUri = host.Certificate.KeyVaultUri,
                         KeyVaultCertificateName = host.Certificate.KeyVaultCertificateName,
                         KeyVaultCertificatePasswordName = host.Certificate.KeyVaultCertificatePasswordName,
-                        AwsRegion = host.Certificate.AwsRegion,
-                        AwsCertificateName = host.Certificate.AwsCertificateName,
-                        AwsCertificatePasswordName = host.Certificate.AwsCertificatePasswordName,
                         FilePath = host.Certificate.FilePath,
                         FilePassword = host.Certificate.FilePassword
                     };
@@ -221,7 +218,6 @@ public class GatewayConfigurationService
         {
             "inmemory" => CertificateSources.InMemory,
             "azurekeyvault" => CertificateSources.AzureKeyVault,
-            "awssecretmanager" => CertificateSources.AwsSecretManager,
             "file" => CertificateSources.File,
             _ => CertificateSources.InMemory
         };

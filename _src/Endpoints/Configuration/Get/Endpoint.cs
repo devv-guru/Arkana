@@ -25,10 +25,10 @@ public class Endpoint : EndpointWithoutRequest<Response>
 
         if (result is null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
-        await SendOkAsync(result, ct);
+        await Send.OkAsync(result, ct);
     }
 }

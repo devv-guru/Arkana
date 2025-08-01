@@ -1,5 +1,6 @@
 ﻿﻿using Data.Entities;
 using Data.Entities.Metrics;
+using Data.Entities.Mcp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -27,6 +28,14 @@ public interface IWriteOnlyContext
     // Metrics
     DbSet<RequestMetric> RequestMetrics { get; }
     DbSet<SystemMetric> SystemMetrics { get; }
+    
+    // MCP
+    DbSet<McpServer> McpServers { get; }
+    DbSet<McpUserAssignment> McpUserAssignments { get; }
+    DbSet<McpRoleAssignment> McpRoleAssignments { get; }
+    DbSet<McpBackendAuth> McpBackendAuths { get; }
+    DbSet<McpUserApiKey> McpUserApiKeys { get; }
+    DbSet<McpAuditLog> McpAuditLogs { get; }
 
     int SaveChanges();
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

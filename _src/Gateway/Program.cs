@@ -62,7 +62,7 @@ public class Program
 
         host.AddLogging(builder.Configuration);
 
-        builder.Services.AddLazyCache();
+        builder.Services.AddHybridCache();
         builder.Services.AddSingleton<HostCertificateCache>();
         builder.Services.AddSingleton<CertificateManager>();
         builder.WebHost.ConfigureWebServer();
