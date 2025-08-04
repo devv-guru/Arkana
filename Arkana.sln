@@ -25,7 +25,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_test", "_test", "{10D71BC2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_docs", "_docs", "{E85B1F92-9A3C-4D2B-8F4E-A7B2C3D4E5F6}"
 	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		_docs\index.md = _docs\index.md
+		_docs\README.md = _docs\README.md
+		_docs\ARCHITECTURE_DECISIONS.md = _docs\ARCHITECTURE_DECISIONS.md
+		_docs\Backlog.md = _docs\Backlog.md
+		_docs\DEVELOPMENT_STANDARDS.md = _docs\DEVELOPMENT_STANDARDS.md
 		_docs\MCP_GATEWAY_IMPLEMENTATION.md = _docs\MCP_GATEWAY_IMPLEMENTATION.md
+		_docs\MCP_SERVER_STANDARDS.md = _docs\MCP_SERVER_STANDARDS.md
+		_docs\MVP_ROADMAP.md = _docs\MVP_ROADMAP.md
+		_docs\PROMPT_INJECTION_PREVENTION.md = _docs\PROMPT_INJECTION_PREVENTION.md
+		_docs\PRD.md = _docs\PRD.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway.Tests", "_test\Gateway.Tests\Gateway.Tests.csproj", "{3ED46CA4-6934-404C-9F5E-B4D3195CA606}"

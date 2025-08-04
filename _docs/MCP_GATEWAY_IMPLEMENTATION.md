@@ -1,5 +1,7 @@
 # MCP Enterprise Security Gateway - Implementation Documentation
 
+> **📍 Navigation:** [Documentation Index](index.md) | [Development Standards](DEVELOPMENT_STANDARDS.md) | [Architecture Decisions](ARCHITECTURE_DECISIONS.md) | [Product Requirements](PRD.md)
+
 ## 🎯 Project Overview
 
 The **Arkana MCP Gateway** transforms the existing reverse proxy into an enterprise-grade security gateway for Model Context Protocol (MCP) servers. This addresses critical security gaps in MCP adoption by providing centralized authentication, authorization, and audit capabilities.
@@ -155,43 +157,70 @@ McpRoutingMiddleware
 └── InjectCredentials(request, mcpServer, user)
 ```
 
-### 3.2 Authentication Middleware
-**Objective**: Pre-connection user authorization and credential injection
+### 3.2 Authentication & Security Middleware
+**Objective**: Pre-connection user authorization, credential injection, and prompt injection prevention
 
-#### Middleware Pipeline
+#### Enhanced Middleware Pipeline
 ```
 HTTP Request
 ↓
-1. OIDC Token Validation
+1. OIDC Token Validation (Generic OIDC with Entra ID priority)
 ↓
-2. User Authorization Check
+2. User Authorization Check (Role-based access)
 ↓
-3. Backend Token Provisioning
+3. Prompt Injection Prevention (MANDATORY for MCP requests)
 ↓
-4. Credential Injection
+4. Backend Token Provisioning
 ↓
-5. WebSocket Upgrade (if applicable)
+5. Credential Injection
+↓
+6. Connection Type Routing (HTTP/WebSocket/SSE/Webhook)
 ↓
 MCP Server
+```
+
+#### Prompt Injection Prevention Middleware
+```csharp
+public class PromptInjectionMiddleware
+{
+    public async Task InvokeAsync(HttpContext context)
+    {
+        if (IsMcpRequest(context) && HasRequestBody(context))
+        {
+            var body = await ReadRequestBody(context.Request);
+            var safetyResult = await _safetyService.AnalyzeRequest(body);
+            
+            if (!safetyResult.IsSafe)
+            {
+                await LogSecurityViolation(context, safetyResult);
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync("Request blocked: potential prompt injection detected");
+                return;
+            }
+        }
+        await _next(context);
+    }
+}
 ```
 
 ---
 
 ## 🔄 Phase 4: Management UI (NEXT)
 
-### 4.1 Blazor UI Extensions
-**Objective**: User-friendly MCP server management interface
+### 4.1 Blazor WebAssembly UI Extensions
+**Objective**: User-friendly MCP server management interface using Blazor WASM with Tailwind CSS
 
 #### New Pages to Build
 1. **MCP Servers Dashboard**
    - Server list with status indicators
    - Quick enable/disable toggles
    - Connection health monitoring
+   - Color scheme: Onyx Black & Regal Gold or Velvet Indigo & Platinum Frost
 
 2. **Add/Edit MCP Server**
-   - Simplified configuration form
-   - Real-time validation
+   - Simplified configuration form with real-time validation
    - Test connection functionality
+   - Protocol-specific configuration (HTTP/WebSocket/SSE/Webhook)
 
 3. **Access Management**
    - User assignment interface
@@ -199,19 +228,20 @@ MCP Server
    - Bulk user/role operations
 
 4. **Security Configuration**
-   - OAuth2 client setup wizard
+   - OIDC provider setup wizard (Entra ID priority)
    - API key management
    - Token cache configuration
+   - Prompt injection prevention settings
 
 5. **Audit & Monitoring**
-   - Connection logs viewer
-   - Security violation alerts
-   - Usage analytics dashboard
+   - Connection logs viewer with filtering
+   - Security violation alerts and analytics
+   - Usage analytics dashboard with real-time metrics
 
-### 4.2 FastEndpoints API
-**Objective**: RESTful API for MCP server management
+### 4.2 Minimal API Endpoints
+**Objective**: RESTful API for MCP server management (MIGRATION from FastEndpoints)
 
-#### Endpoints to Build
+#### Endpoints to Build (Minimal APIs Only)
 ```http
 # MCP Server Management
 GET    /api/mcp/servers

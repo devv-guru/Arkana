@@ -1,106 +1,144 @@
-using Endpoints;
-using Gateway.Configuration;
+using FluentValidation;
 using Gateway.Data;
-using Gateway.Logging;
-using Gateway.Metrics;
-using Gateway.Proxy;
-using Gateway.UI;
-using Gateway.WebServer;
-using Microsoft.Extensions.FileProviders;
-using System.Globalization;
+using Gateway.Services;
+using Gateway.Endpoints;
+using Gateway.Middleware;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
+using Serilog;
+using System.Text.Json;
 
 namespace Gateway;
 
 public class Program
 {
-    public static async Task Main(string[] args)
+    public static void Main(string[] args)
     {
-        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
-        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+        // Configure Serilog
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.File("logs/arkana-gateway-.txt", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
 
+        try
+        {
+            Log.Information("Starting Arkana MCP Security Gateway");
+            CreateApplication(args).Run();
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Application terminated unexpectedly");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
+    }
+
+    public static WebApplication CreateApplication(string[] args)
+    {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.AddServiceDefaults();
+        // Add Serilog
+        builder.Host.UseSerilog();
 
-        var host = builder.Host;
-
-        // Clear the default configuration sources
-        builder.Configuration.Sources.Clear();
-#if DEBUG
-        builder.Configuration.AddJsonFile("appsettings.Development.json", false, true);
-#else
-        builder.Configuration.SetBasePath(Environment.GetEnvironmentVariable("CONFIG_PATH"))
-            .AddJsonFile("appsettings.json", false, true)
-            .AddEnvironmentVariables();
-#endif
-        var configuration = builder.Configuration;
-
-        var envOptions = new EnvironmentOptions
-        {
-            CertificatePath = !string.IsNullOrEmpty(configuration["CERT_PATH"]) ? configuration["CERT_PATH"] : "/etc/app/certs",
-            LogsPath = !string.IsNullOrEmpty(configuration["LOG_PATH"]) ? configuration["LOG_PATH"] : "/var/log/app",
-            ConfigPath = !string.IsNullOrEmpty(configuration["CONFIG_PATH"]) ? configuration["CONFIG_PATH"] : "/etc/app-config",
-            StaticFilesPath = !string.IsNullOrEmpty(configuration["STATIC_CONTENT_PATH"]) ? configuration["STATIC_CONTENT_PATH"] : "/var/www/app/static",
-            DataPath = !string.IsNullOrEmpty(configuration["DATA_PATH"]) ? configuration["DATA_PATH"] : "/var/lib/app/data",
-        };
-
-        // Ensure all paths are created
-        Directory.CreateDirectory(envOptions.CertificatePath);
-        Directory.CreateDirectory(envOptions.LogsPath);
-        Directory.CreateDirectory(envOptions.ConfigPath);
-        Directory.CreateDirectory(envOptions.StaticFilesPath);
-        Directory.CreateDirectory(envOptions.DataPath);
-
-        builder.Services.Configure<EnvironmentOptions>(_ =>
-        {
-            _.CertificatePath = envOptions.CertificatePath;
-            _.LogsPath = envOptions.LogsPath;
-            _.ConfigPath = envOptions.ConfigPath;
-            _.StaticFilesPath = envOptions.StaticFilesPath;
-            _.DataPath = envOptions.DataPath;
-        });
-
-        host.AddLogging(builder.Configuration);
-
-        builder.Services.AddHybridCache();
-        builder.Services.AddSingleton<HostCertificateCache>();
-        builder.Services.AddSingleton<CertificateManager>();
-        builder.WebHost.ConfigureWebServer();
-        builder.AddDataContext(configuration);
-        builder.Services.AddGatewayHttpsRedirection();
-        builder.Services.AddGatewayFastEndpoints();
-        builder.Services.AddProxy(configuration);
-        builder.Services.AddConfiguration();
-        builder.Services.AddMetrics(configuration);
-        builder.Services.AddUI(configuration);
-        
-        builder.Services.AddHostedService<LoadStartup>();
+        // Add services
+        ConfigureServices(builder.Services, builder.Configuration);
 
         var app = builder.Build();
 
-        app.MapDefaultEndpoints();
+        // Configure pipeline
+        ConfigurePipeline(app);
 
-        app.UseWhen(context => !IsStaticFileRequest(context), appBuilder => { appBuilder.UseHttpsRedirection(); });
-        app.UseAuthorization();
-        // Serve static files from the path
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            FileProvider = new PhysicalFileProvider(envOptions.StaticFilesPath),
-            RequestPath = $"/{EnvironmentOptions.StaticRequestPath}"
-        });
-
-        app.UseMetricsMiddleware();
-        app.UseGatewayFastEndpoints(configuration);
-        app.UseProxy();
-        app.UseUI(builder.Environment);
-
-        await app.RunAsync();
+        return app;
     }
 
-    private static bool IsStaticFileRequest(HttpContext context)
+    private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
-        return context.Request.Path.StartsWithSegments($"/{EnvironmentOptions.StaticRequestPath}")
-               && context.Request.Method == "GET"
-               && !context.Request.IsHttps;
+
+        // API Documentation
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new() { 
+                Title = "Arkana MCP Gateway API", 
+                Version = "v1",
+                Description = "Enterprise MCP Security Gateway"
+            });
+        });
+
+        // Database - SQLite for MVP
+        services.AddDbContext<GatewayDbContext>(options =>
+        {
+            var connectionString = configuration.GetConnectionString("DefaultConnection") 
+                ?? "Data Source=arkana-gateway.db";
+            options.UseSqlite(connectionString);
+        });
+
+        // JWT Authentication
+        services.AddAuthentication("Bearer")
+            .AddJwtBearer("Bearer", options =>
+            {
+                options.Authority = configuration["Authentication:Jwt:Authority"];
+                options.Audience = configuration["Authentication:Jwt:Audience"];
+                options.RequireHttpsMetadata = false; // For development
+            });
+
+        services.AddAuthorization();
+
+        // FluentValidation
+        services.AddValidatorsFromAssemblyContaining<Program>();
+
+        // Health Checks
+        services.AddHealthChecks()
+            .AddDbContextCheck<GatewayDbContext>();
+
+        // YARP Reverse Proxy
+        services.AddReverseProxy()
+            .LoadFromConfig(configuration.GetSection("ReverseProxy"));
+
+        // Business Services
+        services.AddScoped<IMcpServerService, McpServerService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IPromptSafetyService, PromptSafetyService>();
+
+        // Configure JSON options
+        services.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        });
+    }
+
+    private static void ConfigurePipeline(WebApplication app)
+    {
+        // Development tools
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Arkana MCP Gateway v1"));
+        }
+
+        // Security headers
+        app.UseHsts();
+        app.UseHttpsRedirection();
+
+        // Authentication & Authorization
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        // Custom middleware
+        app.UseMiddleware<PromptInjectionMiddleware>();
+
+        // Routing
+        app.UseRouting();
+
+        // Minimal API endpoints
+        app.MapMcpServerEndpoints();
+        app.MapUserEndpoints();
+        app.MapHealthChecks("/health");
+
+        // YARP Reverse Proxy (last in pipeline)
+        app.MapReverseProxy();
     }
 }
