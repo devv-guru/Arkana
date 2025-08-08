@@ -12,7 +12,7 @@ Graph.User.Mcp.Client/
 ├── README.md                           # This file
 │
 ├── Authentication/                     # Authentication services
-│   └── WindowsHelloAuthService.cs     # Azure AD + Windows Hello integration
+│   └── WindowsHelloAuthService.cs     # Microsoft Entra ID + Windows Hello integration
 │
 ├── Commands/                           # Command execution services
 │   ├── CommandRouter.cs               # Routes commands to appropriate executors
@@ -38,7 +38,7 @@ Graph.User.Mcp.Client/
 
 ### 🔐 **Secure Authentication**
 - **Windows Hello Integration**: Biometric authentication (fingerprint, face, iris)
-- **Azure AD OIDC**: Enterprise-grade identity integration
+- **Microsoft Entra ID OIDC**: Enterprise-grade identity integration
 - **Hardware Security**: TPM-backed credential storage
 - **Token Management**: Automatic refresh and caching
 
@@ -69,7 +69,7 @@ Graph.User.Mcp.Client/
 
 ### Prerequisites
 - Windows 10/11 with Windows Hello
-- Azure AD account with Microsoft 365
+- Microsoft Entra ID account with Microsoft 365
 - .NET 9.0 Runtime
 
 ### Installation
@@ -87,10 +87,10 @@ dotnet run
 ### Configuration
 
 #### Prerequisites
-**🚨 Azure AD Setup Required**: Before configuring the client, you must set up Azure AD application registrations. Follow the [**Azure AD Setup Guide**](../../AZURE_AD_SETUP.md) in the solution root.
+**🚨 Microsoft Entra ID Setup Required**: Before configuring the client, you must set up Microsoft Entra ID application registrations. Follow the [**Microsoft Entra ID Setup Guide**](../../AZURE_AD_SETUP.md) in the solution root.
 
 #### Local Configuration
-Create `appsettings.local.json` with values from your Azure AD app registrations:
+Create `appsettings.local.json` with values from your Microsoft Entra ID app registrations:
 ```json
 {
   "AzureAd": {
@@ -195,7 +195,7 @@ exit
 
 ### Flow Diagram
 ```
-[User] → [Windows Hello] → [Azure AD] → [MCP Client] 
+[User] → [Windows Hello] → [Microsoft Entra ID] → [MCP Client] 
    ↓
 [Arkana Gateway] → [Token Exchange] → [Graph.User.Mcp.Server]
    ↓
@@ -203,7 +203,7 @@ exit
 ```
 
 ### Security Model
-1. **User Authentication**: Windows Hello + Azure AD OIDC
+1. **User Authentication**: Windows Hello + Microsoft Entra ID OIDC
 2. **Gateway Communication**: Bearer token with OIDC JWT
 3. **Token Exchange**: Gateway performs On-Behalf-Of flow
 4. **API Access**: Server uses Graph tokens for Microsoft 365
@@ -235,7 +235,7 @@ exit
 ## 🔍 Troubleshooting
 
 ### Common Issues
-1. **Authentication Failed**: Check Windows Hello setup and Azure AD registration
+1. **Authentication Failed**: Check Windows Hello setup and Microsoft Entra ID registration
 2. **Gateway Unreachable**: Verify Gateway URL and network connectivity
 3. **Permission Denied**: Ensure Microsoft Graph permissions and admin consent
 4. **Command Not Found**: Use `help` to see all available commands
@@ -251,7 +251,7 @@ dotnet run
 
 - **[DEPLOYMENT.md](DEPLOYMENT.md)**: Complete deployment guide
 - **Type `help`**: Interactive command reference
-- **Azure AD Setup**: App registration and permission configuration
+- **Microsoft Entra ID Setup**: App registration and permission configuration
 - **Gateway Configuration**: Arkana Gateway setup requirements
 
 ## 🤝 Contributing

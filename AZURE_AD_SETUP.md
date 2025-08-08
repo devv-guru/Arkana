@@ -1,24 +1,94 @@
-# Azure AD Application Registration Setup
+# Arkana MCP Gateway - Microsoft Entra ID Setup Hub
 
-This guide covers setting up Azure AD application registrations for the Arkana MCP Gateway and Client applications.
+This is the central Microsoft Entra ID configuration hub for the Arkana MCP Gateway ecosystem. The gateway acts as the OAuth 2.0 server that brokers authentication between multiple MCP clients and servers.
 
 ## 🏗️ Architecture Overview
 
-The Arkana solution uses a **dual application registration** pattern:
-
-1. **Gateway Application** - Acts as the OAuth 2.0 server for On-Behalf-Of (OBO) token exchange
-2. **Client Application** - Public client that authenticates users and calls the gateway
+The Arkana ecosystem uses a **hub-and-spoke authentication** pattern:
 
 ```
-[User] → [Client App] → [Gateway App] → [Microsoft Graph]
-         (Public)       (Confidential)     (Resource)
+[MCP Clients] → [Arkana Gateway] → [MCP Servers] → [Microsoft Graph/APIs]
+  (Public)       (Confidential)      (Protected)       (Resources)
 ```
+
+**Gateway Role**: Central authentication hub that performs On-Behalf-Of (OBO) token exchange
 
 ## 📋 Prerequisites
 
-- Azure AD tenant with admin permissions
-- Microsoft 365 subscription
+- Microsoft Entra ID tenant with admin permissions
+- Microsoft 365 subscription (for Graph API access)
 - Access to [Azure Portal](https://portal.azure.com)
+
+## 🚀 Quick Start
+
+**Choose your setup path:**
+
+1. **🛠️ [Gateway Setup (Required First)](docs/AZURE_AD_GATEWAY.md)** - Core authentication server
+2. **📱 [Graph MCP Client Setup](docs/AZURE_AD_GRAPH_CLIENT.md)** - Microsoft Graph client application
+3. **🔧 [Custom MCP Client Setup](docs/AZURE_AD_CLIENT_TEMPLATE.md)** - Template for custom clients
+4. **⚙️ [Custom MCP Server Setup](docs/AZURE_AD_SERVER_TEMPLATE.md)** - Template for custom servers
+
+---
+
+## 📚 Component Documentation
+
+### Core Components
+
+| Component | Description | Microsoft Entra ID Requirements |
+|-----------|-------------|----------------------|
+| **[Arkana Gateway](docs/AZURE_AD_GATEWAY.md)** | Central OAuth 2.0 server | Confidential client with OBO permissions |
+
+### MCP Clients
+
+| Client | Description | Setup Guide |
+|--------|-------------|-------------|
+| **[Graph User Client](_src/Graph.User.Mcp.Client/docs/AZURE_AD_SETUP.md)** | Microsoft Graph MCP client | Native/Public client |
+| **[Custom Client](docs/AZURE_AD_CLIENT_TEMPLATE.md)** | Template for new clients | Native/Public client template |
+
+### MCP Servers  
+
+| Server | Description | Setup Guide |
+|--------|-------------|-------------|
+| **[Graph User Server](_src/Graph.User.Mcp.Server/docs/AZURE_AD_SETUP.md)** | Microsoft Graph MCP server | Protected API registration |
+| **[Custom Server](docs/AZURE_AD_SERVER_TEMPLATE.md)** | Template for new servers | Protected API template |
+
+---
+
+## 🔄 Authentication Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant C as MCP Client
+    participant G as Gateway
+    participant S as MCP Server
+    participant M as Microsoft Graph
+
+    U->>C: Start MCP Client
+    C->>U: Windows Hello/Browser Auth
+    U->>C: Provide credentials
+    C->>G: Call MCP API with token
+    G->>G: Validate client token
+    G->>M: OBO token exchange
+    M->>G: Server-specific token
+    G->>S: Forward request with server token
+    S->>M: Call Microsoft Graph API
+    M->>S: Return data
+    S->>G: Return MCP response
+    G->>C: Return response
+    C->>U: Display results
+```
+
+---
+
+## 🛠️ Setup Order
+
+**Follow this order for successful setup:**
+
+1. **🏭 [Gateway Setup](docs/AZURE_AD_GATEWAY.md)** *(Required first - provides auth foundation)*
+2. **📊 [Graph MCP Server](_src/Graph.User.Mcp.Server/docs/AZURE_AD_SETUP.md)** *(Optional - if using Graph APIs)*  
+3. **💻 [Graph MCP Client](_src/Graph.User.Mcp.Client/docs/AZURE_AD_SETUP.md)** *(Client for Graph APIs)*
+4. **🔧 Custom Components** *(Use templates for additional clients/servers)*
 
 ---
 
@@ -229,7 +299,7 @@ Update your Client's `appsettings.local.json`:
 
 2. **Expected Flow:**
    - Windows Hello prompt appears
-   - Browser opens for Azure AD sign-in
+   - Browser opens for Microsoft Entra ID sign-in
    - User consents to permissions
    - Client displays "✅ Authentication successful"
 
@@ -265,7 +335,7 @@ Update your Client's `appsettings.local.json`:
    $cert = New-SelfSignedCertificate -Subject "CN=ArkanaGateway" -CertStoreLocation "Cert:\CurrentUser\My" -KeyExportPolicy Exportable -KeySpec Signature
    ```
 
-2. **Upload to Azure AD:**
+2. **Upload to Microsoft Entra ID:**
    - Go to your Gateway app registration
    - Navigate to "Certificates & secrets"
    - Upload the certificate
@@ -314,4 +384,4 @@ Enable detailed logging in `appsettings.local.json`:
 
 - [Microsoft Graph Permissions Reference](https://docs.microsoft.com/en-us/graph/permissions-reference)
 - [OAuth 2.0 On-Behalf-Of Flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow)
-- [Azure AD App Registration Best Practices](https://docs.microsoft.com/en-us/azure/active-directory/develop/security-best-practices-for-app-registration)
+- [Microsoft Entra ID App Registration Best Practices](https://docs.microsoft.com/en-us/azure/active-directory/develop/security-best-practices-for-app-registration)

@@ -90,8 +90,8 @@ User authentication      Azure Entra ID   Token cache        Backend systems
 # 1. Clone repository
 $ git clone https://github.com/your-org/mcp-gateway.git && cd mcp-gateway
 
-# 2. Setup Azure AD application registrations
-#   – Follow the Azure AD Setup Guide: AZURE_AD_SETUP.md
+# 2. Setup Microsoft Entra ID application registrations
+#   – Follow the Microsoft Entra ID Setup Guide: AZURE_AD_SETUP.md
 
 # 3. Configure local settings (create appsettings.local.json files)  
 #   – See "Local Development Setup" section below for details
@@ -139,7 +139,7 @@ Open [http://localhost:5173](http://localhost:5173) to access the Admin UI.
 
 | Level               | Mechanism                                                            |
 | ------------------- | -------------------------------------------------------------------- |
-| **Gateway ingress** | Validates Azure AD token; rejects if not in tenant.                  |
+| **Gateway ingress** | Validates Microsoft Entra ID token; rejects if not in tenant.                  |
 | **Discovery**       | Looks up caller’s `roles`/`groups` claim; filters `/tools` response. |
 | **Invocation**      | Enforces same RBAC matrix before forwarding.                         |
 | **Tool server**     | Verifies scoped TokenB; rejects if missing `requiredScope`.          |
@@ -221,7 +221,7 @@ We use **Conventional Commits** and **Semantic Versioning**.
 
 ### Prerequisites
 
-1. **Azure AD Setup Required**: Follow the [**Azure AD Setup Guide**](AZURE_AD_SETUP.md) to create application registrations
+1. **Microsoft Entra ID Setup Required**: Follow the [**Microsoft Entra ID Setup Guide**](AZURE_AD_SETUP.md) to create application registrations
 2. **Local Configuration**: Create `appsettings.local.json` files as described below
 
 ### Configuration Pattern

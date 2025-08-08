@@ -4,7 +4,7 @@
 
 ### Prerequisites
 - Windows 10/11 with Windows Hello capability
-- Azure AD account with Microsoft 365 access
+- Microsoft Entra ID account with Microsoft 365 access
 - PowerShell 5.1 or newer
 - .NET 9.0 Runtime (will be auto-installed if missing)
 
@@ -49,11 +49,11 @@
    }
    ```
 
-2. **Azure AD App Registration:**
+2. **Microsoft Entra ID App Registration:**
    
-   **⚠️ IMPORTANT**: Complete Azure AD setup is required before deployment.
+   **⚠️ IMPORTANT**: Complete Microsoft Entra ID setup is required before deployment.
    
-   📋 **Follow the comprehensive [Azure AD Setup Guide](../../AZURE_AD_SETUP.md)** which covers:
+   📋 **Follow the comprehensive [Microsoft Entra ID Setup Guide](../../AZURE_AD_SETUP.md)** which covers:
    - Creating Gateway and Client app registrations
    - Configuring proper permissions and scopes  
    - Setting up On-Behalf-Of (OBO) token exchange
@@ -239,7 +239,7 @@ files --help
 ### Windows Hello (Recommended)
 - Biometric authentication (fingerprint, face, iris)
 - Hardware security key support
-- Seamless Azure AD integration
+- Seamless Microsoft Entra ID integration
 
 ### PIN Authentication
 - 6+ digit PIN with complexity rules
@@ -255,7 +255,7 @@ files --help
 ```
 [User] → [Graph.User.Mcp.Client] → [Arkana Gateway] → [Graph.User.Mcp.Server] → [Microsoft Graph API]
 
-1. Client authenticates user (Windows Hello + Azure AD)
+1. Client authenticates user (Windows Hello + Microsoft Entra ID)
 2. Client sends OIDC token to Gateway
 3. Gateway validates token and exchanges for Graph token (OBO flow)
 4. Gateway forwards MCP requests with Graph token
@@ -287,7 +287,7 @@ help
 
 1. **Authentication Failed**
    - Ensure Windows Hello is configured
-   - Check Azure AD app registration
+   - Check Microsoft Entra ID app registration
    - Verify tenant ID and client ID
 
 2. **Gateway Unreachable**
@@ -328,7 +328,7 @@ dotnet build --configuration Release
 ## 📋 Deployment Checklist
 
 ### For IT Administrators
-- [ ] Azure AD app registration configured
+- [ ] Microsoft Entra ID app registration configured
 - [ ] Graph permissions granted and admin consent provided  
 - [ ] Gateway deployed and accessible
 - [ ] MCP Server deployed and healthy
@@ -338,7 +338,7 @@ dotnet build --configuration Release
 
 ### For End Users
 - [ ] Windows Hello configured on device
-- [ ] Azure AD account with M365 license
+- [ ] Microsoft Entra ID account with M365 license
 - [ ] Client application installed
 - [ ] Configuration file updated
 - [ ] Initial authentication completed
