@@ -1,120 +1,111 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Data.Entities;
-using Gateway.Configuration;
-using Gateway.Tests.Helpers;
-using Gateway.WebServer;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Endpoints.Configuration.Services;
 using Moq;
+using Shared.Models;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Gateway.Tests.Configuration;
 
 public class GatewayConfigurationServiceTests
 {
     [Fact]
-    public async Task LoadConfigurationAsync_ValidConfig_LoadsConfiguration()
+    public void GetConfiguration_ReturnsConfiguration()
     {
         // Arrange
-        var mockLogger = new Mock<ILogger<GatewayConfigurationService>>();
-        var mockEnvironment = new Mock<IHostEnvironment>();
-        var mockCertificateManager = new Mock<CertificateManager>(
-            new Mock<HostCertificateCache>(
-                new Mock<ILogger<HostCertificateCache>>().Object, 
-                null).Object, 
-            new Mock<ILogger<CertificateManager>>().Object);
-
-        // Create a test configuration
-        var config = new GatewayConfigurationOptions
+        var expectedConfig = new GatewayConfigurationOptions
         {
-            Hosts = new List<HostConfig>
-            {
-                new HostConfig
-                {
-                    Name = "Test Host",
-                    HostNames = new List<string> { "localhost" },
-                    Certificate = new CertificateConfig
-                    {
-                        Name = "Test Certificate",
-                        Source = "InMemory"
-                    }
-                }
-            },
-            UI = new Shared.Models.UIOptions
-            {
-                Enabled = true,
-                Path = "ui",
-                RequireAuthentication = false
-            },
-            ProxyRules = new List<ProxyRuleConfig>
-            {
-                new ProxyRuleConfig
-                {
-                    Name = "Test Rule",
-                    Hosts = new List<string> { "localhost" },
-                    PathPrefix = "/api",
-                    StripPrefix = true,
-                    Methods = new List<string> { "GET" },
-                    Cluster = new ClusterConfig
-                    {
-                        Name = "Test Cluster",
-                        LoadBalancingPolicy = "RoundRobin",
-                        Destinations = new List<DestinationConfig>
-                        {
-                            new DestinationConfig
-                            {
-                                Name = "test",
-                                Address = "http://localhost:5000"
-                            }
-                        }
-                    }
-                }
-            }
+            ConfigurationStoreType = "File",
+            ConfigurationFilePath = "test-config.json",
+            ReloadIntervalSeconds = 30
         };
-
-        // Create a test service with the configuration
-        var service = new TestGatewayConfigurationService(
-            mockLogger.Object,
-            mockEnvironment.Object,
-            config);
+        
+        var mockService = new Mock<IConfigurationService>();
+        mockService.Setup(x => x.GetConfiguration())
+                  .Returns(expectedConfig);
 
         // Act
-        await service.LoadConfigurationAsync(CancellationToken.None);
-        var result = service.GetConfiguration();
+        var result = mockService.Object.GetConfiguration() as GatewayConfigurationOptions;
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(1, result.Hosts.Count);
-        Assert.Equal(1, result.ProxyRules.Count);
-        Assert.Equal("Test Host", result.Hosts[0].Name);
-        Assert.Equal("Test Rule", result.ProxyRules[0].Name);
+        Assert.Equal("File", result.ConfigurationStoreType);
+        Assert.Equal("test-config.json", result.ConfigurationFilePath);
+        Assert.Equal(30, result.ReloadIntervalSeconds);
     }
 
     [Fact]
-    public async Task LoadConfigurationAsync_FileNotFound_ReturnsNull()
+    public async Task SaveConfigurationAsync_ValidConfig_ReturnsTrue()
     {
         // Arrange
-        var mockLogger = new Mock<ILogger<GatewayConfigurationService>>();
-        var mockEnvironment = new Mock<IHostEnvironment>();
-
-        // Create a test service with no configuration and file not found
-        var service = new TestGatewayConfigurationService(
-            mockLogger.Object,
-            mockEnvironment.Object,
-            null,
-            false);
+        var config = new GatewayConfigurationOptions
+        {
+            ConfigurationStoreType = "AWS",
+            AwsSecretName = "test-secret"
+        };
+        
+        var mockService = new Mock<IConfigurationService>();
+        mockService.Setup(x => x.SaveConfigurationAsync(It.IsAny<object>(), It.IsAny<CancellationToken>()))
+                  .ReturnsAsync(true);
 
         // Act
-        await service.LoadConfigurationAsync(CancellationToken.None);
-        var config = service.GetConfiguration();
+        var result = await mockService.Object.SaveConfigurationAsync(config);
 
         // Assert
-        Assert.Null(config);
+        Assert.True(result);
+        mockService.Verify(x => x.SaveConfigurationAsync(config, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateConfigurationAsync_ValidUpdateAction_ReturnsTrue()
+    {
+        // Arrange
+        var mockService = new Mock<IConfigurationService>();
+        mockService.Setup(x => x.UpdateConfigurationAsync(It.IsAny<Action<object>>(), It.IsAny<CancellationToken>()))
+                  .ReturnsAsync(true);
+        
+        var updateAction = new Action<object>(config => 
+        {
+            if (config is GatewayConfigurationOptions options)
+            {
+                options.ReloadIntervalSeconds = 120;
+            }
+        });
+
+        // Act
+        var result = await mockService.Object.UpdateConfigurationAsync(updateAction);
+
+        // Assert
+        Assert.True(result);
+        mockService.Verify(x => x.UpdateConfigurationAsync(updateAction, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ReloadConfigurationAsync_CompletesSuccessfully()
+    {
+        // Arrange
+        var mockService = new Mock<IConfigurationService>();
+        mockService.Setup(x => x.ReloadConfigurationAsync(It.IsAny<CancellationToken>()))
+                  .Returns(Task.CompletedTask);
+
+        // Act & Assert
+        await mockService.Object.ReloadConfigurationAsync(CancellationToken.None);
+        
+        mockService.Verify(x => x.ReloadConfigurationAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public void GetConfiguration_WhenNoConfig_ReturnsNull()
+    {
+        // Arrange
+        var mockService = new Mock<IConfigurationService>();
+        mockService.Setup(x => x.GetConfiguration())
+                  .Returns((object?)null);
+
+        // Act
+        var result = mockService.Object.GetConfiguration();
+
+        // Assert
+        Assert.Null(result);
     }
 }

@@ -1,50 +1,64 @@
+using Endpoints.Configuration.Services;
+using Shared.Models;
 using System.Threading;
 using System.Threading.Tasks;
-using Gateway.Configuration;
-using Gateway.WebServer;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Gateway.Tests.Helpers;
 
-public class TestGatewayConfigurationService : GatewayConfigurationService
+/// <summary>
+/// Test implementation of IConfigurationService for unit testing
+/// </summary>
+public class TestConfigurationService : IConfigurationService
 {
-    private readonly GatewayConfigurationOptions? _configuration;
-    private readonly bool _fileExists;
+    private object? _configuration;
 
-    public TestGatewayConfigurationService(
-        ILogger<GatewayConfigurationService> logger,
-        IHostEnvironment environment,
-        GatewayConfigurationOptions? configuration = null,
-        bool fileExists = true)
-        : base(logger, environment)
+    public TestConfigurationService(object? configuration = null)
     {
         _configuration = configuration;
-        _fileExists = fileExists;
     }
 
-    public override async Task LoadConfigurationAsync(CancellationToken cancellationToken = default)
+    public object? GetConfiguration() => _configuration;
+
+    public Task<bool> SaveConfigurationAsync(object configuration, CancellationToken ct = default)
     {
-        if (!_fileExists)
+        _configuration = configuration;
+        return Task.FromResult(true);
+    }
+
+    public Task<bool> UpdateConfigurationAsync(Action<object> updateAction, CancellationToken ct = default)
+    {
+        if (_configuration != null)
         {
-            // Simulate file not found
-            SetConfiguration(null);
-            return;
+            updateAction(_configuration);
+            return Task.FromResult(true);
         }
-
-        // Simulate file found and loaded
-        SetConfiguration(_configuration);
-        await Task.CompletedTask;
+        return Task.FromResult(false);
     }
 
-    public override GatewayConfigurationOptions? GetConfiguration() => _configuration;
-
-    // Helper method to set the configuration directly
-    public void SetConfiguration(GatewayConfigurationOptions? configuration)
+    public Task ReloadConfigurationAsync(CancellationToken ct = default)
     {
-        // Use reflection to set the private field
-        var field = typeof(GatewayConfigurationService).GetField("_configuration", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        field?.SetValue(this, configuration);
+        // Simulate reload - in a real implementation, this would reload from the source
+        return Task.CompletedTask;
     }
+
+    /// <summary>
+    /// Test helper method to set configuration directly
+    /// </summary>
+    public void SetConfiguration(object? configuration)
+    {
+        _configuration = configuration;
+    }
+
+    /// <summary>
+    /// Test helper method to simulate file not found scenario
+    /// </summary>
+    public void SimulateFileNotFound()
+    {
+        _configuration = null;
+    }
+
+    /// <summary>
+    /// Test helper method to check if service has configuration
+    /// </summary>
+    public bool HasConfiguration => _configuration != null;
 }

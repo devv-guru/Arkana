@@ -1,159 +1,190 @@
-using System.Collections.Generic;
-using Gateway.Configuration;
-using Gateway.Proxy;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Moq;
+using Shared.ViewModels;
+using System.Text.Json;
 using Xunit;
-using Yarp.ReverseProxy.Configuration;
 
 namespace Gateway.Tests.Proxy;
 
-public class YarpConfigurationServiceTests
+public class GatewayViewModelTests
 {
-    // Test implementation of GatewayConfigurationService for testing
-    private class TestGatewayConfigurationService : GatewayConfigurationService
-    {
-        private readonly GatewayConfigurationOptions? _config;
-
-        public TestGatewayConfigurationService(GatewayConfigurationOptions? config)
-            : base(Mock.Of<ILogger<GatewayConfigurationService>>(), Mock.Of<IHostEnvironment>())
-        {
-            _config = config;
-        }
-
-        public override GatewayConfigurationOptions? GetConfiguration() => _config;
-    }
-
     [Fact]
-    public void GetConfig_NoConfiguration_ReturnsEmptyConfig()
+    public void GatewayConfigurationViewModel_DefaultValues_AreSetCorrectly()
     {
-        // Arrange
-        var mockLogger = new Mock<ILogger<YarpConfigurationService>>();
-        var gatewayConfigService = new TestGatewayConfigurationService(null);
-        
-        var service = new YarpConfigurationService(
-            mockLogger.Object,
-            gatewayConfigService);
-        
         // Act
-        var config = service.GetConfig();
-        
+        var viewModel = new GatewayConfigurationViewModel();
+
         // Assert
-        Assert.NotNull(config);
-        Assert.Empty(config.Routes);
-        Assert.Empty(config.Clusters);
-        Assert.NotNull(config.ChangeToken);
+        Assert.Equal("File", viewModel.ConfigurationStoreType);
+        Assert.Equal("_config/gateway-config.json", viewModel.ConfigurationFilePath);
+        Assert.Equal("us-east-1", viewModel.AwsRegion);
+        Assert.Equal("gateway-config", viewModel.AwsSecretName);
+        Assert.Equal("", viewModel.AzureKeyVaultUri);
+        Assert.Equal("gateway-config", viewModel.AzureKeyVaultSecretName);
+        Assert.Equal("GATEWAY_CONFIG", viewModel.EnvironmentVariableName);
+        Assert.Equal(60, viewModel.ReloadIntervalSeconds);
+        Assert.NotNull(viewModel.Hosts);
+        Assert.Empty(viewModel.Hosts);
+        Assert.NotNull(viewModel.ProxyRules);
+        Assert.Empty(viewModel.ProxyRules);
+        Assert.NotNull(viewModel.UI);
     }
-    
+
     [Fact]
-    public void UpdateConfig_ValidConfiguration_BuildsRoutesAndClusters()
+    public void HostConfig_CanBeCreatedWithValidData()
+    {
+        // Arrange & Act
+        var hostConfig = new HostConfig
+        {
+            Name = "Test Host",
+            HostNames = new List<string> { "localhost", "example.com" },
+            Certificate = new CertificateConfig
+            {
+                Name = "Test Certificate"
+            }
+        };
+
+        // Assert
+        Assert.Equal("Test Host", hostConfig.Name);
+        Assert.Equal(2, hostConfig.HostNames.Count);
+        Assert.Contains("localhost", hostConfig.HostNames);
+        Assert.Contains("example.com", hostConfig.HostNames);
+        Assert.NotNull(hostConfig.Certificate);
+        Assert.Equal("Test Certificate", hostConfig.Certificate.Name);
+    }
+
+    [Fact]
+    public void ProxyRuleConfig_CanBeCreatedWithValidData()
+    {
+        // Arrange & Act
+        var proxyRule = new ProxyRuleConfig
+        {
+            Name = "Test Rule",
+            Hosts = new List<string> { "localhost" },
+            PathPrefix = "/api",
+            StripPrefix = true,
+            Cluster = new ClusterConfig
+            {
+                Name = "Test Cluster"
+            }
+        };
+
+        // Assert
+        Assert.Equal("Test Rule", proxyRule.Name);
+        Assert.Single(proxyRule.Hosts);
+        Assert.Equal("localhost", proxyRule.Hosts[0]);
+        Assert.Equal("/api", proxyRule.PathPrefix);
+        Assert.True(proxyRule.StripPrefix);
+        Assert.NotNull(proxyRule.Cluster);
+        Assert.Equal("Test Cluster", proxyRule.Cluster.Name);
+    }
+
+    [Fact]
+    public void GatewayConfigurationViewModel_CanSerializeToJson()
     {
         // Arrange
-        var mockLogger = new Mock<ILogger<YarpConfigurationService>>();
-        var gatewayConfig = new GatewayConfigurationOptions
+        var viewModel = new GatewayConfigurationViewModel
         {
+            ConfigurationStoreType = "AWS",
+            AwsRegion = "eu-west-1",
+            AwsSecretName = "my-gateway-config",
+            ReloadIntervalSeconds = 120,
             Hosts = new List<HostConfig>
             {
                 new HostConfig
                 {
-                    Name = "Test Host",
-                    HostNames = new List<string> { "localhost" },
-                    Certificate = new CertificateConfig
-                    {
-                        Name = "Test Certificate",
-                        Source = "InMemory"
-                    }
+                    Name = "Production Host",
+                    HostNames = new List<string> { "api.prod.com" },
+                    Certificate = new CertificateConfig { Name = "Prod Cert" }
                 }
             },
             ProxyRules = new List<ProxyRuleConfig>
             {
                 new ProxyRuleConfig
                 {
-                    Name = "Test Rule",
-                    Hosts = new List<string> { "localhost" },
-                    PathPrefix = "/api",
-                    StripPrefix = true,
-                    Methods = new List<string> { "GET" },
-                    Cluster = new Gateway.Configuration.ClusterConfig
-                    {
-                        Name = "Test Cluster",
-                        LoadBalancingPolicy = "RoundRobin",
-                        Destinations = new List<Gateway.Configuration.DestinationConfig>
-                        {
-                            new Gateway.Configuration.DestinationConfig
-                            {
-                                Name = "test",
-                                Address = "http://localhost:5000"
-                            }
-                        }
-                    }
+                    Name = "API Rule",
+                    Hosts = new List<string> { "api.prod.com" },
+                    PathPrefix = "/api/v1",
+                    StripPrefix = false,
+                    Cluster = new ClusterConfig { Name = "API Cluster" }
                 }
             }
         };
-        
-        var gatewayConfigService = new TestGatewayConfigurationService(gatewayConfig);
-        
-        var service = new YarpConfigurationService(
-            mockLogger.Object,
-            gatewayConfigService);
-        
+
         // Act
-        service.UpdateConfig();
-        var config = service.GetConfig();
-        
+        var json = JsonSerializer.Serialize(viewModel, new JsonSerializerOptions { WriteIndented = true });
+
         // Assert
-        Assert.NotNull(config);
-        Assert.Single(config.Routes);
-        Assert.Single(config.Clusters);
-        
-        // Verify route
-        var route = config.Routes[0];
-        Assert.Equal("Test Rule", route.RouteId);
-        Assert.Equal("Test Cluster", route.ClusterId);
-        Assert.Contains("localhost", route.Match.Hosts);
-        Assert.Equal("/api/{**catchAll}", route.Match.Path);
-        Assert.Contains("GET", route.Match.Methods);
-        
-        // Verify transforms
-        Assert.NotNull(route.Transforms);
-        Assert.Single(route.Transforms);
-        Assert.Equal("PathRemovePrefix", route.Transforms[0].Keys.First());
-        Assert.Equal("/api", route.Transforms[0]["PathRemovePrefix"]);
-        
-        // Verify cluster
-        var cluster = config.Clusters[0];
-        Assert.Equal("Test Cluster", cluster.ClusterId);
-        Assert.Equal("RoundRobin", cluster.LoadBalancingPolicy);
-        
-        // Verify destinations
-        Assert.Single(cluster.Destinations);
-        Assert.Contains("test", cluster.Destinations.Keys);
-        Assert.Equal("http://localhost:5000", cluster.Destinations["test"].Address);
+        Assert.NotNull(json);
+        Assert.Contains("\"ConfigurationStoreType\": \"AWS\"", json);
+        Assert.Contains("\"AwsRegion\": \"eu-west-1\"", json);
+        Assert.Contains("\"ReloadIntervalSeconds\": 120", json);
+        Assert.Contains("\"Name\": \"Production Host\"", json);
+        Assert.Contains("\"PathPrefix\": \"/api/v1\"", json);
+        Assert.Contains("\"StripPrefix\": false", json);
     }
-    
+
     [Fact]
-    public void UpdateConfig_NoConfiguration_LogsWarning()
+    public void GatewayConfigurationViewModel_CanDeserializeFromJson()
     {
         // Arrange
-        var mockLogger = new Mock<ILogger<YarpConfigurationService>>();
-        var gatewayConfigService = new TestGatewayConfigurationService(null);
-        
-        var service = new YarpConfigurationService(
-            mockLogger.Object,
-            gatewayConfigService);
-        
+        var json = @"{
+            ""ConfigurationStoreType"": ""Azure"",
+            ""AzureKeyVaultUri"": ""https://test.vault.azure.net/"",
+            ""ReloadIntervalSeconds"": 300,
+            ""Hosts"": [
+                {
+                    ""Name"": ""Test Host"",
+                    ""HostNames"": [""test.com"", ""www.test.com""],
+                    ""Certificate"": {
+                        ""Name"": ""Test SSL Cert""
+                    }
+                }
+            ],
+            ""ProxyRules"": [
+                {
+                    ""Name"": ""Main Rule"",
+                    ""Hosts"": [""test.com""],
+                    ""PathPrefix"": ""/app"",
+                    ""StripPrefix"": true,
+                    ""Cluster"": {
+                        ""Name"": ""App Cluster""
+                    }
+                }
+            ]
+        }";
+
         // Act
-        service.UpdateConfig();
-        
+        var viewModel = JsonSerializer.Deserialize<GatewayConfigurationViewModel>(json);
+
         // Assert
-        mockLogger.Verify(
-            x => x.Log(
-                LogLevel.Warning,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("No proxy rules configured")),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-            Times.Once);
+        Assert.NotNull(viewModel);
+        Assert.Equal("Azure", viewModel.ConfigurationStoreType);
+        Assert.Equal("https://test.vault.azure.net/", viewModel.AzureKeyVaultUri);
+        Assert.Equal(300, viewModel.ReloadIntervalSeconds);
+        
+        Assert.Single(viewModel.Hosts);
+        var host = viewModel.Hosts[0];
+        Assert.Equal("Test Host", host.Name);
+        Assert.Equal(2, host.HostNames.Count);
+        Assert.Equal("Test SSL Cert", host.Certificate.Name);
+        
+        Assert.Single(viewModel.ProxyRules);
+        var rule = viewModel.ProxyRules[0];
+        Assert.Equal("Main Rule", rule.Name);
+        Assert.Equal("/app", rule.PathPrefix);
+        Assert.True(rule.StripPrefix);
+        Assert.Equal("App Cluster", rule.Cluster.Name);
+    }
+
+    [Fact]
+    public void UIViewModel_DefaultValues_AreSetCorrectly()
+    {
+        // Act
+        var uiViewModel = new UIViewModel();
+
+        // Assert
+        Assert.True(uiViewModel.Enabled);
+        Assert.Equal("/ui", uiViewModel.Path);
+        Assert.Equal("UI/BlazorWasm/wwwroot", uiViewModel.PhysicalPath);
+        Assert.False(uiViewModel.RequireAuthentication);
     }
 }

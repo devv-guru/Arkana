@@ -5,7 +5,22 @@
       "Bash(rm:*)",
       "Bash(grep:*)",
       "Bash(dotnet build)",
-      "Bash(dotnet ef migrations:*)"
+      "Bash(dotnet ef migrations:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)",
+      "Bash(dotnet new:*)",
+      "Bash(dotnet add package:*)",
+      "WebFetch(domain:modelcontextprotocol.github.io)",
+      "WebFetch(domain:devblogs.microsoft.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:laurentkempe.com)",
+      "Bash(dotnet list:*)",
+      "Bash(dotnet run:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(find:*)",
+      "WebFetch(domain:learn.microsoft.com)",
+      "WebFetch(domain:graphpermissions.merill.net)"
     ],
     "deny": []
   }

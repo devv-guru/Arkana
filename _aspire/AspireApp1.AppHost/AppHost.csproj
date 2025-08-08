@@ -14,6 +14,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\_src\Gateway\Gateway.csproj" />
 		<ProjectReference Include="..\..\_src\Shared\Shared.csproj" />
+		<ProjectReference Include="..\..\_src\Graph.User.Mcp.Server\Graph.User.Mcp.Server.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,10 +1,2 @@
-﻿namespace Gateway.Tests;
-
-public class UnitTest1
-{
-    [Fact]
-    public void Test1()
-    {
-
-    }
-}
+﻿// This file has been replaced with specific test files.
+// See Configuration/, Mcp/, and Proxy/ directories for actual tests.

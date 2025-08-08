@@ -40,6 +40,9 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        // Add local configuration support
+        builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true);
+
         // Add Serilog
         builder.Host.UseSerilog();
 
@@ -83,13 +86,20 @@ public class Program
             options.UseSqlite(connectionString);
         });
 
-        // JWT Authentication
+        // Azure AD Authentication
         services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options =>
             {
-                options.Authority = configuration["Authentication:Jwt:Authority"];
-                options.Audience = configuration["Authentication:Jwt:Audience"];
+                options.Authority = configuration["AzureAd:Instance"] + configuration["AzureAd:TenantId"] + "/v2.0";
+                options.Audience = "api://0e8c11c8-1fd7-42ec-8532-e02711fa5b5b";
                 options.RequireHttpsMetadata = false; // For development
+                
+                // Accept both v1.0 and v2.0 token issuers
+                options.TokenValidationParameters.ValidIssuers = new[]
+                {
+                    $"https://login.microsoftonline.com/{configuration["AzureAd:TenantId"]}/v2.0",
+                    $"https://sts.windows.net/{configuration["AzureAd:TenantId"]}/"
+                };
             });
 
         services.AddAuthorization();
@@ -98,8 +108,10 @@ public class Program
         services.AddValidatorsFromAssemblyContaining<Program>();
 
         // Health Checks
+        services.AddHttpClient<Gateway.HealthChecks.McpServerHealthCheck>();
         services.AddHealthChecks()
-            .AddDbContextCheck<GatewayDbContext>();
+            .AddDbContextCheck<GatewayDbContext>()
+            .AddCheck<Gateway.HealthChecks.McpServerHealthCheck>("mcp_servers");
 
         // YARP Reverse Proxy
         services.AddReverseProxy()
@@ -109,6 +121,7 @@ public class Program
         services.AddScoped<IMcpServerService, McpServerService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IPromptSafetyService, PromptSafetyService>();
+        services.AddScoped<IGraphTokenService, GraphTokenService>();
 
         // Configure JSON options
         services.ConfigureHttpJsonOptions(options =>
@@ -130,20 +143,47 @@ public class Program
         app.UseHsts();
         app.UseHttpsRedirection();
 
-        // Authentication & Authorization
+        // Routing (must come before Authorization)
+        app.UseRouting();
+
+        // Authentication & Authorization (must come after UseRouting)
         app.UseAuthentication();
         app.UseAuthorization();
 
         // Custom middleware - TODO: Fix scoped service resolution
         // app.UseMiddleware<PromptInjectionMiddleware>();
-
-        // Routing
-        app.UseRouting();
+        app.UseMiddleware<GraphTokenExchangeMiddleware>();
 
         // Minimal API endpoints
         app.MapMcpServerEndpoints();
         app.MapUserEndpoints();
-        app.MapHealthChecks("/health");
+        app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+        {
+            ResponseWriter = async (context, report) =>
+            {
+                context.Response.ContentType = "application/json";
+                var response = new
+                {
+                    Status = report.Status.ToString(),
+                    Service = "Arkana MCP Gateway",
+                    Version = "1.0.0",
+                    Timestamp = DateTime.UtcNow,
+                    TotalDuration = report.TotalDuration.TotalMilliseconds,
+                    Checks = report.Entries.ToDictionary(
+                        entry => entry.Key,
+                        entry => new
+                        {
+                            Status = entry.Value.Status.ToString(),
+                            Duration = entry.Value.Duration.TotalMilliseconds,
+                            Description = entry.Value.Description,
+                            Data = entry.Value.Data.Count > 0 ? entry.Value.Data : null,
+                            Exception = entry.Value.Exception?.Message
+                        })
+                };
+                await context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(response, 
+                    new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+            }
+        });
 
         // YARP Reverse Proxy (last in pipeline)
         app.MapReverseProxy();

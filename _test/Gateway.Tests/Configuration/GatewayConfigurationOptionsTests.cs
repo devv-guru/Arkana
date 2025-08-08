@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Gateway.Configuration;
+using Shared.Models;
 using Xunit;
 
 namespace Gateway.Tests.Configuration;
@@ -11,60 +11,14 @@ public class GatewayConfigurationOptionsTests
     {
         // Arrange
         var json = @"{
-            ""Hosts"": [
-                {
-                    ""Name"": ""Test Host"",
-                    ""HostNames"": [""localhost"", ""example.com""],
-                    ""Certificate"": {
-                        ""Name"": ""Test Certificate"",
-                        ""Source"": ""InMemory"",
-                        ""SubjectAlternativeNames"": [""localhost"", ""example.com""]
-                    }
-                }
-            ],
-            ""UI"": {
-                ""Enabled"": true,
-                ""Path"": ""ui"",
-                ""RequireAuthentication"": false
-            },
-            ""ProxyRules"": [
-                {
-                    ""Name"": ""Test Rule"",
-                    ""Hosts"": [""localhost""],
-                    ""PathPrefix"": ""/api"",
-                    ""StripPrefix"": true,
-                    ""Methods"": [""GET"", ""POST""],
-                    ""Cluster"": {
-                        ""Name"": ""Test Cluster"",
-                        ""LoadBalancingPolicy"": ""RoundRobin"",
-                        ""HealthCheck"": {
-                            ""Enabled"": true,
-                            ""Interval"": ""00:00:10"",
-                            ""Timeout"": ""00:00:10"",
-                            ""Threshold"": 5,
-                            ""Path"": ""/health""
-                        },
-                        ""HttpRequest"": {
-                            ""Version"": ""2"",
-                            ""VersionPolicy"": ""RequestVersionOrLower"",
-                            ""AllowResponseBuffering"": false,
-                            ""ActivityTimeout"": ""00:02:00""
-                        },
-                        ""Transforms"": [
-                            {
-                                ""RequestHeader"": ""X-Forwarded-Host"",
-                                ""Set"": ""{Host}""
-                            }
-                        ],
-                        ""Destinations"": [
-                            {
-                                ""Name"": ""test"",
-                                ""Address"": ""http://localhost:5000""
-                            }
-                        ]
-                    }
-                }
-            ]
+            ""ConfigurationStoreType"": ""File"",
+            ""ConfigurationFilePath"": ""_config/test-config.json"",
+            ""AwsRegion"": ""us-west-2"",
+            ""AwsSecretName"": ""test-secret"",
+            ""AzureKeyVaultUri"": ""https://test.vault.azure.net/"",
+            ""AzureKeyVaultSecretName"": ""test-config"",
+            ""EnvironmentVariableName"": ""TEST_CONFIG"",
+            ""ReloadIntervalSeconds"": 120
         }";
 
         // Act
@@ -76,64 +30,53 @@ public class GatewayConfigurationOptionsTests
 
         // Assert
         Assert.NotNull(config);
-        Assert.Single(config.Hosts);
-        Assert.Single(config.ProxyRules);
-        
-        // Verify host
-        var host = config.Hosts[0];
-        Assert.Equal("Test Host", host.Name);
-        Assert.Equal(2, host.HostNames.Count);
-        Assert.Contains("localhost", host.HostNames);
-        Assert.Contains("example.com", host.HostNames);
-        
-        // Verify certificate
-        var certificate = host.Certificate;
-        Assert.Equal("Test Certificate", certificate.Name);
-        Assert.Equal("InMemory", certificate.Source);
-        Assert.Equal(2, certificate.SubjectAlternativeNames.Count);
-        
-        // Verify UI options
-        var ui = config.UI;
-        Assert.True(ui.Enabled);
-        Assert.Equal("ui", ui.Path);
-        Assert.False(ui.RequireAuthentication);
-        
-        // Verify proxy rule
-        var rule = config.ProxyRules[0];
-        Assert.Equal("Test Rule", rule.Name);
-        Assert.Single(rule.Hosts);
-        Assert.Equal("/api", rule.PathPrefix);
-        Assert.True(rule.StripPrefix);
-        Assert.Equal(2, rule.Methods.Count);
-        
-        // Verify cluster
-        var cluster = rule.Cluster;
-        Assert.Equal("Test Cluster", cluster.Name);
-        Assert.Equal("RoundRobin", cluster.LoadBalancingPolicy);
-        
-        // Verify health check
-        var healthCheck = cluster.HealthCheck;
-        Assert.NotNull(healthCheck);
-        Assert.True(healthCheck.Enabled);
-        Assert.Equal("00:00:10", healthCheck.Interval);
-        Assert.Equal("/health", healthCheck.Path);
-        
-        // Verify HTTP request
-        var httpRequest = cluster.HttpRequest;
-        Assert.NotNull(httpRequest);
-        Assert.Equal("2", httpRequest.Version);
-        Assert.Equal("RequestVersionOrLower", httpRequest.VersionPolicy);
-        
-        // Verify transforms
-        Assert.Single(cluster.Transforms);
-        var transform = cluster.Transforms[0];
-        Assert.Equal("X-Forwarded-Host", transform["RequestHeader"]);
-        Assert.Equal("{Host}", transform["Set"]);
-        
-        // Verify destinations
-        Assert.Single(cluster.Destinations);
-        var destination = cluster.Destinations[0];
-        Assert.Equal("test", destination.Name);
-        Assert.Equal("http://localhost:5000", destination.Address);
+        Assert.Equal("File", config.ConfigurationStoreType);
+        Assert.Equal("_config/test-config.json", config.ConfigurationFilePath);
+        Assert.Equal("us-west-2", config.AwsRegion);
+        Assert.Equal("test-secret", config.AwsSecretName);
+        Assert.Equal("https://test.vault.azure.net/", config.AzureKeyVaultUri);
+        Assert.Equal("test-config", config.AzureKeyVaultSecretName);
+        Assert.Equal("TEST_CONFIG", config.EnvironmentVariableName);
+        Assert.Equal(120, config.ReloadIntervalSeconds);
+    }
+
+    [Fact]
+    public void DefaultValues_AreSetCorrectly()
+    {
+        // Act
+        var config = new GatewayConfigurationOptions();
+
+        // Assert
+        Assert.Equal("File", config.ConfigurationStoreType);
+        Assert.Equal("_config/gateway-config.json", config.ConfigurationFilePath);
+        Assert.Equal("us-east-1", config.AwsRegion);
+        Assert.Equal("gateway-config", config.AwsSecretName);
+        Assert.Equal("", config.AzureKeyVaultUri);
+        Assert.Equal("gateway-config", config.AzureKeyVaultSecretName);
+        Assert.Equal("GATEWAY_CONFIG", config.EnvironmentVariableName);
+        Assert.Equal(60, config.ReloadIntervalSeconds);
+    }
+
+    [Fact]
+    public void CanSerializeToJson()
+    {
+        // Arrange
+        var config = new GatewayConfigurationOptions
+        {
+            ConfigurationStoreType = "AWS",
+            AwsRegion = "eu-west-1",
+            AwsSecretName = "my-gateway-config",
+            ReloadIntervalSeconds = 300
+        };
+
+        // Act
+        var json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
+
+        // Assert
+        Assert.NotNull(json);
+        Assert.Contains("\"ConfigurationStoreType\": \"AWS\"", json);
+        Assert.Contains("\"AwsRegion\": \"eu-west-1\"", json);
+        Assert.Contains("\"AwsSecretName\": \"my-gateway-config\"", json);
+        Assert.Contains("\"ReloadIntervalSeconds\": 300", json);
     }
 }

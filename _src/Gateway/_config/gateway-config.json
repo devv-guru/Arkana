@@ -93,6 +93,50 @@
           }
         ]
       }
+    },
+    {
+      "Name": "Microsoft Graph MCP Server Rule",
+      "Hosts": ["localhost", "example.com"],
+      "PathPrefix": "/mcp/msgraph",
+      "StripPrefix": false,
+      "Methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      "Cluster": {
+        "Name": "MSGraphMCPServer",
+        "LoadBalancingPolicy": "RoundRobin",
+        "HealthCheck": {
+          "Enabled": true,
+          "Interval": "00:00:30",
+          "Timeout": "00:00:10",
+          "Threshold": 3,
+          "Path": "/health",
+          "Query": null
+        },
+        "HttpRequest": {
+          "Version": "2",
+          "VersionPolicy": "RequestVersionOrLower",
+          "AllowResponseBuffering": true,
+          "ActivityTimeout": "00:05:00"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/mcp"
+          },
+          {
+            "RequestHeader": "X-Forwarded-Host",
+            "Set": "{Host}"
+          },
+          {
+            "RequestHeader": "X-MCP-Client",
+            "Set": "Arkana-Gateway"
+          }
+        ],
+        "Destinations": [
+          {
+            "Name": "mcp-msgraph-server",
+            "Address": "http://localhost:7000"
+          }
+        ]
+      }
     }
   ]
 }

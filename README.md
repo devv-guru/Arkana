@@ -90,9 +90,8 @@ User authentication      Azure Entra ID   Token cache        Backend systems
 # 1. Clone repository
 $ git clone https://github.com/your-org/mcp-gateway.git && cd mcp-gateway
 
-# 2. Create local environment file
-$ cp .env.example .env
-#   – fill in AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET
+# 2. Configure local settings (create appsettings.local.json files)
+#   – See "Local Development Setup" section below for details
 
 # 3. Spin up dependencies (Redis + SQL) with docker‑compose
 $ docker compose up -d redis sql
@@ -212,6 +211,71 @@ Scaling: Increase instances or move to **Azure Container Apps / AKS**; the gate
 4. Submit a PR with a clear description.
 
 We use **Conventional Commits** and **Semantic Versioning**.
+
+---
+
+## 🔧 Local Development Setup
+
+### Configuration Pattern
+
+Each project uses **`appsettings.local.json`** files for sensitive configuration data. These files are excluded from source control via `.gitignore` to protect credentials.
+
+### Required Local Configuration Files
+
+#### 1. **MCP Client** (`_src/Graph.User.Mcp.Client/appsettings.local.json`)
+```json
+{
+  "AzureAd": {
+    "TenantId": "your-tenant-id", 
+    "ClientId": "your-client-id"
+  },
+  "Gateway": {
+    "ApiScope": "api://your-app-id/obo"
+  }
+}
+```
+
+#### 2. **Gateway** (`_src/Gateway/appsettings.local.json`)
+```json
+{
+  "DataContextOptions": {
+    "ConnectionString": "Server=host.docker.internal,1433;Database=Devv.SqlServer.Test;User Id=sa;Password=YourPassword;"
+  }
+}
+```
+
+#### 3. **MCP Server** (`_src/Graph.User.Mcp.Server/appsettings.local.json`)
+```json
+{
+  "Diagnostics": {
+    "ApiKey": "your-diagnostics-api-key"
+  }
+}
+```
+
+#### 4. **Aspire AppHost** (`_aspire/AspireApp1.AppHost/appsettings.local.json`)
+```json
+{
+  "DataContextOptions": {
+    "ConnectionString": "Server=host.docker.internal,1433;Database=Devv.SqlServer.Test;User Id=sa;Password=YourPassword;TrustServerCertificate=true"
+  }
+}
+```
+
+### Configuration Loading Order
+
+Each project loads configuration in this priority order:
+1. `appsettings.json` (safe defaults, committed to source control)
+2. `appsettings.{Environment}.json` (environment-specific settings)  
+3. **`appsettings.local.json`** (local secrets, gitignored)
+4. Environment variables (highest precedence)
+
+### Security Benefits
+
+✅ **No secrets in source control**  
+✅ **Easy developer onboarding**  
+✅ **Environment-specific overrides**  
+✅ **Production-ready defaults**
 
 ---
 

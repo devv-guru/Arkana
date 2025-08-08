@@ -17,6 +17,11 @@ namespace Mediator
         public string Namespace { get; set; } = "Mediator";
 
         /// <summary>
+        /// Wether or not generated types should be <c>internal</c> (they are public by default).
+        /// </summary>
+        public bool GenerateTypesAsInternal { get; set; } = false;
+
+        /// <summary>
         /// The <see cref="global::Mediator.INotificationPublisher" /> type to use when publishing notifications.
         /// By default, the type is <see cref="global::Mediator.ForeachAwaitPublisher" />.
         /// </summary>
@@ -28,5 +33,23 @@ namespace Mediator
         /// </summary>
         public global::Microsoft.Extensions.DependencyInjection.ServiceLifetime ServiceLifetime { get; set; } =
             global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Singleton;
+
+        /// <summary>
+        /// The collection of assemblies to scan for Mediator handlers.
+        /// By default, the collection is empty, in which case the source generator will scan all assemblies through references from the source generated project.
+        /// </summary>
+        public global::System.Collections.Generic.IReadOnlyList<global::Mediator.AssemblyReference> Assemblies { get; set; } = new global::Mediator.AssemblyReference[0];
+
+        /// <summary>
+        /// The collection of types of pipeline behaviors to register in DI.
+        /// When the type is an unconstructed generic type, the source generator will register all the constructed types of the generic type (open generics that is supported during AoT).
+        /// </summary>
+        public global::System.Collections.Generic.IReadOnlyList<global::System.Type> PipelineBehaviors { get; set; } = new global::System.Type[0];
+
+        /// <summary>
+        /// The collection of types of streaming pipeline behaviors to register in DI.
+        /// When the type is an unconstructed generic type, the source generator will register all the constructed types of the generic type (open generics that is supported during AoT).
+        /// </summary>
+        public global::System.Collections.Generic.IReadOnlyList<global::System.Type> StreamPipelineBehaviors { get; set; } = new global::System.Type[0];
     }
 }
