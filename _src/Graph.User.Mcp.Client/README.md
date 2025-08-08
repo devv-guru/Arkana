@@ -85,15 +85,20 @@ dotnet run
 ```
 
 ### Configuration
-Create `appsettings.local.json` with your specific values:
+
+#### Prerequisites
+**🚨 Azure AD Setup Required**: Before configuring the client, you must set up Azure AD application registrations. Follow the [**Azure AD Setup Guide**](../../AZURE_AD_SETUP.md) in the solution root.
+
+#### Local Configuration
+Create `appsettings.local.json` with values from your Azure AD app registrations:
 ```json
 {
   "AzureAd": {
     "TenantId": "your-tenant-id",
-    "ClientId": "your-app-registration-id"
+    "ClientId": "your-client-app-registration-id"
   },
   "Gateway": {
-    "ApiScope": "api://your-app-id/obo"
+    "ApiScope": "api://your-gateway-app-registration-id/obo"
   }
 }
 ```

@@ -90,16 +90,19 @@ User authentication      Azure Entra ID   Token cache        Backend systems
 # 1. Clone repository
 $ git clone https://github.com/your-org/mcp-gateway.git && cd mcp-gateway
 
-# 2. Configure local settings (create appsettings.local.json files)
+# 2. Setup Azure AD application registrations
+#   – Follow the Azure AD Setup Guide: AZURE_AD_SETUP.md
+
+# 3. Configure local settings (create appsettings.local.json files)  
 #   – See "Local Development Setup" section below for details
 
-# 3. Spin up dependencies (Redis + SQL) with docker‑compose
+# 4. Spin up dependencies (Redis + SQL) with docker‑compose
 $ docker compose up -d redis sql
 
-# 4. Run the gateway
+# 5. Run the gateway
 $ dotnet run --project src/Gateway
 
-# 5. Register a sample tool
+# 6. Register a sample tool
 $ curl -X POST http://localhost:5000/registry/register \
        -H "Content-Type: application/json" \
        -d '@samples/calculator/manifest.json'
@@ -215,6 +218,11 @@ We use **Conventional Commits** and **Semantic Versioning**.
 ---
 
 ## 🔧 Local Development Setup
+
+### Prerequisites
+
+1. **Azure AD Setup Required**: Follow the [**Azure AD Setup Guide**](AZURE_AD_SETUP.md) to create application registrations
+2. **Local Configuration**: Create `appsettings.local.json` files as described below
 
 ### Configuration Pattern
 

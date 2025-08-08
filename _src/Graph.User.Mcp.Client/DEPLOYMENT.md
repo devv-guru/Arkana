@@ -50,17 +50,23 @@
    ```
 
 2. **Azure AD App Registration:**
-   - Register application in Azure AD
-   - Configure redirect URI: `https://login.microsoftonline.com/common/oauth2/nativeclient`
-   - Grant Microsoft Graph permissions:
-     - User.Read
-     - Mail.ReadWrite
-     - Calendars.ReadWrite
-     - Files.ReadWrite.All
-     - Directory.Read.All
-     - Group.Read.All
-     - Notes.Read.All
-     - Presence.Read.All
+   
+   **⚠️ IMPORTANT**: Complete Azure AD setup is required before deployment.
+   
+   📋 **Follow the comprehensive [Azure AD Setup Guide](../../AZURE_AD_SETUP.md)** which covers:
+   - Creating Gateway and Client app registrations
+   - Configuring proper permissions and scopes  
+   - Setting up On-Behalf-Of (OBO) token exchange
+   - Security best practices and troubleshooting
+   
+   **Quick Reference - Required Permissions:**
+   - User.Read, User.ReadBasic.All, User.Read.All
+   - Mail.ReadWrite, Mail.Send  
+   - Calendars.ReadWrite
+   - Files.ReadWrite.All, Sites.Read.All
+   - Directory.Read.All, Group.Read.All, GroupMember.Read.All
+   - Notes.Read.All, Presence.Read.All
+   - Tasks.ReadWrite, Contacts.ReadWrite
 
 ## 🎯 Available Services & Commands
 
