@@ -17,8 +17,9 @@ A YARP‑powered, identity‑aware reverse proxy that brokers access between AI 
 9. [Deployment on Azure](#deployment-on-azure)
 10. [Operational Guides](#operational-guides)
 11. [Extending the Gateway](#extending-the-gateway)
-12. [Contributing](#contributing)
-13. [License](#license)
+12. [MCP Client Integration](#-mcp-client-integration)
+13. [Contributing](#contributing)
+14. [License](#license)
 
 ---
 
@@ -203,6 +204,93 @@ Scaling: Increase instances or move to **Azure Container Apps / AKS**; the gate
 | **Alternate IdPs**            | Add additional authentication schemes (`AddJwtBearer("Okta" ...)`). |
 | **Policy plugins**            | Use `EndpointFilter` to inject content scans or rate‑limit logic.   |
 | **UI additions**              | Admin SPA lives in `src/Admin`; React + Tailwind.                   |
+
+---
+
+## 🖥️ MCP Client Integration
+
+### Overview
+
+To integrate with **MCP clients** (Claude Desktop, VSCode, Cline, Cursor, Windsurf, etc.), you need a lightweight intermediary MCP server that handles local authentication and proxies requests to the Arkana gateway. This approach provides enterprise security while maintaining a simple user experience.
+
+### Architecture
+
+```
+MCP Client        →  Local MCP Bridge  →  Arkana Gateway  →  Backend Tools
+(Claude/VSCode/      (Single Server)      (RBAC + Auth)     (Graph, etc.)
+ Cline/Cursor/etc.)
+```
+
+### Why This Approach?
+
+| **Single MCP Bridge Benefits** | **Details** |
+|-------------------------------|-------------|
+| **Leverages Gateway RBAC** | Gateway's `/tools/list` returns only user-authorized tools |
+| **Simplified Client Config** | User configures one MCP server instead of multiple |
+| **Centralized Management** | Admin UI manages all tool access from one location |
+| **Consistent Audit Logging** | All tool calls logged through gateway |
+
+### Implementation Strategy
+
+Your lightweight MCP bridge server should:
+
+1. **Local Authentication**: Use Windows Hello → Azure Entra ID token exchange
+2. **Tool Discovery**: Proxy gateway's `/tools/list` endpoint (filtered by user roles)
+3. **Tool Execution**: Forward `/tools/call` requests to gateway with user's token
+4. **Response Streaming**: Pass through streaming responses from gateway
+
+### Existing Foundation
+
+Leverage these existing components:
+
+- **Bridge Implementation**: `_src/Arkana.Mcp.Bridge/` (framework-dependent DLL)
+- **Cross-Platform Auth**: Windows Hello, Azure CLI, Device Code Flow support
+- **Gateway Integration**: JWT token handling and RBAC enforcement
+
+### Configuration Examples
+
+#### Claude Desktop
+`claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "arkana-bridge": {
+      "command": "dotnet",
+      "args": [
+        "C:\\Program Files\\CompanyName\\ArkanaMcpBridge\\Arkana.Mcp.Bridge.dll"
+      ]
+    }
+  }
+}
+```
+
+#### Other MCP Clients (VSCode, Cline, Cursor, Windsurf)
+Most MCP clients use similar configuration patterns:
+```json
+{
+  "mcpServers": {
+    "arkana-bridge": {
+      "command": "dotnet",
+      "args": [
+        "C:\\Program Files\\CompanyName\\ArkanaMcpBridge\\Arkana.Mcp.Bridge.dll"
+      ]
+    }
+  }
+}
+```
+
+### Enterprise Deployment
+
+Deploy bridge via Group Policy:
+```bash
+# Build framework-dependent DLL
+dotnet publish -c Release --no-self-contained -o dist/
+
+# Deploy to standard location:
+# C:\Program Files\CompanyName\ArkanaMcpBridge\
+```
+
+This gives you **enterprise security** (via Arkana gateway) with **simple user experience** (single MCP server for any MCP client).
 
 ---
 

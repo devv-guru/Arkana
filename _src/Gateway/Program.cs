@@ -1,9 +1,11 @@
 using FluentValidation;
-using Gateway.Data;
+using Data.Contexts.SqLite;
+using Data.Contexts.Base;
 using Gateway.Services;
 using Gateway.Endpoints;
 using Gateway.Middleware;
 using Microsoft.EntityFrameworkCore;
+using Yarp.ReverseProxy.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -57,7 +59,7 @@ public class Program
         // Ensure database is created
         using (var scope = app.Services.CreateScope())
         {
-            var context = scope.ServiceProvider.GetRequiredService<GatewayDbContext>();
+            var context = scope.ServiceProvider.GetRequiredService<SqLiteWriteOnlyContext>();
             context.Database.EnsureCreated();
         }
 
@@ -79,12 +81,16 @@ public class Program
         });
 
         // Database - SQLite for MVP
-        services.AddDbContext<GatewayDbContext>(options =>
+        services.AddDbContext<SqLiteWriteOnlyContext>(options =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection") 
                 ?? "Data Source=arkana-gateway.db";
             options.UseSqlite(connectionString);
         });
+        
+        // Register the interface
+        services.AddScoped<IWriteOnlyContext>(provider => 
+            provider.GetRequiredService<SqLiteWriteOnlyContext>());
 
         // Azure AD Authentication
         services.AddAuthentication("Bearer")
@@ -110,18 +116,22 @@ public class Program
         // Health Checks
         services.AddHttpClient<Gateway.HealthChecks.McpServerHealthCheck>();
         services.AddHealthChecks()
-            .AddDbContextCheck<GatewayDbContext>()
+            .AddDbContextCheck<SqLiteWriteOnlyContext>()
             .AddCheck<Gateway.HealthChecks.McpServerHealthCheck>("mcp_servers");
 
-        // YARP Reverse Proxy
+        // YARP Reverse Proxy with dynamic configuration
+        services.AddSingleton<DynamicProxyConfigProvider>();
+        services.AddSingleton<IProxyConfigProvider>(provider => 
+            provider.GetRequiredService<DynamicProxyConfigProvider>());
         services.AddReverseProxy()
-            .LoadFromConfig(configuration.GetSection("ReverseProxy"));
+            .LoadFromMemory([], []);
 
         // Business Services
         services.AddScoped<IMcpServerService, McpServerService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IPromptSafetyService, PromptSafetyService>();
         services.AddScoped<IGraphTokenService, GraphTokenService>();
+        services.AddScoped<IConfigurationService, ConfigurationService>();
 
         // Configure JSON options
         services.ConfigureHttpJsonOptions(options =>
@@ -157,6 +167,7 @@ public class Program
         // Minimal API endpoints
         app.MapMcpServerEndpoints();
         app.MapUserEndpoints();
+        app.MapConfigurationEndpoints();
         app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
         {
             ResponseWriter = async (context, report) =>

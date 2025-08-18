@@ -1,0 +1,19 @@
+{
+  "Gateway": {
+    "Url": "https://your-arkana-gateway.internal"
+  },
+  "Authentication": {
+    "TenantId": "your-azure-tenant-id",
+    "ClientId": "your-azure-client-id",
+    "Scopes": [
+      "api://your-gateway-app-id/.default"
+    ]
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Claude.Desktop.Mcp.Bridge": "Debug"
+    },
+    "EnableConsole": false
+  }
+}

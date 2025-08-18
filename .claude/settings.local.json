@@ -20,7 +20,10 @@
       "Bash(mv:*)",
       "Bash(find:*)",
       "WebFetch(domain:learn.microsoft.com)",
-      "WebFetch(domain:graphpermissions.merill.net)"
+      "WebFetch(domain:graphpermissions.merill.net)",
+      "Bash(xcopy:*)",
+      "Bash(robocopy:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }
