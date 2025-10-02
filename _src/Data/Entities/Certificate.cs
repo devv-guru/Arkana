@@ -19,5 +19,6 @@ public class Certificate : EntityBase
     // For In-Memory/Self-Signed
     public string[]? SubjectAlternativeNames { get; set; }
 
-    public ICollection<WebHost> WebHosts { get; set; }
+    // WebHosts relationship removed - Azure handles SSL termination
+    // Certificate management may still be needed for other purposes
 }

@@ -12,34 +12,35 @@
     <!-- MVP Simplified Package References -->
     <ItemGroup>
         <!-- Core Framework -->
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
         
         <!-- YARP Reverse Proxy -->
         <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
         
         <!-- Entity Framework Core (SQLite only for MVP) -->
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.7" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.7">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
             <PrivateAssets>all</PrivateAssets>
             <IncludeInPackageTargets>false</IncludeInPackageTargets>
         </PackageReference>
         
         <!-- Authentication -->
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.1" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.6.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.8" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
         
         <!-- Microsoft Graph and Authentication -->
-        <PackageReference Include="Microsoft.Graph" Version="5.89.0" />
+        <PackageReference Include="Microsoft.Graph" Version="5.91.0" />
         <PackageReference Include="Microsoft.Graph.Auth" Version="1.0.0-preview.7" />
-        <PackageReference Include="Microsoft.Identity.Web" Version="3.3.0" />
+        <PackageReference Include="Microsoft.Identity.Web" Version="3.13.2" />
         
         <!-- Validation -->
-        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+        <PackageReference Include="FluentValidation" Version="12.0.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
         
         <!-- Health Checks -->
-        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="9.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="9.0.8" />
         
         <!-- Logging -->
         <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
@@ -57,6 +58,9 @@
     <!-- Project References -->
     <ItemGroup>
         <ProjectReference Include="..\Data\Data.csproj" />
+        <ProjectReference Include="..\Endpoints\Endpoints.csproj" />
+        <ProjectReference Include="..\Shared\Shared.csproj" />
+        <ProjectReference Include="..\..\\_aspire\AspireApp1.ServiceDefaults\ServiceDefaults.csproj" />
     </ItemGroup>
 
 </Project>

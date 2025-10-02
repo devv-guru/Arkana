@@ -127,9 +127,9 @@ public class ConfigurationService : IConfigurationService
             .Include(c => c.Host)
             .Include(c => c.Destinations)
             .Include(c => c.HealthCheck)
-                .ThenInclude(h => h.ActiveHealthCheck)
+                .ThenInclude(h => h.Active)
             .Include(c => c.HealthCheck)
-                .ThenInclude(h => h.PassiveHealthCheck)
+                .ThenInclude(h => h.Passive)
             .Include(c => c.SessionAffinity)
             .Include(c => c.HttpClient)
             .Include(c => c.HttpRequest)
@@ -197,15 +197,13 @@ public class ConfigurationService : IConfigurationService
     public async Task<IEnumerable<Destination>> GetDestinationsAsync(Guid clusterId)
     {
         return await _context.Destinations
-            .Include(d => d.Metadata)
-            .Where(d => d.ClusterId == clusterId && !d.IsDeleted)
+            .Where(d => d.ClusterConfigId == clusterId && !d.IsDeleted)
             .ToListAsync();
     }
 
     public async Task<Destination?> GetDestinationAsync(Guid id)
     {
         return await _context.Destinations
-            .Include(d => d.Metadata)
             .FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
     }
 
@@ -271,8 +269,7 @@ public class ConfigurationService : IConfigurationService
     {
         return await _context.WebHosts
             .Include(h => h.Routes)
-            .Include(h => h.Clusters)
-            .Include(h => h.Certificates)
+            .Include(h => h.Cluster)
             .Where(h => !h.IsDeleted)
             .ToListAsync();
     }
@@ -281,8 +278,7 @@ public class ConfigurationService : IConfigurationService
     {
         return await _context.WebHosts
             .Include(h => h.Routes)
-            .Include(h => h.Clusters)
-            .Include(h => h.Certificates)
+            .Include(h => h.Cluster)
             .FirstOrDefaultAsync(h => h.Id == id && !h.IsDeleted);
     }
 

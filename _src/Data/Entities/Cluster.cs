@@ -3,6 +3,7 @@
 public class Cluster : EntityBase
 {
     public string? LoadBalancingPolicy { get; set; }
+    public string? Name { get; set; }
     public Guid HostId { get; set; }
     public WebHost? Host { get; set; }
     public SessionAffinity? SessionAffinity { get; set; }

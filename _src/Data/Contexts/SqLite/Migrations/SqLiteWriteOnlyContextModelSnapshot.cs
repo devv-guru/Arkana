@@ -15,7 +15,7 @@ namespace Data.Contexts.SqLite.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.8");
 
             modelBuilder.Entity("Data.Entities.ActiveHealthCheck", b =>
                 {
@@ -35,8 +35,7 @@ namespace Data.Contexts.SqLite.Migrations
                     b.Property<Guid>("HealthCheckConfigId")
                         .HasColumnType("TEXT");
 
-                    b.Property<TimeSpan?>("Interval")
-                        .IsRequired()
+                    b.Property<TimeSpan>("Interval")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
@@ -75,27 +74,26 @@ namespace Data.Contexts.SqLite.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("AwsCertificateName")
-                        .HasMaxLength(500)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AwsCertificatePasswordName")
-                        .HasMaxLength(500)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AwsRegion")
-                        .HasMaxLength(500)
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("CertificateSource")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("Certificate source type: Local, KeyVault, InMemory, SelfSigned");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("FilePassword")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT")
+                        .HasComment("Local certificate file password");
+
+                    b.Property<string>("FilePath")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT")
+                        .HasComment("Local certificate file path");
 
                     b.Property<bool>("IsDefault")
                         .HasColumnType("INTEGER");
@@ -105,27 +103,33 @@ namespace Data.Contexts.SqLite.Migrations
 
                     b.Property<string>("KeyVaultCertificateName")
                         .HasMaxLength(500)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("Certificate name in Azure Key Vault");
 
                     b.Property<string>("KeyVaultCertificatePasswordName")
                         .HasMaxLength(500)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("Certificate password secret name in Azure Key Vault");
 
                     b.Property<string>("KeyVaultName")
                         .HasMaxLength(500)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("Azure Key Vault name");
 
                     b.Property<string>("KeyVaultUri")
                         .HasMaxLength(1000)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("Azure Key Vault URI");
 
                     b.Property<string>("Name")
                         .HasMaxLength(500)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("Certificate display name");
 
                     b.Property<string>("SubjectAlternativeNames")
                         .HasMaxLength(1000)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("Subject Alternative Names for self-signed certificates");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
@@ -158,6 +162,9 @@ namespace Data.Contexts.SqLite.Migrations
 
                     b.Property<string>("LoadBalancingPolicy")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -402,14 +409,14 @@ namespace Data.Contexts.SqLite.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Hosts")
+                    b.PrimitiveCollection<string>("Hosts")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Methods")
+                    b.PrimitiveCollection<string>("Methods")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -432,6 +439,508 @@ namespace Data.Contexts.SqLite.Migrations
                         .IsUnique();
 
                     b.ToTable("Matches", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Entities.Mcp.McpAuditLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AdditionalData")
+                        .HasMaxLength(8000)
+                        .HasColumnType("TEXT")
+                        .HasComment("JSON serialized additional event data");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeSpan?>("Duration")
+                        .HasColumnType("TEXT")
+                        .HasComment("Duration of the operation");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT")
+                        .HasComment("Error message if event failed");
+
+                    b.Property<string>("EventDescription")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT")
+                        .HasComment("Description of the event");
+
+                    b.Property<int>("EventType")
+                        .HasColumnType("INTEGER")
+                        .HasComment("Type of audit event");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(45)
+                        .HasColumnType("TEXT")
+                        .HasComment("Client IP address (supports IPv6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsSuccess")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true)
+                        .HasComment("Whether the event was successful");
+
+                    b.Property<Guid?>("McpServerId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SessionId")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT")
+                        .HasComment("Session identifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT")
+                        .HasComment("Client user agent string");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("TEXT")
+                        .HasComment("User email address");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT")
+                        .HasComment("OIDC subject/user identifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_McpAuditLogs_CreatedAt");
+
+                    b.HasIndex("EventType")
+                        .HasDatabaseName("IX_McpAuditLogs_EventType");
+
+                    b.HasIndex("IsSuccess")
+                        .HasDatabaseName("IX_McpAuditLogs_IsSuccess");
+
+                    b.HasIndex("McpServerId")
+                        .HasDatabaseName("IX_McpAuditLogs_McpServerId");
+
+                    b.HasIndex("UserEmail")
+                        .HasDatabaseName("IX_McpAuditLogs_UserEmail");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_McpAuditLogs_UserId");
+
+                    b.HasIndex("EventType", "CreatedAt")
+                        .HasDatabaseName("IX_McpAuditLogs_EventType_CreatedAt");
+
+                    b.HasIndex("McpServerId", "CreatedAt")
+                        .HasDatabaseName("IX_McpAuditLogs_ServerId_CreatedAt");
+
+                    b.HasIndex("UserId", "CreatedAt")
+                        .HasDatabaseName("IX_McpAuditLogs_UserId_CreatedAt");
+
+                    b.ToTable("McpAuditLogs", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Entities.Mcp.McpBackendAuth", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("AllowPerUserApiKeys")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false)
+                        .HasComment("Whether to allow per-user API keys");
+
+                    b.Property<string>("ApiKey")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT")
+                        .HasComment("Encrypted global API key");
+
+                    b.Property<string>("ApiKeyHeader")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("Authorization")
+                        .HasComment("Header name for API key");
+
+                    b.Property<string>("ApiKeyPrefix")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("Bearer")
+                        .HasComment("Prefix for API key value");
+
+                    b.Property<int>("AuthType")
+                        .HasColumnType("INTEGER")
+                        .HasComment("Authentication type: None, OAuth2, ApiKey, Bearer");
+
+                    b.Property<string>("AuthorizationEndpoint")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT")
+                        .HasComment("OAuth2 authorization endpoint URL");
+
+                    b.Property<string>("ClientId")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT")
+                        .HasComment("OAuth2 client ID");
+
+                    b.Property<string>("ClientSecret")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT")
+                        .HasComment("Encrypted OAuth2 client secret");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CustomHeaders")
+                        .HasMaxLength(4000)
+                        .HasColumnType("TEXT")
+                        .HasComment("JSON serialized custom headers");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("EnableTokenRefresh")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true)
+                        .HasComment("Whether to enable automatic token refresh");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("McpServerId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RedirectUri")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT")
+                        .HasComment("OAuth2 redirect URI");
+
+                    b.Property<string>("Scope")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT")
+                        .HasComment("OAuth2 requested scopes");
+
+                    b.Property<int>("TokenCacheTtlSeconds")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(3600)
+                        .HasComment("Token cache TTL in seconds");
+
+                    b.Property<string>("TokenEndpoint")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT")
+                        .HasComment("OAuth2 token endpoint URL");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthType");
+
+                    b.HasIndex("IsDeleted")
+                        .HasFilter("IsDeleted = 0");
+
+                    b.HasIndex("McpServerId")
+                        .IsUnique()
+                        .HasFilter("IsDeleted = 0");
+
+                    b.ToTable("McpBackendAuths", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Entities.Mcp.McpRoleAssignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("TEXT")
+                        .HasComment("Optional expiration date for the assignment");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true)
+                        .HasComment("Whether the assignment is active");
+
+                    b.Property<Guid>("McpServerId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleDisplayName")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT")
+                        .HasComment("Human-readable role name");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT")
+                        .HasComment("OIDC role/group name");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpiresAt");
+
+                    b.HasIndex("IsDeleted")
+                        .HasFilter("IsDeleted = 0");
+
+                    b.HasIndex("IsEnabled");
+
+                    b.HasIndex("RoleName")
+                        .HasDatabaseName("IX_McpRoleAssignments_RoleName");
+
+                    b.HasIndex("McpServerId", "RoleName")
+                        .IsUnique()
+                        .HasDatabaseName("IX_McpRoleAssignments_ServerId_RoleName")
+                        .HasFilter("IsDeleted = 0");
+
+                    b.ToTable("McpRoleAssignments", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Entities.Mcp.McpServer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT")
+                        .HasComment("Description of the MCP server functionality");
+
+                    b.Property<string>("Endpoint")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT")
+                        .HasComment("WebSocket or SSE endpoint URL");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true)
+                        .HasComment("Whether the MCP server is enabled");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT")
+                        .HasComment("Unique name for the MCP server");
+
+                    b.Property<int>("Priority")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0)
+                        .HasComment("Priority for routing (lower = higher priority)");
+
+                    b.Property<int>("ProtocolType")
+                        .HasColumnType("INTEGER")
+                        .HasComment("Protocol type: WebSocket, SSE, or HTTP");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted")
+                        .HasFilter("IsDeleted = 0");
+
+                    b.HasIndex("IsEnabled");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("IsDeleted = 0");
+
+                    b.HasIndex("Priority");
+
+                    b.ToTable("McpServers", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Entities.Mcp.McpUserApiKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ApiKey")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT")
+                        .HasComment("Encrypted user-specific API key");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("TEXT")
+                        .HasComment("Optional expiration date for the API key");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true)
+                        .HasComment("Whether the API key is active");
+
+                    b.Property<DateTime?>("LastUsedAt")
+                        .HasColumnType("TEXT")
+                        .HasComment("Timestamp of last API key usage");
+
+                    b.Property<Guid>("McpBackendAuthId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("TEXT")
+                        .HasComment("User email address");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT")
+                        .HasComment("OIDC subject/user identifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpiresAt");
+
+                    b.HasIndex("IsDeleted")
+                        .HasFilter("IsDeleted = 0");
+
+                    b.HasIndex("IsEnabled");
+
+                    b.HasIndex("LastUsedAt");
+
+                    b.HasIndex("UserEmail")
+                        .HasDatabaseName("IX_McpUserApiKeys_UserEmail");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_McpUserApiKeys_UserId");
+
+                    b.HasIndex("McpBackendAuthId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_McpUserApiKeys_BackendAuthId_UserId")
+                        .HasFilter("IsDeleted = 0");
+
+                    b.ToTable("McpUserApiKeys", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Entities.Mcp.McpUserAssignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("TEXT")
+                        .HasComment("Optional expiration date for the assignment");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true)
+                        .HasComment("Whether the assignment is active");
+
+                    b.Property<Guid>("McpServerId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserDisplayName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT")
+                        .HasComment("User display name");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("TEXT")
+                        .HasComment("User email address");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT")
+                        .HasComment("OIDC subject/user identifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpiresAt");
+
+                    b.HasIndex("IsDeleted")
+                        .HasFilter("IsDeleted = 0");
+
+                    b.HasIndex("IsEnabled");
+
+                    b.HasIndex("UserEmail")
+                        .HasDatabaseName("IX_McpUserAssignments_UserEmail");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_McpUserAssignments_UserId");
+
+                    b.HasIndex("McpServerId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_McpUserAssignments_ServerId_UserId")
+                        .HasFilter("IsDeleted = 0");
+
+                    b.ToTable("McpUserAssignments", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Metadata", b =>
@@ -471,6 +980,127 @@ namespace Data.Contexts.SqLite.Migrations
                         .HasFilter("IsDeleted = 0");
 
                     b.ToTable("Metadata", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Entities.Metrics.RequestMetric", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClientIp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClusterId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DestinationId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("ElapsedMilliseconds")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Host")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Method")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Path")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("RequestSize")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("ResponseSize")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("RouteId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("StatusCode")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserAgent")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RequestMetrics");
+                });
+
+            modelBuilder.Entity("Data.Entities.Metrics.SystemMetric", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ActiveConnections")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("CpuUsagePercent")
+                        .HasColumnType("REAL");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("DiskReadKbps")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("DiskWriteKbps")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("HandleCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("HostName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("MemoryUsageMB")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("NetworkInboundKbps")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("NetworkOutboundKbps")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("ThreadCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("TotalMemoryMB")
+                        .HasColumnType("REAL");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SystemMetrics");
                 });
 
             modelBuilder.Entity("Data.Entities.PassiveHealthCheck", b =>
@@ -827,6 +1457,60 @@ namespace Data.Contexts.SqLite.Migrations
                     b.Navigation("Route");
                 });
 
+            modelBuilder.Entity("Data.Entities.Mcp.McpAuditLog", b =>
+                {
+                    b.HasOne("Data.Entities.Mcp.McpServer", "McpServer")
+                        .WithMany("AuditLogs")
+                        .HasForeignKey("McpServerId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("McpServer");
+                });
+
+            modelBuilder.Entity("Data.Entities.Mcp.McpBackendAuth", b =>
+                {
+                    b.HasOne("Data.Entities.Mcp.McpServer", "McpServer")
+                        .WithOne("BackendAuth")
+                        .HasForeignKey("Data.Entities.Mcp.McpBackendAuth", "McpServerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("McpServer");
+                });
+
+            modelBuilder.Entity("Data.Entities.Mcp.McpRoleAssignment", b =>
+                {
+                    b.HasOne("Data.Entities.Mcp.McpServer", "McpServer")
+                        .WithMany("RoleAssignments")
+                        .HasForeignKey("McpServerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("McpServer");
+                });
+
+            modelBuilder.Entity("Data.Entities.Mcp.McpUserApiKey", b =>
+                {
+                    b.HasOne("Data.Entities.Mcp.McpBackendAuth", "McpBackendAuth")
+                        .WithMany("UserApiKeys")
+                        .HasForeignKey("McpBackendAuthId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("McpBackendAuth");
+                });
+
+            modelBuilder.Entity("Data.Entities.Mcp.McpUserAssignment", b =>
+                {
+                    b.HasOne("Data.Entities.Mcp.McpServer", "McpServer")
+                        .WithMany("UserAssignments")
+                        .HasForeignKey("McpServerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("McpServer");
+                });
+
             modelBuilder.Entity("Data.Entities.Metadata", b =>
                 {
                     b.HasOne("Data.Entities.Cluster", "Cluster")
@@ -938,6 +1622,22 @@ namespace Data.Contexts.SqLite.Migrations
                     b.Navigation("Headers");
 
                     b.Navigation("QueryParameters");
+                });
+
+            modelBuilder.Entity("Data.Entities.Mcp.McpBackendAuth", b =>
+                {
+                    b.Navigation("UserApiKeys");
+                });
+
+            modelBuilder.Entity("Data.Entities.Mcp.McpServer", b =>
+                {
+                    b.Navigation("AuditLogs");
+
+                    b.Navigation("BackendAuth");
+
+                    b.Navigation("RoleAssignments");
+
+                    b.Navigation("UserAssignments");
                 });
 
             modelBuilder.Entity("Data.Entities.Route", b =>

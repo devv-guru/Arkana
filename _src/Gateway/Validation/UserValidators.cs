@@ -1,5 +1,5 @@
 using FluentValidation;
-using Gateway.Endpoints;
+using Gateway.Endpoints.Users;
 
 namespace Gateway.Validation;
 
@@ -8,18 +8,13 @@ public class GrantAccessRequestValidator : AbstractValidator<GrantAccessRequest>
     public GrantAccessRequestValidator()
     {
         RuleFor(x => x.ServerId)
-            .GreaterThan(0)
-            .WithMessage("ServerId must be a positive integer");
+            .NotEqual(Guid.Empty)
+            .WithMessage("ServerId must be a valid GUID");
 
         RuleFor(x => x.UserEmail)
             .EmailAddress()
             .When(x => !string.IsNullOrEmpty(x.UserEmail))
             .WithMessage("UserEmail must be a valid email address");
-
-        RuleFor(x => x.Roles)
-            .MaximumLength(200)
-            .When(x => !string.IsNullOrEmpty(x.Roles))
-            .WithMessage("Roles must not exceed 200 characters");
     }
 }
 
@@ -28,9 +23,9 @@ public class LogEventRequestValidator : AbstractValidator<LogEventRequest>
     public LogEventRequestValidator()
     {
         RuleFor(x => x.ServerId)
-            .GreaterThan(0)
+            .NotEqual(Guid.Empty)
             .When(x => x.ServerId.HasValue)
-            .WithMessage("ServerId must be a positive integer");
+            .WithMessage("ServerId must be a valid GUID");
 
         RuleFor(x => x.Action)
             .NotEmpty()

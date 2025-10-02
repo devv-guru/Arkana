@@ -1,15 +1,17 @@
 using FluentValidation;
-using Data.Contexts.SqLite;
 using Data.Contexts.Base;
 using Gateway.Services;
-using Gateway.Endpoints;
+using Gateway.Endpoints.Users;
 using Gateway.Middleware;
+using Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Yarp.ReverseProxy.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text.Json;
+using Endpoints;
+using EndpointsConfigurationService = Endpoints.Configuration.Services.IConfigurationService;
 
 namespace Gateway;
 
@@ -48,6 +50,9 @@ public class Program
         // Add Serilog
         builder.Host.UseSerilog();
 
+        // Add Aspire service defaults
+        builder.AddServiceDefaults();
+
         // Add services
         ConfigureServices(builder.Services, builder.Configuration);
 
@@ -55,12 +60,21 @@ public class Program
 
         // Configure pipeline
         ConfigurePipeline(app);
+        
+        // Map default endpoints for Aspire
+        app.MapDefaultEndpoints();
 
-        // Ensure database is created
-        using (var scope = app.Services.CreateScope())
+        // Apply database migrations in development
+        if (app.Environment.IsDevelopment())
         {
-            var context = scope.ServiceProvider.GetRequiredService<SqLiteWriteOnlyContext>();
-            context.Database.EnsureCreated();
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<IWriteOnlyContext>();
+                if (context is DbContext dbContext)
+                {
+                    dbContext.Database.Migrate();
+                }
+            }
         }
 
         return app;
@@ -80,17 +94,8 @@ public class Program
             });
         });
 
-        // Database - SQLite for MVP
-        services.AddDbContext<SqLiteWriteOnlyContext>(options =>
-        {
-            var connectionString = configuration.GetConnectionString("DefaultConnection") 
-                ?? "Data Source=arkana-gateway.db";
-            options.UseSqlite(connectionString);
-        });
-        
-        // Register the interface
-        services.AddScoped<IWriteOnlyContext>(provider => 
-            provider.GetRequiredService<SqLiteWriteOnlyContext>());
+        // Database - Dynamic provider selection based on configuration
+        services.AddDatabaseContexts(configuration);
 
         // Azure AD Authentication
         services.AddAuthentication("Bearer")
@@ -110,13 +115,15 @@ public class Program
 
         services.AddAuthorization();
 
+        // FastEndpoints
+        services.AddGatewayFastEndpoints();
+
         // FluentValidation
         services.AddValidatorsFromAssemblyContaining<Program>();
 
         // Health Checks
         services.AddHttpClient<Gateway.HealthChecks.McpServerHealthCheck>();
         services.AddHealthChecks()
-            .AddDbContextCheck<SqLiteWriteOnlyContext>()
             .AddCheck<Gateway.HealthChecks.McpServerHealthCheck>("mcp_servers");
 
         // YARP Reverse Proxy with dynamic configuration
@@ -132,6 +139,12 @@ public class Program
         services.AddScoped<IPromptSafetyService, PromptSafetyService>();
         services.AddScoped<IGraphTokenService, GraphTokenService>();
         services.AddScoped<IConfigurationService, ConfigurationService>();
+        services.AddSingleton<Shared.Services.IDateTimeProvider, Shared.Services.SystemDateTimeProvider>();
+        
+        // Services for Endpoints project
+        services.AddScoped<Domain.Metrics.IMetricsService, MetricsService>();
+        services.AddScoped<EndpointsConfigurationService>(provider =>
+            new Gateway.Services.EndpointsConfigurationService(provider.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>()));
 
         // Configure JSON options
         services.ConfigureHttpJsonOptions(options =>
@@ -163,38 +176,12 @@ public class Program
         // Custom middleware - TODO: Fix scoped service resolution
         // app.UseMiddleware<PromptInjectionMiddleware>();
         app.UseMiddleware<GraphTokenExchangeMiddleware>();
+        
+        // MCP Proxy middleware - handle /mcp/* routes
+        app.UseMiddleware<McpProxyMiddleware>();
 
-        // Minimal API endpoints
-        app.MapMcpServerEndpoints();
-        app.MapUserEndpoints();
-        app.MapConfigurationEndpoints();
-        app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
-        {
-            ResponseWriter = async (context, report) =>
-            {
-                context.Response.ContentType = "application/json";
-                var response = new
-                {
-                    Status = report.Status.ToString(),
-                    Service = "Arkana MCP Gateway",
-                    Version = "1.0.0",
-                    Timestamp = DateTime.UtcNow,
-                    TotalDuration = report.TotalDuration.TotalMilliseconds,
-                    Checks = report.Entries.ToDictionary(
-                        entry => entry.Key,
-                        entry => new
-                        {
-                            Status = entry.Value.Status.ToString(),
-                            Duration = entry.Value.Duration.TotalMilliseconds,
-                            Description = entry.Value.Description,
-                            Data = entry.Value.Data.Count > 0 ? entry.Value.Data : null,
-                            Exception = entry.Value.Exception?.Message
-                        })
-                };
-                await context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(response, 
-                    new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
-            }
-        });
+        // FastEndpoints
+        app.UseGatewayFastEndpoints(app.Configuration);
 
         // YARP Reverse Proxy (last in pipeline)
         app.MapReverseProxy();

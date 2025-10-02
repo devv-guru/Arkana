@@ -13,11 +13,8 @@ public class WebHostConfiguration : IEntityTypeConfiguration<WebHost>
         builder.HasKey(h => h.Id);
 
         // Configure relationships
-        builder.HasOne(o => o.Certificate)
-            .WithMany(o => o.WebHosts)
-            .HasForeignKey(m => m.CertificateId)
-            .IsRequired();
-
+        // Certificate relationship removed - Azure handles SSL termination
+        
         builder.HasOne(h => h.Cluster)
             .WithOne(o => o.Host)
             .HasForeignKey<Cluster>(f => f.HostId);

@@ -1,0 +1,88 @@
+{
+  "WebHosts": [
+    {
+      "Id": "users-api-host",
+      "ListenHost": "localhost",
+      "ListenPort": 7001,
+      "Routes": [
+        {
+          "RouteId": "users-api-route",
+          "ClusterId": "users-api-cluster",
+          "Match": {
+            "Path": "/api/users/{**catch-all}"
+          },
+          "Transforms": [
+            {
+              "PathPattern": "/api/users/{**catch-all}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "products-api-host", 
+      "ListenHost": "localhost",
+      "ListenPort": 7002,
+      "Routes": [
+        {
+          "RouteId": "products-api-route",
+          "ClusterId": "products-api-cluster", 
+          "Match": {
+            "Path": "/api/products/{**catch-all}"
+          },
+          "Transforms": [
+            {
+              "PathPattern": "/api/products/{**catch-all}"
+            }
+          ]
+        },
+        {
+          "RouteId": "categories-api-route",
+          "ClusterId": "products-api-cluster",
+          "Match": {
+            "Path": "/api/categories/{**catch-all}"
+          },
+          "Transforms": [
+            {
+              "PathPattern": "/api/categories/{**catch-all}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Clusters": [
+    {
+      "ClusterId": "users-api-cluster",
+      "Destinations": {
+        "users-api-dest-1": {
+          "Address": "http://localhost:5001",
+          "Health": "http://localhost:5001/health"
+        }
+      },
+      "HealthCheck": {
+        "Enabled": true,
+        "Interval": "00:00:30",
+        "Timeout": "00:00:15",
+        "Policy": "ConsecutiveFailures",
+        "Path": "/health"
+      }
+    },
+    {
+      "ClusterId": "products-api-cluster",
+      "Destinations": {
+        "products-api-dest-1": {
+          "Address": "http://localhost:5002",
+          "Health": "http://localhost:5002/health"
+        }
+      },
+      "HealthCheck": {
+        "Enabled": true,
+        "Interval": "00:00:30", 
+        "Timeout": "00:00:15",
+        "Policy": "ConsecutiveFailures",
+        "Path": "/health"
+      }
+    }
+  ]
+}

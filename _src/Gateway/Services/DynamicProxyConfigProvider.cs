@@ -62,8 +62,9 @@ public class DynamicProxyConfigProvider : IProxyConfigProvider
             using var scope = _scopeFactory.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<IWriteOnlyContext>();
 
-            // Load routes with all related entities
+            // Load routes with related entities using query splitting to avoid Cartesian product
             var routes = await context.Routes
+                .AsSplitQuery()
                 .Include(r => r.Host)
                 .Include(r => r.Match)
                     .ThenInclude(m => m.Headers)
@@ -74,14 +75,15 @@ public class DynamicProxyConfigProvider : IProxyConfigProvider
                 .Where(r => !r.IsDeleted)
                 .ToListAsync();
 
-            // Load clusters with all related entities
+            // Load clusters with related entities using query splitting
             var clusters = await context.Clusters
+                .AsSplitQuery()
                 .Include(c => c.Host)
                 .Include(c => c.Destinations)
                 .Include(c => c.HealthCheck)
-                    .ThenInclude(h => h.ActiveHealthCheck)
+                    .ThenInclude(h => h.Active)
                 .Include(c => c.HealthCheck)
-                    .ThenInclude(h => h.PassiveHealthCheck)
+                    .ThenInclude(h => h.Passive)
                 .Include(c => c.SessionAffinity)
                 .Include(c => c.HttpClient)
                 .Include(c => c.HttpRequest)
@@ -117,22 +119,28 @@ public class DynamicProxyConfigProvider : IProxyConfigProvider
             {
                 var transformDict = new Dictionary<string, string>();
                 
-                // Parse transform data (stored as JSON or key-value pairs)
-                if (!string.IsNullOrEmpty(transform.RequestHeader))
+                // Convert to YARP transform format
+                if (!string.IsNullOrEmpty(transform.RequestHeader) && !string.IsNullOrEmpty(transform.Set))
                 {
-                    transformDict["RequestHeader"] = transform.RequestHeader;
-                }
-                if (!string.IsNullOrEmpty(transform.Set))
-                {
-                    transformDict["Set"] = transform.Set;
-                }
-                if (!string.IsNullOrEmpty(transform.PathSet))
-                {
-                    transformDict["PathSet"] = transform.PathSet;
-                }
-                if (!string.IsNullOrEmpty(transform.PathPattern))
-                {
-                    transformDict["PathPattern"] = transform.PathPattern;
+                    // Handle different transform types
+                    if (transform.RequestHeader == "PathRemovePrefix")
+                    {
+                        transformDict["PathRemovePrefix"] = transform.Set;
+                    }
+                    else if (transform.RequestHeader == "PathSet")
+                    {
+                        transformDict["PathSet"] = transform.Set;
+                    }
+                    else if (transform.RequestHeader == "PathPattern")
+                    {
+                        transformDict["PathPattern"] = transform.Set;
+                    }
+                    else
+                    {
+                        // Default behavior for request headers
+                        transformDict["RequestHeader"] = transform.RequestHeader;
+                        transformDict["Set"] = transform.Set;
+                    }
                 }
                 
                 if (transformDict.Count > 0)
@@ -205,34 +213,27 @@ public class DynamicProxyConfigProvider : IProxyConfigProvider
                 destinations[dest.Id.ToString()] = new DestinationConfig
                 {
                     Address = dest.Address,
-                    Health = dest.Health,
-                    Metadata = dest.Metadata?.Data
+                    Health = dest.Health
                 };
             }
         }
 
         var healthCheckConfig = cluster.HealthCheck != null ? new HealthCheckConfig
         {
-            Enabled = cluster.HealthCheck.Enabled,
-            Interval = cluster.HealthCheck.Interval,
-            Timeout = cluster.HealthCheck.Timeout,
-            Path = cluster.HealthCheck.Path,
-            Query = cluster.HealthCheck.Query,
-            
-            Active = cluster.HealthCheck.ActiveHealthCheck != null ? new ActiveHealthCheckConfig
+            Active = cluster.HealthCheck.Active != null ? new ActiveHealthCheckConfig
             {
-                Enabled = cluster.HealthCheck.ActiveHealthCheck.Enabled,
-                Interval = cluster.HealthCheck.ActiveHealthCheck.Interval,
-                Timeout = cluster.HealthCheck.ActiveHealthCheck.Timeout,
-                Policy = cluster.HealthCheck.ActiveHealthCheck.Policy,
-                Path = cluster.HealthCheck.ActiveHealthCheck.Path
+                Enabled = cluster.HealthCheck.Active.Enabled,
+                Interval = cluster.HealthCheck.Active.Interval,
+                Timeout = cluster.HealthCheck.Active.Timeout,
+                Policy = cluster.HealthCheck.Active.Policy,
+                Path = cluster.HealthCheck.Active.Path
             } : null,
             
-            Passive = cluster.HealthCheck.PassiveHealthCheck != null ? new PassiveHealthCheckConfig
+            Passive = cluster.HealthCheck.Passive != null ? new PassiveHealthCheckConfig
             {
-                Enabled = cluster.HealthCheck.PassiveHealthCheck.Enabled,
-                Policy = cluster.HealthCheck.PassiveHealthCheck.Policy,
-                ReactivationPeriod = cluster.HealthCheck.PassiveHealthCheck.ReactivationPeriod
+                Enabled = cluster.HealthCheck.Passive.Enabled,
+                Policy = cluster.HealthCheck.Passive.Policy,
+                ReactivationPeriod = cluster.HealthCheck.Passive.ReactivationPeriod
             } : null
         } : null;
 
@@ -240,39 +241,22 @@ public class DynamicProxyConfigProvider : IProxyConfigProvider
         {
             Enabled = cluster.SessionAffinity.Enabled,
             Policy = cluster.SessionAffinity.Policy,
-            FailurePolicy = cluster.SessionAffinity.FailurePolicy,
-            AffinityKeyName = cluster.SessionAffinity.AffinityKeyName,
-            Cookie = cluster.SessionAffinity.Cookie != null ? new SessionAffinityCookieConfig
-            {
-                Domain = cluster.SessionAffinity.Cookie.Domain,
-                Expiration = cluster.SessionAffinity.Cookie.Expiration,
-                HttpOnly = cluster.SessionAffinity.Cookie.HttpOnly,
-                IsEssential = cluster.SessionAffinity.Cookie.IsEssential,
-                MaxAge = cluster.SessionAffinity.Cookie.MaxAge,
-                Path = cluster.SessionAffinity.Cookie.Path,
-                SameSite = cluster.SessionAffinity.Cookie.SameSite,
-                SecurePolicy = cluster.SessionAffinity.Cookie.SecurePolicy
-            } : null,
-            Settings = cluster.SessionAffinity.Settings
+            FailurePolicy = cluster.SessionAffinity.FailurePolicy
         } : null;
 
         var httpClientConfig = cluster.HttpClient != null ? new HttpClientConfig
         {
-            SslProtocols = cluster.HttpClient.SslProtocols,
+            SslProtocols = !string.IsNullOrEmpty(cluster.HttpClient.SslProtocols) ? 
+                Enum.Parse<System.Security.Authentication.SslProtocols>(cluster.HttpClient.SslProtocols) : null,
             DangerousAcceptAnyServerCertificate = cluster.HttpClient.DangerousAcceptAnyServerCertificate,
             MaxConnectionsPerServer = cluster.HttpClient.MaxConnectionsPerServer,
             EnableMultipleHttp2Connections = cluster.HttpClient.EnableMultipleHttp2Connections,
             RequestHeaderEncoding = cluster.HttpClient.RequestHeaderEncoding
         } : null;
 
-        var forwarderRequestConfig = cluster.HttpRequest != null ? new ForwarderRequestConfig
-        {
-            ActivityTimeout = cluster.HttpRequest.ActivityTimeout,
-            Version = cluster.HttpRequest.Version != null ? Version.Parse(cluster.HttpRequest.Version) : null,
-            VersionPolicy = cluster.HttpRequest.VersionPolicy != null ? 
-                Enum.Parse<HttpVersionPolicy>(cluster.HttpRequest.VersionPolicy) : null,
-            AllowResponseBuffering = cluster.HttpRequest.AllowResponseBuffering
-        } : null;
+        // ForwarderRequestConfig is not available in current YARP version
+        // TODO: Update when YARP version supports this configuration
+        var forwarderRequestConfig = (object?)null;
 
         return new ClusterConfig
         {
@@ -282,7 +266,7 @@ public class DynamicProxyConfigProvider : IProxyConfigProvider
             HealthCheck = healthCheckConfig,
             SessionAffinity = sessionAffinityConfig,
             HttpClient = httpClientConfig,
-            HttpRequest = forwarderRequestConfig,
+            HttpRequest = null, // TODO: Implement when YARP supports ForwarderRequestConfig
             Metadata = cluster.Metadata?.Data
         };
     }

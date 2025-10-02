@@ -25,12 +25,23 @@ var prometheus = builder.AddContainer("prometheus", "prom/prometheus")
 var mcpGraphUserServer = builder.AddProject<Projects.Graph_User_Mcp_Server>("mcp-graph-user-server",launchProfileName: "https")
     .WithReplicas(1);
 
+// Add dummy APIs for testing proxy configuration
+var dummyApi1 = builder.AddProject<Projects.DummyApi1>("dummy-user-api", launchProfileName: "http")
+    .WithReplicas(1);
+
+var dummyApi2 = builder.AddProject<Projects.DummyApi2>("dummy-product-api",launchProfileName: "http")
+    .WithReplicas(1);
+
 var gateway = builder.AddProject<Projects.Gateway>("arkana-gateway", launchProfileName: "https")
     .WithExternalHttpEndpoints()
     .WithReference(cache)
     .WithReference(mcpGraphUserServer)
+    .WithReference(dummyApi1)
+    .WithReference(dummyApi2)
     .WaitFor(cache)
-    .WaitFor(mcpGraphUserServer);
+    .WaitFor(mcpGraphUserServer)
+    .WaitFor(dummyApi1)
+    .WaitFor(dummyApi2);
 
 var databaseProvider = configuration["DataContextOptions:Provider"];
 

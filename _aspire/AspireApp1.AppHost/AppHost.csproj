@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0" />
+	<Sdk Name="Aspire.AppHost.Sdk" Version="9.4.1" />
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
@@ -15,11 +15,13 @@
 		<ProjectReference Include="..\..\_src\Gateway\Gateway.csproj" />
 		<ProjectReference Include="..\..\_src\Shared\Shared.csproj" />
 		<ProjectReference Include="..\..\_src\Graph.User.Mcp.Server\Graph.User.Mcp.Server.csproj" />
+		<ProjectReference Include="..\..\_src\DummyApi1\DummyApi1.csproj" />
+		<ProjectReference Include="..\..\_src\DummyApi2\DummyApi2.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aspire.Hosting.AppHost" Version="9.4.0" />
-		<PackageReference Include="Aspire.Hosting.Redis" Version="9.4.0" />
+		<PackageReference Include="Aspire.Hosting.AppHost" Version="9.4.1" />
+		<PackageReference Include="Aspire.Hosting.Redis" Version="9.4.1" />
 		
 		<PackageReference Include="Aspire.Hosting.SqlServer" Version="*" />
 		<PackageReference Include="Aspire.Hosting.PostgreSQL" Version="*" />

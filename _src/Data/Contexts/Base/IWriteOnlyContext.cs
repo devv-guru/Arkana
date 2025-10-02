@@ -2,6 +2,7 @@
 using Data.Entities.Metrics;
 using Data.Entities.Mcp;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Data.Contexts.Base;
@@ -36,6 +37,13 @@ public interface IWriteOnlyContext
     DbSet<McpBackendAuth> McpBackendAuths { get; }
     DbSet<McpUserApiKey> McpUserApiKeys { get; }
     DbSet<McpAuditLog> McpAuditLogs { get; }
+
+    // DbContext methods needed for change tracking
+    EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
+    EntityEntry Entry(object entity);
+    EntityEntry<TEntity> Add<TEntity>(TEntity entity) where TEntity : class;
+    EntityEntry<TEntity> Update<TEntity>(TEntity entity) where TEntity : class;
+    EntityEntry<TEntity> Remove<TEntity>(TEntity entity) where TEntity : class;
 
     int SaveChanges();
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

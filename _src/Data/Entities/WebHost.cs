@@ -4,12 +4,10 @@ public class WebHost : EntityBase
 {
     public string? Name { get; set; }
     public string? HostName { get; set; }
-
     public bool IsDefault { get; set; }
 
-    public Guid CertificateId { get; set; }
-    public Certificate? Certificate { get; set; }
-
+    // Azure handles SSL termination - no certificates needed in Gateway
+    
     public Guid? ClusterId { get; set; }
     public Cluster? Cluster { get; set; }
 

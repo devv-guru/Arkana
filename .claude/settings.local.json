@@ -23,7 +23,15 @@
       "WebFetch(domain:graphpermissions.merill.net)",
       "Bash(xcopy:*)",
       "Bash(robocopy:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(dotnet add:*)",
+      "Bash(dotnet sln:*)",
+      "Bash(dotnet nuget search:*)",
+      "Bash(dotnet:*)",
+      "WebFetch(domain:www.nuget.org)",
+      "WebFetch(domain:localhost)",
+      "Bash(curl:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": []
   }

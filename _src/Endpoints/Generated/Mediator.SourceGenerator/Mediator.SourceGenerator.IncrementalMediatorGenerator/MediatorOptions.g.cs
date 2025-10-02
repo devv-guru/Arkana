@@ -8,7 +8,7 @@ namespace Mediator
     /// Provide options for the Mediator source generator.
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCode("Mediator.SourceGenerator", "3.0.0.0")]
-    public sealed class MediatorOptions
+    internal sealed class MediatorOptions
     {
         /// <summary>
         /// The namespace in which the Mediator implementation is generated.
