@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <InvariantGlobalization>false</InvariantGlobalization>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <UserSecretsId>d6ccf7e3-de3a-40fd-8fd5-418e37416fae</UserSecretsId>
+    </PropertyGroup>
+
+    <!-- MVP Simplified Package References -->
+    <ItemGroup>
+        <!-- Core Framework -->
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+        
+        <!-- YARP Reverse Proxy -->
+        <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
+        
+        <!-- Entity Framework Core (SQLite only for MVP) -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.7">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeInPackageTargets>false</IncludeInPackageTargets>
+        </PackageReference>
+        
+        <!-- Authentication -->
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.1" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.6.1" />
+        
+        <!-- Microsoft Graph and Authentication -->
+        <PackageReference Include="Microsoft.Graph" Version="5.89.0" />
+        <PackageReference Include="Microsoft.Graph.Auth" Version="1.0.0-preview.7" />
+        <PackageReference Include="Microsoft.Identity.Web" Version="3.3.0" />
+        
+        <!-- Validation -->
+        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+        
+        <!-- Health Checks -->
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="9.0.7" />
+        
+        <!-- Logging -->
+        <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+        
+    </ItemGroup>
+
+    <!-- Docker Support -->
+    <ItemGroup>
+        <Content Include="Dockerfile" />
+        <Content Include=".dockerignore" />
+    </ItemGroup>
+
+    <!-- Project References -->
+    <ItemGroup>
+        <ProjectReference Include="..\Data\Data.csproj" />
+    </ItemGroup>
+
+</Project>

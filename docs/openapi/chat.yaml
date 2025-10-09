@@ -1,0 +1,110 @@
+openapi: 3.1.0
+info:
+  title: Chat API
+  version: 0.1.0
+paths:
+  /api/chat/messages:
+    post:
+      summary: Send a message and stream the assistant response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      responses:
+        '200':
+          description: NDJSON stream of events
+          content:
+            application/x-ndjson:
+              schema:
+                type: string
+                description: NDJSON lines with event objects
+  /api/chat/stream:
+    get:
+      summary: Subscribe to conversation updates via SSE
+      parameters:
+        - in: query
+          name: conversationId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Server-Sent Events stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+  /api/chat/history/{conversationId}:
+    get:
+      summary: Get conversation messages
+      parameters:
+        - in: path
+          name: conversationId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Conversation with messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversation'
+components:
+  schemas:
+    SendMessageRequest:
+      type: object
+      required: [content]
+      properties:
+        conversationId:
+          type: string
+          nullable: true
+        content:
+          type: string
+        attachments:
+          type: array
+          items:
+            type: string
+            description: Resource URIs
+        toolHints:
+          type: array
+          items:
+            type: string
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+          enum: [user, assistant, system, tool]
+        content:
+          type: string
+        createdUtc:
+          type: string
+          format: date-time
+    Event:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [message.delta, message.completed, run.updated]
+        conversationId:
+          type: string
+        messageId:
+          type: string
+        data:
+          oneOf:
+            - type: object
+            - type: string
